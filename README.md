@@ -244,7 +244,7 @@ polynomial $E_1(s)$ of the same degree (The Control Handbook, sec. 19.1.3):
 
 ```math
 v(s) = \frac{P(s)}{E_1(s)}\,\big(-e_y(s)\big) - \frac{L(s) - E_1(s)}{E_1(s)}\,u_{\mathrm{sat}}(s),
-\qquad u_{\mathrm{sat}}(t) = \operatorname{sat}\big(v(t)\big)
+\qquad u_{\mathrm{sat}}(t) = \mathrm{sat}\big(v(t)\big)
 ```
 
 When the actuator does not saturate, $v = u_{\mathrm{sat}} = u$ and the original controller comes
@@ -471,7 +471,7 @@ l_{1,d} = 2\,(1 - z_o), \quad l_{2,d} = \frac{(1 - z_o)^2}{T_s}
 \begin{aligned}
 \hat x_1[k] &= (1 - l_{1,d})\,\hat x_1[k-1] + T_s\,\hat x_2[k-1] + T_s\,b_0\,u_{\mathrm{sat}}[k-1] + l_{1,d}\,e_y[k-1] \\
 \hat x_2[k] &= -\,l_{2,d}\,\hat x_1[k-1] + \hat x_2[k-1] + l_{2,d}\,e_y[k-1] \\
-u_{\mathrm{sat}}[k] &= \operatorname{sat}_{u_{\min}}^{u_{\max}}\!\left(-\frac{k_{p,d}\,\hat x_1[k] + \hat x_2[k]}{b_0}\right)
+u_{\mathrm{sat}}[k] &= \mathrm{sat}_{u_{\min}}^{u_{\max}}\!\left(-\frac{k_{p,d}\,\hat x_1[k] + \hat x_2[k]}{b_0}\right)
 \end{aligned}
 ```
 
@@ -483,7 +483,7 @@ H_2(z) = \frac{\bar\gamma_0 + \bar\gamma_1 z^{-1} + \bar\gamma_2 z^{-2}}{1 + \al
 ```
 
 The direct term $\bar\gamma_0$ of $H_2$ closes an algebraic loop through the saturation; the block
-solves it by computing $w$ with the past samples and then $u = \operatorname{sat}\big(w/(1 + \bar\gamma_0)\big)$.
+solves it by computing $w$ with the past samples and then $u = \mathrm{sat}\big(w/(1 + \bar\gamma_0)\big)$.
 
 <details>
 <summary>Coefficients of <code>GPI</code>, with E<sub>1</sub>(s) = s² + k<sub>2</sub>s + k<sub>1</sub></summary>
