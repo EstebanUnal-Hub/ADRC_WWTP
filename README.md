@@ -30,7 +30,7 @@ a plant model and compared in simulation with an ISA PID of the same robustness.
 2. [Process and control loop](#2-process-and-control-loop)
 3. [Plant model and identification](#3-plant-model-and-identification)
 4. [Error-based ADRC with extended state observer](#4-error-based-adrc-with-extended-state-observer)
-5. [GPI control and its equivalence with the ESO](#5-gpi-control-and-its-equivalence-with-the-eso)
+5. [GPI control](#5-gpi-control)
 6. [Practical implementation aspects](#6-practical-implementation-aspects)
 7. [PLC implementation](#7-plc-implementation)
 8. [Comparison with an ISA PID](#8-comparison-with-an-isa-pid)
@@ -200,67 +200,181 @@ be. The robustness was checked over the interquartile ranges of $k_{dc}$, $\tau$
 
 ---
 
-## 5. GPI control and its equivalence with the ESO
+## 5. GPI control
+
+### 5.1 Control law
 
 The GPI controller is built only from integrals of the error and of the control signal (flat
-filtering). For $n = m = 1$ it is a PI with an extra filter pole:
+filtering): the error is reconstructed from integrals instead of being observed. For $n = m = 1$ it
+is a PI with an extra filter pole:
 
 ```math
 b_0\,C(s) = \frac{u_0(s)}{-e_y(s)} = \frac{k_1 s + k_0}{s\,(s + k_2)}, \qquad
 \left(s^3 + k_2 s^2 + k_1 s + k_0\right) e_y(s) = s\,(s + k_2)\,\xi(s)
 ```
 
-It is stable if $k_0, k_1, k_2 > 0$ and $k_2 k_1 > k_0$ (Routh–Hurwitz). Placing the poles at
-$-\omega_c$ and $-\omega_o$ (double) gives exactly the transfer function of the error-based ADRC
-with ESO:
+The gains $k_2$, $k_1$ and $k_0$ are the coefficients of the characteristic polynomial, so they set
+both the tracking dynamics and the disturbance rejection. The loop is stable if $k_0, k_1, k_2 > 0$
+and $k_2 k_1 > k_0$ (Routh–Hurwitz). The GPI can be tuned as a PI with a filter, with $k_1/b_0$ as the
+proportional gain, $k_0/b_0$ as the integral gain and $k_2$ as the filter pole, or with the ADRC
+approach of section 5.2.
+
+### 5.2 Equivalence with the ESO
+
+Placing the poles at $-\omega_c$ and $-\omega_o$ (double) gives exactly the transfer function of the
+error-based ADRC with ESO:
 
 ```math
 k_2 = \omega_c + 2\,\omega_o, \qquad k_1 = 2\,\omega_c\,\omega_o + \omega_o^2, \qquad k_0 = \omega_c\,\omega_o^2
 \quad\Longrightarrow\quad
-(s + \omega_c)(s + \omega_o)^2\,e_y(s) = s\,(s + k_2)\,\xi(s)
+\Delta(s) = s^3 + k_2 s^2 + k_1 s + k_0 = (s + \omega_c)(s + \omega_o)^2
 ```
 
 The thesis shows that this equivalence holds in continuous time, in discrete time and also with
-saturation, when the GPI uses the anti-windup split of section 6 with $E_1(s) = (s + \omega_o)^2$.
-If the bandwidths are not known, the GPI can also be tuned as a PI with a filter: $k_1/b_0$ is the
-proportional gain, $k_0/b_0$ the integral gain and $k_2$ the filter pole.
+saturation (section 5.3). Setpoint step from 2.0 to 2.2 mg/L and an input disturbance of −15 % at
+40 min, with the nominal plant, without dead time or saturation: the two responses coincide.
+
+![GPI and ADRC with observer](docs/img/gpi_vs_adrc.png)
+
+### 5.3 Saturation scheme (anti-windup)
+
+Any linear controller can be written as $u = \frac{P(s)}{L(s)}\,(-e_y)$, with $L(s)$ monic of
+degree $n$. It can be implemented by feeding back the saturated command through a stable monic
+polynomial $E_1(s)$ of the same degree (The Control Handbook, sec. 19.1.3):
+
+```math
+v(s) = \frac{P(s)}{E_1(s)}\,\big(-e_y(s)\big) - \frac{L(s) - E_1(s)}{E_1(s)}\,u_{\mathrm{sat}}(s),
+\qquad u_{\mathrm{sat}}(t) = \operatorname{sat}\big(v(t)\big)
+```
+
+When the actuator does not saturate, $v = u_{\mathrm{sat}} = u$ and the original controller comes
+back:
+
+```math
+u(s)\left[1 + \frac{L(s) - E_1(s)}{E_1(s)}\right] = \frac{P(s)}{E_1(s)}\,\big(-e_y(s)\big)
+\quad\Longrightarrow\quad
+u(s) = \frac{P(s)}{L(s)}\,\big(-e_y(s)\big)
+```
+
+For the GPI, $P(s) = k_1 s + k_0$ and $L(s) = s\,(s + k_2)$, and $1/b_0$ goes right after
+$P/E_1$, as in the ADRC ($u = u_0/b_0$). The feedback branch receives the applied command
+$u_{\mathrm{sat}}$, not the requested one:
+
+![GPI with anti-windup](docs/img/gpi_antiwindup.png)
+
+$E_1$ is free, as long as it is stable and of degree 2. Two choices were implemented:
+
+- **With the gains**, $E_1(s) = s^2 + k_2 s + k_1$ (block `GPI`): $\Delta(s)$ without its constant
+  term, divided by $s$. It needs no factorization, and it is stable whenever $k_1, k_2 > 0$.
+
+```math
+v_1(s) = \frac{k_1 s + k_0}{s^2 + k_2 s + k_1}\,\big(-e_y(s)\big), \qquad
+v_2(s) = \frac{-k_1}{s^2 + k_2 s + k_1}\,u_{\mathrm{sat}}(s), \qquad
+v(s) = \frac{v_1(s)}{b_0} - v_2(s)
+```
+
+- **With the observer polynomial**, $E_1(s) = (s + \omega_o)^2$ (block `ADRC_GPI`): the observer
+  part of $\Delta(s) = (s + \omega_c)(s + \omega_o)^2$.
+
+```math
+v_1(s) = \frac{\omega_o\big[(\omega_o + 2\omega_c)\,s + \omega_c\,\omega_o\big]}{(s + \omega_o)^2}\,\big(-e_y(s)\big), \qquad
+v_2(s) = \frac{\omega_c\,s - \omega_o^2}{(s + \omega_o)^2}\,u_{\mathrm{sat}}(s), \qquad
+v(s) = \frac{v_1(s)}{b_0} - v_2(s)
+```
+
+In both cases the static gain of the inner feedback is exactly $-1$, so the integral action is
+recovered. With $E_1 = (s + \omega_o)^2$ the GPI with anti-windup is exactly the ADRC whose observer
+is fed with $b_0\,u_{\mathrm{sat}}$; with $E_1 = s^2 + k_2 s + k_1$ the difference only shows while
+the actuator is saturated.
+
+The same scheme in Simulink (`Simulaciones/PTAR/02 Diseño/Matlab/`):
+
+![GPI anti-windup in Simulink](docs/img/simulink_gpi_antiwindup.png)
+
+Start-up from 0 mg/L with the nominal plant and the blower limited to 0–100 %: the ADRC with observer
+and the GPI with both choices of $E_1$ reach the setpoint without overshoot, while the GPI without
+anti-windup winds up and overshoots to about 2.8 mg/L. Under the same saturation, the GPI with
+anti-windup also stays stable over the plant variations and with a dead time of 100 s, twice the
+design value.
+
+![Start-up with saturation](docs/img/saturation_startup.png)
 
 ---
 
 ## 6. Practical implementation aspects
 
-### Saturation and anti-windup
+### 6.1 Saturation of the ADRC
 
-- **ESO.** The observer receives the applied command $u_{\mathrm{sat}}$, not the requested one.
-  That alone gives the ADRC its anti-windup.
-- **GPI.** The controller is split into two filters, and the saturation closes the loop around $H_2$:
+The observer of the ESO receives the applied command $b_0\,u_{\mathrm{sat}}$, not the requested one
+(Simulink model below). That alone gives the ADRC its anti-windup: the observer sees the command that
+really reaches the plant, so its states do not wind up while the blower is at 0 or 100 %. The GPI
+uses the scheme of section 5.3.
 
-```math
-v(s) = \frac{1}{b_0}\,H_1(s)\,\big(-e_y(s)\big) - H_2(s)\,u_{\mathrm{sat}}(s), \qquad u_{\mathrm{sat}} = \operatorname{sat}(v),
-\qquad
-H_1(s) = \frac{k_1 s + k_0}{E_1(s)}, \qquad H_2(s) = \frac{s\,(s + k_2) - E_1(s)}{E_1(s)}
-```
+![ESO with saturation in Simulink](docs/img/simulink_eso_saturation.png)
 
-Without saturation, $u = \frac{1}{b_0}\frac{H_1}{1 + H_2}(-e_y)$, which is the GPI of section 5 for any
-monic $E_1$ of degree 2. The `GPI` block uses $E_1 = s^2 + k_2 s + k_1$ and `ADRC_GPI` uses
-$E_1 = (s + \omega_o)^2$, which makes it behave like the ADRC also while saturated.
+### 6.2 Reference conditioning
 
-### Reference conditioning
-
-The reference-to-output transfer function of the error-based ADRC has a zero, which gives overshoot
-and a large initial control peak on a setpoint step. Two options were implemented, both outside the
-loop, so the controller and its disturbance rejection do not change:
-
-- **Prefilter.** A first-order filter with its pole on that zero, which cancels it:
+On a setpoint step the error-based ADRC overshoots even though all its poles are real. With the design
+model the setpoint response is
 
 ```math
-F(s) = \frac{r_f(s)}{r(s)} = \frac{k_0}{k_1 s + k_0} = \frac{1}{\dfrac{\omega_o + 2\,\omega_c}{\omega_c\,\omega_o}\,s + 1}
+\frac{y(s)}{r(s)} = \frac{k_1 s + k_0}{s^3 + k_2 s^2 + k_1 s + k_0} = \frac{k_1 s + k_0}{(s + \omega_c)(s + \omega_o)^2}
 ```
 
-  With the tuning above its time constant is 420 s.
+It has a zero at $s = -k_0/k_1 = -\omega_c\,\omega_o/(\omega_o + 2\omega_c) = -\tfrac{5}{7}\,\omega_c$,
+slower than the pole $-\omega_c$, and that zero causes the overshoot. Besides, a step in the setpoint
+asks for a very large control peak. Both are reduced by conditioning the reference before it enters
+the loop, with a prefilter or with a Bézier curve. In both cases the controller does not change, and
+neither does the disturbance rejection.
 
-- **Cubic Bézier reference.** At each setpoint change, a cubic segment goes from the current value
-  and slope of the reference to the new setpoint, with zero final slope, in a chosen time $t_f$:
+#### Setpoint prefilter
+
+Following the prefilter in the reference channel proposed by Herbst and Madoński (sec. 6.4.2), a
+first-order filter with its pole exactly on that zero is placed before the summing junction:
+
+```math
+F(s) = \frac{r_f(s)}{r(s)} = \frac{k_0}{k_1 s + k_0} = \frac{1}{\dfrac{k_1}{k_0}\,s + 1}
+= \frac{1}{\dfrac{\omega_o + 2\,\omega_c}{\omega_c\,\omega_o}\,s + 1}
+```
+
+Its static gain is 1, so the output still reaches the setpoint, and its time constant is
+$k_1/k_0 = 420$ s (7 min). The prefilter is outside the loop: the controller still receives only the
+error, now $e_y = y - r_f$.
+
+![Loop with prefilter](PLC_ST/Libreria_ADRC/_Images/DIAG_PREFILTER.png)
+
+The pole of the filter cancels the zero, and the three design poles remain, with no zero. The
+disturbance does not go through the prefilter, so its response is the same:
+
+```math
+\frac{y(s)}{r(s)} = \frac{k_0}{(s + \omega_c)(s + \omega_o)^2}, \qquad
+\frac{y(s)}{\bar\xi(s)} = \frac{s\,(s + k_2)}{(s + \omega_c)(s + \omega_o)^2}
+```
+
+Setpoint step from 2.0 to 2.2 mg/L and an input disturbance of −15 % at 40 min, with the nominal
+plant and the blower limited to 0–100 %:
+
+| | Overshoot | Peak of $u$ | Settling time (2 %) |
+|---|---|---|---|
+| Without prefilter, $\theta = 0$ | 10.3 % | 80 % | 15.7 min |
+| With prefilter, $\theta = 0$ | 0 % | 50 % | 24.4 min |
+| Without prefilter, $\theta = 50$ s | 46 % | 93 % | 14.7 min |
+| With prefilter, $\theta = 50$ s | 0 % | 54 % | 24.7 min |
+
+The disturbance gives the same dip with and without the prefilter. The price is a slower arrival at
+the setpoint.
+
+![Step with and without prefilter](docs/img/prefilter_step.png)
+
+In the PLC, `PREFILTER_ADRC` receives $\omega_c$ and $\omega_o$, and `PREFILTER_GPI` receives $k_0$
+and $k_1$; both are discretized with Tustin (section 7). If the structure of the controller changes
+(another plant order, or ramp references), the filter has to be re-tuned so that its poles cancel the
+new zeros of $y/r$.
+
+#### Cubic Bézier reference
+
+At each setpoint change, a cubic segment goes from the current value and slope of the reference to
+the new setpoint, with zero final slope, in a chosen time $t_f$:
 
 ```math
 y^*(\tau) = y_c + \tau\big(c_1 + \tau\,(c_2 + \tau\,c_3)\big), \qquad \tau = \frac{t - t_0}{t_f} \in [0, 1]
@@ -270,18 +384,19 @@ y^*(\tau) = y_c + \tau\big(c_1 + \tau\,(c_2 + \tau\,c_3)\big), \qquad \tau = \fr
 \bar\Delta = r - y_c, \qquad c_1 = \dot y_c\,t_f, \qquad c_2 = 3\bar\Delta - 2\,\dot y_c\,t_f, \qquad c_3 = -2\bar\Delta + \dot y_c\,t_f
 ```
 
-  so that $y^*(0) = y_c$, $\dot y^*(0) = \dot y_c$, $y^*(1) = r$ and $\dot y^*(1) = 0$. Because it
-  restarts from the state of the reference, a new setpoint can arrive in the middle of a segment.
+so that $y^*(0) = y_c$, $\dot y^*(0) = \dot y_c$, $y^*(1) = r$ and $\dot y^*(1) = 0$. Because it
+restarts from the state of the reference, a new setpoint can arrive in the middle of a segment. Unlike
+the prefilter, the zero stays in the loop, so a small overshoot can remain.
 
 ![Bézier segment](PLC_ST/Libreria_ADRC/_Images/BEZIER_SEGMENT.png)
 
-### Noise
+### 6.3 Noise
 
 The ADRC with ESO and the GPI share the same strictly proper transfer function, so they already filter
 high-frequency sensor noise without extra filters. To pass less noise to the blower command,
 $\omega_o$ is lowered.
 
-### Discretization
+### 6.4 Discretization
 
 - **ESO.** The observer keeps its structure; the integrators of the augmented system are discretized
   with zero-order hold, and the gains are computed from the images of the poles,
@@ -290,7 +405,7 @@ $\omega_o$ is lowered.
 - **Sampling.** At least 10 times, and preferably 20 times, faster than the fastest pole, the
   observer's. The PLC uses $T_s = 50$ ms.
 
-### Dead time
+### 6.5 Dead time
 
 If $\theta$ is known, the observer can be synchronized with the plant by delaying the command that
 enters it by $n_d \approx \theta/T_s$ samples. The other way is to keep $\omega_c$ low enough to have
@@ -415,7 +530,7 @@ r_f[k] = -\alpha_f\,r_f[k-1] + \beta_f\,\big(r[k] + r[k-1]\big), \qquad
 
 with $k_1/k_0 = (\omega_o + 2\omega_c)/(\omega_c\omega_o)$ in `PREFILTER_ADRC`.
 
-**`BEZIER_REF`**: the segment of section 6 evaluated with $\tau = n\,T_s/t_f$, where $n$ restarts at
+**`BEZIER_REF`**: the segment of section 6.2 evaluated with $\tau = n\,T_s/t_f$, where $n$ restarts at
 each setpoint change, and $y^*[n] = r$ for $\tau \ge 1$.
 
 **`PLANT`** (Tustin):
