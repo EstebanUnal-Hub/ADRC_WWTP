@@ -1,0 +1,71 @@
+% ============================================================================
+%  Anexos
+% ============================================================================
+% Cambiar aquí la dirección del repositorio
+\newcommand{\repositorio}{\url{https://github.com/EstebanUnal-Hub/ADRC_WWTP}}
+
+\chapter{Repositorio de código y datos}
+\label{anx:st}
+\label{anx:archivos}
+
+El código, los cuadernos y las trazas de este trabajo están en el repositorio \repositorio. La
+Tabla~\ref{tab:anx_repo} resume qué contiene cada carpeta. Los bloques de \texttt{PLC\_ST/Codigos/} son la
+implementación de la Sección~\ref{sec:met_plc} en texto estructurado (IEC 61131-3) para un PLC ctrlX
+de Bosch Rexroth; usan los estados \texttt{RESET} y \texttt{AUTOMATIC} de la
+Figura~\ref{fig:plc_estados} y calculan las ganancias discretas solo en \texttt{RESET}.
+
+% longtable: la tabla no cabe en una página y se parte sola
+{\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|>{\small\raggedright\arraybackslash}p{5.0cm}|>{\small\raggedright\arraybackslash}p{9.8cm}|}
+\caption{Contenido del repositorio.}
+\label{tab:anx_repo} \\
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Ruta} & \textbf{Contenido} \\ \hline
+\endfirsthead
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Ruta} & \textbf{Contenido} \\ \hline
+\endhead
+\multicolumn{2}{|l|}{\textbf{Bloques del PLC}, en \texttt{PLC\_ST/Codigos/}} \\ \hline
+\texttt{ADRC\_ESO.st} & ADRC basado en el error con observador de estado extendido:
+\eqref{eq:disc_filas_retardos} y \eqref{eq:disc_ley_escalar}, con las ganancias de
+\eqref{eq:disc_ganancias_wc_wo}. \\ \hline
+\texttt{GPI.st} & GPI con ganancias: \eqref{eq:disc_gpi_fd1} con los coeficientes de la
+Tabla~\ref{tab:disc_gpi_coef}, para $E_1 = s^2 + k_2 s + k_1$. \\ \hline
+\texttt{ADRC\_GPI.st} & El mismo GPI con $E_1 = (s + \omega_o)^2$, a partir de los anchos de
+banda. \\ \hline
+\texttt{PREFILTER\_GPI.st} y \texttt{PREFILTER\_ADRC.st} & Prefiltro de consigna
+\eqref{eq:disc_pref_dif} con las ganancias de \eqref{eq:disc_pref_tf}; el primero recibe $k_0$ y
+$k_1$, y el segundo $\omega_c$ y $\omega_o$. \\ \hline
+\texttt{BEZIER\_REF.st} & Referencia de Bézier, \eqref{eq:bz_c} y \eqref{eq:bz_horner}, que
+replanifica en cada cambio de consigna (Sección~\ref{subsec:bz_replanificacion}). \\ \hline
+\texttt{PLANT.st} & Planta de primer orden discretizada con Tustin ($\alpha_g$ y $\beta_g$ de
+la Tabla~\ref{tab:disc_gpi_coef}), para probar los bloques en el PLC sin conectarlos al proceso. \\ \hline
+\texttt{PLC\_ST/Libreria\_ADRC/} & Los mismos bloques documentados para la librería ADRC de ctrlX,
+con sus ecuaciones, diagramas de bloques y la conexión en CFC (\texttt{\_Images/}). \\ \hline
+\texttt{PLC\_ST/capturas\_codesys/} & Capturas del CFC; en \texttt{Pruebas/}, las trazas del PLC con la
+planta de diseño (Figura~\ref{fig:plc_trazas}), que se dibujan en
+\texttt{ADRC\_PTAR\_continuo.ipynb}. \\ \hline
+\multicolumn{2}{|l|}{\textbf{Datos y caracterización}} \\ \hline
+\texttt{Datos/tools/} & Conversor del formato binario propietario del historiador, verificado en
+1.773 casos. \\ \hline
+\texttt{Datos/csv/} & Historiador del SCADA convertido: 19 archivos, 7.439.296 filas. \\ \hline
+\texttt{Datos/analisis/} & \texttt{analisis\_dinamica\_limpio.ipynb}: cuaderno de identificación y
+caracterización de perturbaciones (Capítulo~\ref{cap:caracterizacion});
+\texttt{identificacion.py}: regresión ARX por ventanas y validación por simulación libre;
+\texttt{perturbacion.py}: piezas medidas de $\bar{\xi}(t)$ y generador de la señal sintética;
+\texttt{f\_generada\_M2\_14d\_1min.csv} y \texttt{f\_generada\_M3\_14d\_1min.csv}: señales usadas en
+las simulaciones. \\ \hline
+\texttt{Simulaciones/PTAR/01 Datos/} & Trazas del PLC ctrlX a 50~ms del ensayo en M1. \\ \hline
+\texttt{P\&ID/} & Plano P\&ID de la etapa de aireación en Visio y su exportación en PDF
+(Figura~\ref{fig:pid_tikz}). \\ \hline
+\multicolumn{2}{|l|}{\textbf{Diseño y simulación}} \\ \hline
+\texttt{Simulaciones/PTAR/02 Diseño/Python/} & \texttt{ADRC\_PTAR\_continuo.ipynb}: diseño del
+ADRC, el GPI y el PID, anti-\emph{windup}, simulaciones y figuras de los
+Capítulos~\ref{cap:ADRC-ESO} a \ref{cap:comparacion_pid}; \texttt{ADRC\_PTAR\_discreto.ipynb}:
+discretización de los controladores y sus simulaciones en tiempo discreto. \\ \hline
+\texttt{Simulaciones/PTAR/02 Diseño/Matlab/} & Modelos de Simulink del ADRC y del GPI con saturación
+(Figuras~\ref{fig:simulink_eso} y \ref{fig:simulink_gpi}). \\ \hline
+\end{longtable}
+}

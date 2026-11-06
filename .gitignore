@@ -1,0 +1,65 @@
+# ---------------------------------------------------------------
+# Raw plant data (too large for GitHub, files over 100 MB)
+# ---------------------------------------------------------------
+Datos/Hst/
+Datos/csv/
+Datos/Tunja servicios/
+Datos/analisis/maestra.pkl
+
+# ---------------------------------------------------------------
+# Third-party documents (books, papers, slides, reports)
+# ---------------------------------------------------------------
+Documentos/Libros/
+Documentos/Articulos/
+Documentos/Citas/
+Documentos/Slides/
+Documentos/BSM_TG_Tech_Report_no_1_BSM1_General_Description.pdf
+Documentos/wei-et-al-2020-*.pdf
+
+# ---------------------------------------------------------------
+# LaTeX build files (main.pdf is kept)
+# ---------------------------------------------------------------
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.synctex(busy)
+
+# ---------------------------------------------------------------
+# Python and Jupyter
+# ---------------------------------------------------------------
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------
+# ctrlX PLC Engineering / CODESYS build and user files
+# ---------------------------------------------------------------
+*.opt
+*.precompilecache
+*.compileinfo
+*.bootinfo
+*.bootinfo_guids
+*.~u
+
+# ---------------------------------------------------------------
+# MATLAB / Simulink
+# ---------------------------------------------------------------
+*.slxc
+*.asv
+slprj/
+
+# ---------------------------------------------------------------
+# Editors and temporary files
+# ---------------------------------------------------------------
+.vscode/
+~$*
+*.tmp
+.~lock.*

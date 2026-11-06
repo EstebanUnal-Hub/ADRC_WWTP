@@ -1,0 +1,8 @@
+# Python 3.12; versions used to run the notebooks of this repository
+numpy==2.3.5
+scipy==1.16.3
+pandas==3.0.2
+matplotlib==3.10.8
+sympy==1.14.0
+control==0.10.2
+ipykernel==7.1.0

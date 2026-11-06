@@ -1,0 +1,144 @@
+% ============================================================================
+%  Capítulo 8 — Conclusiones
+% ============================================================================
+\chapter{Conclusiones}
+\label{cap:conclusiones}
+
+\section{Conclusiones por objetivo}
+
+\textbf{OE1 --- Caracterizar las perturbaciones.} Las perturbaciones del lazo
+de oxígeno quedaron cuantificadas sobre 22 meses de operación
+(Tabla~\ref{tab:ident_resumen}) y llevadas con \eqref{eq:pid_eps} a la unidad que decide el diseño,
+\% de la señal de control. Con ellas se generó la perturbación sintética
+(Figura~\ref{fig:ident_perturbacion}) con la que se validaron los controladores implementados, y en la
+Figura~\ref{fig:pid_adrc_perturbacion} se ve que durante las 12~h el observador sigue la perturbación
+aplicada. El $95~\%$ de su energía está por debajo de $12$~rad/h y el $99~\%$ por debajo de $56$~rad/h
+(Tabla~\ref{tab:ident_espectro_f}), que es lo que orientó el ancho de banda del observador.
+
+\textbf{OE2 --- Diseñar un GPI robusto sobre el error.} El controlador GPI de
+orden $n=1$, $m=1$ quedó diseñado, discretizado y dotado de un esquema de
+\emph{anti-windup} deducido de sus propias ganancias. El esquema elimina el sobrepaso por saturación:
+en el arranque, sin él el oxígeno sube hasta $2{,}79$~mg/L, y con él llega a la consigna sin pasarse
+(Figura~\ref{fig:sat_arranque}). Se verificó que su diseño en tiempo continuo coincide con su
+realización en discreto (Figura~\ref{fig:gpi_discreto_vs_adrc}). Además, se implementó en el PLC para
+los dos tipos de sintonía, por anchos de banda o por las ganancias $k_0$, $k_1$ y $k_2$,
+correspondientes a las de un PI con filtro del error \eqref{eq:gpi_pi_filtro}.
+
+\textbf{OE3 --- Diseñar un ADRC basado en ESO sobre el error.} El controlador
+quedó diseñado con criterio físico para las dos perillas: $\wc = 4/\tau$, cuatro veces más rápido que
+la planta en lazo abierto, y $\wo = 5\,\wc = 60$~rad/h, validado contra el contenido espectral de la
+perturbación y con un rechazo coherente con las perturbaciones de orden $m=1$. Con esa sintonía el
+margen de fase es de $65{,}8^{\circ}$ sin retardo y de $36{,}0^{\circ}$ con $\theta = 50$~s
+(Figuras~\ref{fig:adrc_frecuencia} y \ref{fig:adrc_margenes_retardo}), y el escalón de $2{,}0$ a
+$2{,}2$~mg/L se asienta en $15{,}7$~min. Además, se presenta una relación de equivalencia entre el GPI
+y el ADRC basado en observador de estado extendido \eqref{eq:eso2gpi}.
+
+\textbf{OE4 --- Metodología de implementación en PLC.} Se documentó una
+metodología (Sección~\ref{sec:impl_resumen}), verificada sobre plataformas basadas en CODESYS, con
+bloques de función en texto estructurado formulados sobre el error para que
+sustituyan al PID existente sin modificar la arquitectura del lazo
+(Tablas~\ref{tab:plc_adrc_eso}, \ref{tab:plc_gpi} y \ref{tab:plc_adrc_gpi}, Figura~\ref{fig:plc_codesys}, Anexo~\ref{anx:st}). Los dos
+controladores se ejecutaron en las plataformas, lo que valida su funcionamiento junto con los
+productos digitales diseñados bajo los aspectos prácticos de implementación, como la curva de Bézier
+para la referencia y el prefiltro (Tablas~\ref{tab:plc_prefilter_gpi}, \ref{tab:plc_prefilter_adrc} y \ref{tab:plc_bezier}).
+
+\textbf{OE5 --- Validación frente a un PID convencional.} La validación se hizo en simulación, con la
+planta identificada y la perturbación sintetizada de los datos reales, ya que el controlador no se ha
+puesto en marcha en campo (Sección~\ref{sec:limitaciones}). La comparación se hizo contra dos
+referencias: los arranques medidos del PID real, que unas veces llegan limpios y otras oscilan con
+sobreimpulsos de $44$ y $91~\%$ (Figura~\ref{fig:ident_pid}), y un PID ISA sintonizado para que su
+señal de control no salte más que la del ADRC en el cambio de consigna y tenga la misma sensibilidad
+máxima sin retardo. Con esas condiciones, el ADRC es mejor en el escalón de consigna, con un IAE de
+$42{,}7$ frente a $88{,}4$~mg$\cdot$s/L con el retardo de diseño (Tabla~\ref{tab:pid_escalon},
+Figura~\ref{fig:pid_adrc_escalon}), y en el rechazo de una perturbación de entrada, que corrige sin
+pasarse de la consigna (Tabla~\ref{tab:pid_pert_escalon}). En las 12~h con perturbación sintética el
+IAE del ADRC es algo menor, $1{,}86$ frente a $2{,}23$~mg$\cdot$h/L (Sección~\ref{sec:pid_perturbacion}), y
+el PID se pasa unas tres veces más en los cambios de consigna y maneja peor el ruido, con una señal de
+control más ruidosa ($\sigma_u$ de $0{,}22$ frente a $0{,}009~\%$,
+Figura~\ref{fig:pid_adrc_escalon}). El PID solo queda mejor en robustez con retardo, con
+$M_s$ de $1{,}59$ frente a $2{,}32$ (Tabla~\ref{tab:pid_robustez}), a cambio de poco más de un tercio
+del ancho de banda. Para esta planta de primer orden, un PI con el mismo margen de fase del ADRC puede
+superarlo en rechazo (Figura~\ref{fig:pid_mejores}), pero deja pasar mucho más ruido al soplador.
+
+\section{Conclusión general}
+
+Las dos arquitecturas de rechazo activo evaluadas --- GPI y ADRC con ESO ---
+son, para este proceso y con las ganancias correspondientes, el mismo
+controlador escrito de dos maneras, es decir, son equivalentes. Su ventaja frente al PID no está
+estrictamente en el IAE, dado que con diferentes sintonizaciones puedo tener mejores IAE. Bajo la misma
+sensibilidad máxima y el mismo esfuerzo inicial, está en el precio que cada uno paga por ese IAE: en
+sobrepico, en el rechazo de perturbaciones y en el ruido que llega al soplador. En general, se pudieron validar los controladores y sus respectivas
+equivalencias en una problemática industrial donde el PID es la forma habitual de control, y se llegó
+a una metodología y a unos aspectos prácticos de implementación para realizar una puesta en marcha
+adecuada a cada problemática que pueda llegar a surgir, usando plataformas basadas en CODESYS. Lo que
+queda pendiente es confirmarlo en campo.
+
+\section{Aportes principales}
+
+\begin{enumerate}
+
+  \item \textbf{Validación de controladores más que todo teóricos, pero con enfoque industrial.}
+  Si bien ya se ha demostrado que estos tipos de controladores avanzados, como el ADRC y el GPI, tienen
+  algunas ventajas frente a controladores clásicos como el PID, a nivel de manejo de ruido y de
+  facilidad de sintonización relacionada con fenómenos físicos como los anchos de banda de la planta y
+  de la perturbación, o incluso por \emph{pole placement}, no son tan vistos en proyectos o procesos
+  industriales, donde el PID sigue ganando terreno. Aquí se demuestra una forma más práctica de
+  implementarlos, diseñados sobre los datos reales de una planta en operación.
+
+  \item \textbf{La reconstrucción explícita de la equivalencia ESO--GPI.} Se buscaba una forma de
+  obtener el mismo resultado bajo dos enfoques diferentes de construcción de controladores, y la
+  equivalencia \eqref{eq:eso2gpi} se mantiene en tiempo continuo, en discreto y también con saturación
+  (Figuras~\ref{fig:gpi_vs_adrc}, \ref{fig:sat_arranque} y \ref{fig:gpi_discreto_vs_adrc}).
+
+  \item \textbf{Una metodología de implementación en PLC verificada en CODESYS.} Se entregan códigos
+  escritos en texto estructurado, correspondiente a la norma IEC~61131-3 (Anexo~\ref{anx:st}), y su
+  metodología de sintonización y uso (Sección~\ref{sec:impl_resumen}), por lo que queda listo para que
+  cualquier usuario lo pruebe y tenga forma de sintonizarlo fácilmente.
+
+  \item \textbf{Aspectos prácticos de implementación.} Se realizaron diferentes experimentos para
+  demarcar qué se debe considerar a la hora de integrar estos tipos de controladores, o en general
+  controladores, en entornos industriales, y cómo se puede hacer un mejor uso de ellos con
+  acondicionamientos específicos como el manejo de la saturación, una referencia acotada e incluso un
+  manejo del ruido, que a nivel industrial puede estar presente en todos los procesos.
+
+\end{enumerate}
+
+\section{Trabajo futuro}
+
+\begin{enumerate}
+  \item \textbf{Terminar la puesta en marcha en campo.} Teniendo ya todos los esquemas listos para
+  probar, simulados y con sus códigos establecidos, queda su puesta en marcha como pendiente.
+
+  \item \textbf{Evaluar bajo influentes de lluvia, cambios ambientales y zonas muertas de los motores.}
+  Si bien ya está validado bajo perturbaciones y sintonización relacionadas con la planta, falta
+  validarlo bajo históricos de un tiempo prolongado, de meses, para ver su comportamiento bajo
+  condiciones ambientales cambiantes, como tormentas o lluvias, donde se modifica el caudal y cambia la
+  biología de la planta. Si bien el controlador responde adecuadamente a perturbaciones supuestas e
+  interpretadas de los datos, es necesario realizar pruebas prácticas en las que se involucren mayores
+  perturbaciones, y más que todo dirigidas a los actuadores, como cambios en los difusores o en la
+  potencia de los mismos motores al cambiar equipos o introducir nuevos, siendo esto evidenciado en un
+  cambio de las ganancias, además de la presencia de posibles zonas muertas en los motores.
+
+  \item \textbf{Reducción del esfuerzo de control.} Una de las diferencias entre el esquema basado en el
+  error y el esquema de estimación de la señal de salida es que, al introducir la referencia por el
+  observador en el error de seguimiento y meter un paso, la acción de control va a ser muy fuerte,
+  debido a que el controlador debe compensar la derivada de un paso, que es un impulso,
+  $u^* = [y^*]^{(n)}$, y eso genera un enorme esfuerzo de la señal de control. Aquí se redujo con Bézier y
+  con el prefiltro; otra forma de reducirlo es mediante un \emph{clutch} que no inyecte directamente todo
+  el esfuerzo de la señal de control a la planta, sobre lo que ya existen documentos como
+  \cite{quecan2026clutch}.
+
+  \item \textbf{Implementación de controladores ADRC con otro tipo de perturbación.} Poder llevar a
+  estructuras implementables en equipos digitales grados mayores de perturbación, para tener mejor
+  seguimiento ante otros tipos de señales, como rampas o incluso señales oscilatorias, de las que ya
+  existe una teoría grande, y el único esfuerzo es ver la forma de facilitar su implementación.
+
+  \item \textbf{Implementación analógica de controladores en circuitos dedicados.} Si bien la
+  discretización ha sido una forma muy buena de implementar diferentes controladores teóricos continuos,
+  sería interesante validar estos tipos de controladores en SoC con periféricos totalmente analógicos,
+  cuya única función sea realizar el control. Por lo que, bajo un enfoque de diseño ASIC
+  (\emph{Application-Specific Integrated Circuit}) mixto, se podría llegar a crear un producto con una
+  parte digital que permita la interacción con el usuario y modelar cada una de las ganancias del
+  controlador por software, pero con una realización completamente analógica en un chip dedicado.
+
+\end{enumerate}

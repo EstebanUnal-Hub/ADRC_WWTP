@@ -1,0 +1,50 @@
+{
+  "IsSynced": false,
+  "SyncMode": 0,
+  "InSyncWithRuntime": false,
+  "ApplicationType": "plc",
+  "Configuration": "appdata",
+  "Solution": null,
+  "ControllerGuid": "00000000-0000-0000-0000-000000000000",
+  "LastChange": 639294868667889264,
+  "MachineName": "DESKTOP-7J42K6T",
+  "UserName": "User",
+  "ProjectCompleteFilename": "C:\\Users\\User\\Documents\\ADRC2\\Library\\ADRC.library",
+  "CompilerVersion": {
+    "Major": 0,
+    "Minor": 0,
+    "Build": 0,
+    "Revision": 0,
+    "MajorRevision": 0,
+    "MinorRevision": 0
+  },
+  "OwnVersion": {
+    "Major": 1,
+    "Minor": 2,
+    "Build": 0,
+    "Revision": 0,
+    "MajorRevision": 0,
+    "MinorRevision": 0
+  },
+  "ProductAdditionalFolder": "Default",
+  "ProductProfileName": "ctrlX PLC 1.20.12",
+  "ProductId": "ctrlx-works",
+  "ProductVersion": "1.20.15",
+  "ProductVersionText": "WRK-V-0120.15",
+  "SyncModeSave": false,
+  "SyncModeDownload": false,
+  "SyncModeAsk": false,
+  "SyncAfterBootApplication": false,
+  "UserMetaData": {
+    "DESKTOP-7J42K6T:User": {
+      "MachineName": "DESKTOP-7J42K6T",
+      "UserName": "User",
+      "ProjectCompleteFilename": "C:\\Users\\User\\Documents\\ADRC2\\Library\\ADRC.library"
+    }
+  },
+  "CompileinfoChecksum": null,
+  "SyncDescription": false,
+  "DeviceId": null,
+  "DeviceVersion": null,
+  "UseIoHierachy": true
+}

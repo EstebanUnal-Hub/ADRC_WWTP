@@ -1,0 +1,162 @@
+% ============================================================================
+%  Tesis de Maestría — Universidad Nacional de Colombia
+%  Control con rechazo activo de perturbaciones para la regulación de oxígeno
+%  disuelto en la etapa de lodos activados de una PTAR
+%
+%  Manuel Esteban Peña Choachi
+%
+%  Compilar:  pdflatex main  ->  bibtex main  ->  pdflatex main  ->  pdflatex main
+%             (o simplemente:  latexmk -pdf main)
+% ============================================================================
+\documentclass[12pt,oneside]{report}
+
+% --- nombres en español (se aplican DESPUES de babel, que los reescribe) ----
+% ver mas abajo: \addto\captionsspanish
+
+% --- paquetes (los de la propuesta) -----------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-noquoting]{babel}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{longtable}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{subfig}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+\usepackage{listings}
+\usepackage{epstopdf}
+\usepackage[nottoc]{tocbibind}
+\usepackage[hidelinks]{hyperref}
+
+% --- nombres en español, por encima de babel --------------------------------
+\addto\captionsspanish{%
+  \renewcommand\contentsname{Contenido}%
+  \renewcommand\listfigurename{Lista de Figuras}%
+  \renewcommand\listtablename{Lista de Tablas}%
+  \renewcommand\figurename{Figura}%
+  \renewcommand\tablename{Tabla}%
+  \renewcommand\bibname{Bibliografía}%
+  \renewcommand\chaptername{Capítulo}%
+  \renewcommand\appendixname{Anexo}%
+}
+
+% --- geometría e interlineado (los de la propuesta) -------------------------
+\usepackage[letterpaper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\setlength{\headheight}{14.5pt}
+\setlength{\marginparwidth}{30mm}
+\renewcommand{\baselinestretch}{1.15}
+\renewcommand{\headrulewidth}{0.25pt}
+\date{}
+
+% --- encabezados ------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+
+% --- estilo de los listados de código (PLC / Python) ------------------------
+\definecolor{grisfondo}{gray}{0.96}
+\definecolor{comentario}{rgb}{0.25,0.45,0.25}
+\definecolor{palabra}{rgb}{0.15,0.20,0.55}
+
+% recuadros destacados (apartados y ejemplos)
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins}
+\newtcolorbox{recuadro}[1]{breakable, enhanced, colback=grisfondo, colframe=black!45,
+  coltitle=black, colbacktitle=black!12, fonttitle=\bfseries, title={#1},
+  arc=1mm, boxrule=0.6pt, left=2mm, right=2mm}
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  backgroundcolor=\color{grisfondo},
+  commentstyle=\color{comentario}\itshape,
+  keywordstyle=\color{palabra}\bfseries,
+  breaklines=true,
+  frame=single,
+  framesep=4pt,
+  rulecolor=\color{gray},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=6pt,
+  captionpos=b,
+  showstringspaces=false,
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+           {ñ}{{\~n}}1 {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1
+           {Ú}{{\'U}}1 {Ñ}{{\~N}}1 {°}{{$^\circ$}}1
+}
+\lstdefinelanguage{ST}{
+  morekeywords={FUNCTION_BLOCK,END_FUNCTION_BLOCK,VAR_INPUT,VAR_OUTPUT,VAR,
+    END_VAR,IF,THEN,ELSIF,ELSE,END_IF,REAL,LREAL,BOOL,TIME,TRUE,FALSE,AND,OR,
+    NOT,RETURN,CASE,OF,END_CASE,WHILE,DO,END_WHILE,CONSTANT,PERSISTENT},
+  morecomment=[s]{(*}{*)},
+  morecomment=[l]{//},
+  sensitive=false
+}
+
+% --- atajos propios ---------------------------------------------------------
+\newcommand{\bo}{b_{0}}
+\newcommand{\wc}{\omega_{c}}
+\newcommand{\wo}{\omega_{o}}
+\newcommand{\Ts}{T_{s}}
+\newcommand{\SOc}{S_{O,5}}
+\newcommand{\KLa}{K_{L}a_{5}}
+\graphicspath{{figuras/}}
+
+% ============================================================================
+\begin{document}
+% Referencias principales primero: IEEEtran numera en el orden de la primera cita,
+% así que estas quedan como [1], [2], ... aunque en el texto se citen más adelante.
+\nocite{sira2017adrc,herbst2024adrc,rojas2020equivalence,vargas2026microgrids,%
+  chen1993analog,chen1999linear,levine2011handbook,fliess2002gpi,%
+  madonski2015survey,madonski2019general,stankovic2024pid}
+
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{3}
+\pagenumbering{roman}
+\input{secciones/00_portada}
+\input{secciones/01_resumen}
+
+\cleardoublepage
+\tableofcontents
+\cleardoublepage
+\listoffigures
+\cleardoublepage
+\listoftables
+\cleardoublepage
+\input{secciones/02_simbolos}
+
+\cleardoublepage
+\pagenumbering{arabic}
+
+\input{secciones/03_introduccion}
+\input{secciones/04_Caracterizacion}
+\input{secciones/05_ADRC_ESO}
+\input{secciones/06_GPI}
+\input{secciones/07_Aspectos_practicos_de_implementacion}
+\input{secciones/08_Comparacion_PID}
+\input{secciones/09_discusion}
+\input{secciones/10_conclusiones}
+
+\cleardoublepage
+\input{secciones/11_declaracion_ia}
+
+\cleardoublepage
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\appendix
+\input{secciones/12_anexos}
+
+\end{document}
