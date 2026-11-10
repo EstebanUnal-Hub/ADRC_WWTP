@@ -36,7 +36,8 @@ Sira-Ramírez et al.\ \cite{sira2017adrc}, los libros de Chen
 
 El lazo cerrado con realimentación unitaria es la forma más común de implementar
 un lazo de control; su representación en bloques se muestra en la
-Figura~\ref{fig:feedbackBlock}.Como el error se define de la siguiente  $e_y = y - r$, igual
+Figura~\ref{fig:feedbackBlock}, con la perturbación de entrada $\varepsilon$ y el ruido de medida $\eta$.
+Como el error se define como $e_y = y - r$, igual
 que en \cite{sira2017adrc}, a la entrada del controlador llega
 $-e_y$. Este esquema es fácilmente identificable en diferentes lazos de control,
 e incluso en los diagramas P\&ID, donde se ubican el proceso y el lazo de control
@@ -44,23 +45,30 @@ de cada variable.
 
 \begin{figure}[H]
   \centering
-  \begin{tikzpicture}[>=Stealth, thick, font=\small,
-      blk/.style={draw, thick, minimum width=1.5cm, minimum height=0.9cm},
-      suma/.style={draw, thick, circle, minimum size=0.45cm, inner sep=0pt}]
-    \node[suma] (sa) at (2.9,0) {};
-    \node[blk] (Ca) at (5.7,0) {$C(s)$};
-    \node[blk] (Ga) at (9.0,0) {$G(s)$};
-    \draw[->] (0.9,0) node[above right] {$r(t)$} -- (sa.west);
-    \draw[->] (sa.east) -- node[above] {$-e_y(t)$} (Ca.west);
-    \draw[->] (Ca.east) -- node[above] {$u(t)$} (Ga.west);
-    \draw[->] (Ga.east) -- (12.2,0) node[above left] {$y(t)$};
-    \fill (11.4,0) circle (1.5pt);
-    \draw[->] (11.4,0) -- (11.4,-1.1) -- (2.9,-1.1) -- (sa.south);
-    \node at ($(sa.west)+(-0.2,0.25)$) {$+$};
-    \node at ($(sa.south)+(-0.25,-0.2)$) {$-$};
+  \begin{tikzpicture}[every path/.style={thick}]
+    \node[sum] (s1) at (1.2,0) {};
+    \node[block, minimum width=1.6cm] (c) at (3.6,0) {$C(s)$};
+    \node[sum] (s2) at (5.8,0) {};
+    \node[block, minimum width=1.6cm] (g) at (7.8,0) {$G(s)$};
+    \node[sum] (s3) at (9.9,0) {};
+    \coordinate (yb) at (10.9,0);
+    \draw[->] (-0.3,0) node[above right] {$r(t)$} -- (s1.west);
+    \node[sgn] at ($(s1.west)+(-0.15,0.25)$) {$+$};
+    \draw[->] (s1.east) -- node[above] {$-e_y(t)$} (c.west);
+    \draw[->] (c.east) -- node[above] {$u(t)$} (s2.west);
+    \draw[->] (s2 |- 0,1.2) node[above] {$\varepsilon(t)$} -- (s2.north);
+    \draw[->] (s2.east) -- (g.west);
+    \draw[->] (s3 |- 0,1.2) node[above] {$\eta(t)$} -- (s3.north);
+    \draw[->] (g.east) -- (s3.west);
+    \draw (s3.east) -- (yb);
+    \draw[->] (yb) -- (11.9,0) node[above left] {$y(t)$};
+    \fill (yb) circle (1.5pt);
+    \draw[->] (yb) -- (10.9,-1.2) -- (1.2,-1.2) -- (s1.south);
+    \node[sgn] at ($(s1.south)+(-0.25,-0.15)$) {$-$};
   \end{tikzpicture}
-  \caption[Lazo de control por realimentación del error]{Lazo de control por
-  realimentación del error, con $e_y = y - r$.}
+  \caption[Lazo de control realimentado]{Lazo de control por realimentación del error, con
+    $e_y = y - r$, la perturbación de entrada $\varepsilon$ (en \% de $u$) y el ruido de medida
+    $\eta$ a la salida; $y$ es la medida.}
   \label{fig:feedbackBlock}
 \end{figure}
 
@@ -174,34 +182,11 @@ del oxígeno disuelto: planta de primer orden y perturbación constante a tramos
 \subsection{Planteamiento en términos del error}
 \label{subsec:error}
 Aquí se hacen unos cambios con respecto al esquema clásico del ADRC para pasarlo a un esquema sobre
-el error de seguimiento. Para llegar a él se parte de la planta de diseño
-\eqref{eq:ident_planta_diseno} sin el retardo, $\theta = 0$, porque este no se toma para el diseño
-sino para validar la robustez (Sección~\ref{sec:ident_planta_diseno}):
-\begin{equation}
-G_p(s) = \frac{Y(s)}{U(s)} = \frac{k_{dc}}{\tau s + 1} = \frac{0{,}05}{1200\,s + 1} .
-\label{eq:planta_sin_retardo}
-\end{equation}
-Con una perturbación $\varepsilon(t)$ a la entrada, en las mismas unidades de $u$, la planta en el
-tiempo es
-\begin{equation}
-\tau\,\dot{y}(t) + y(t) = k_{dc}\bigl(u(t) + \varepsilon(t)\bigr)
-\quad\Longrightarrow\quad
-\dot{y}(t) = b_0\left(u(t) + \varepsilon(t) - \frac{y(t)}{k_{dc}}\right),
-\qquad b_0 = \frac{k_{dc}}{\tau} .
-\end{equation}
-La dinámica que sobra de la planta, el término $-y/k_{dc}$, se mete dentro de una perturbación
-equivalente a la entrada,
-\begin{equation}
-\dot{y}(t) = b_0\bigl(u(t) + \bar{\varepsilon}(t)\bigr),
-\qquad
-\bar{\varepsilon}(t) = \varepsilon(t) - \frac{y(t)}{k_{dc}},
-\label{eq:planta_eps_bar}
-\end{equation}
-y la planta queda como un integrador puro con ganancia de entrada
-$b_0 = 0{,}05/1200 = 4{,}17\times10^{-5}$~mg/(L$\cdot$s$\cdot$\%), es decir,
-$0{,}15$~mg/(L$\cdot$h$\cdot$\%) \eqref{eq:car_b0}. Si la perturbación se lleva al lado de la salida,
-$\bar{\xi}(t) = b_0\,\bar{\varepsilon}(t)$, y para una planta de orden $n$ con ganancia de entrada
-aproximada $b_0$ (cadena de integradores) la forma general es:
+el error de seguimiento. Para llegar a él se parte de la planta de diseño escrita como un integrador
+puro, con la perturbación equivalente a la entrada \eqref{eq:planta_eps_bar} llevada al lado de la
+salida, $\bar{\xi}(t) = b_0\,\bar{\varepsilon}(t)$, y $b_0 = k_{dc}/\tau$ \eqref{eq:car_b0}
+(Sección~\ref{sec:car_modelo}). Para una planta de orden $n$ con ganancia de entrada aproximada $b_0$
+(cadena de integradores) la forma general es:
 \begin{equation}
 y^{(n)}(t) = b_0\,u(t) + \bar{\xi}(t),
 \label{eq:planta_n}
@@ -611,11 +596,10 @@ $\mathbf{C} = [\,1 \;\; 0 \;\; \cdots \;\; 0\,]$, esa matriz es la identidad.
 Si además $\mathbf{L}$ se escoge de modo que $\mathbf{A}_o = \mathbf{A} - \mathbf{L}\,\mathbf{C}$
 sea Hurwitz, es decir, que todos sus valores propios tengan parte real
 estrictamente negativa, el error de estimación converge a cero cuando $\xi(t)$
-pertenece a la dinámica del modelo interno ($p_{\xi}(\xi,t) = 0$) y, en caso
-contrario, queda acotado por el residuo. Es decir, $s^{m}$ actúa como un operador
+pertenece a la dinámica del modelo interno . Es decir, $s^{m}$ actúa como un operador
 aniquilador: con $m = 1$ (un integrador en el modelo interno) elimina las constantes,
 dado que la derivada de una constante es cero; en general, elimina cualquier señal de
-grado $m - 1$, y se cumple que
+grado $m - 1$ en el tiempo, y se cumple que
 $\lim_{t \to \infty} \bar{\mathbf{e}}(t) = \mathbf{0}$, por lo que el observador
 estima exactamente el estado del sistema: el error de seguimiento, $\hat{e}_y$,
 y la perturbación, $\hat{\xi}$.
@@ -1005,10 +989,10 @@ donde $\dot{\xi}(t)$ es desconocida; en el diseño del observador se supone
 $\dot{\xi}(t) = 0$, es decir, una perturbación constante 
 \cite[sec.~3.1]{herbst2024adrc}. La ganancia es definida por $b_0 = k_{dc}/\tau$, y los anchos de banda se escogen con la
 sintonía de la Sección~\ref{subsec:sintonia}: el controlador cuatro veces más
-rápido que el lazo abierto ($\tau_c = \tau/4 = 300$~s,$\omega_c=4\cdot\frac{1}{\tau}$) y el observador cinco veces
+rápido que el lazo abierto ($\tau_c = \tau/4 = 300$~s, es decir, 5~min, $\omega_c=4\cdot\frac{1}{\tau}$) y el observador cinco veces
 más rápido que el controlador; Herbst y Madoński sugieren empezar entre $3$ y $10$ veces
 \cite[sec.~3.3]{herbst2024adrc}. La Tabla~\ref{tab:caso_parametros} resume los
-valores.
+valores; se elige el valor de la velocidad del controlador dependiendo de lo rápido que se quiera, sin que sature el sistema. 
 
 \begin{table}[H]
 \centering
@@ -1124,15 +1108,15 @@ la fórmula dual \eqref{eq:ackermann_L} deja $\mathbf{L}$ de la siguiente forma:
 Las fórmulas de Herbst y Madoński \eqref{eq:sintonia_l}, con $n = m = 1$, dan lo
 mismo, $k_{p_1} = \omega_c$, $l_1 = 2\omega_o$ y $l_2 = \omega_o^2$, porque los
 polos se ubicaron en un solo punto (polos duplicados): basta conocer los anchos de banda deseados. Por ejemplo, $\omega_o$ quedó
-igual a $60$~rad/h, y en la Tabla~\ref{tab:ident_espectro_f} vemos que el $95~\%$ de la energía de la
+igual a $60$~rad/h, y en la Tabla~\ref{tab:ident_resumen} vemos que el $95~\%$ de la energía de la
 perturbación está por debajo de $12$~rad/h y el $99~\%$ por debajo de $56$~rad/h, por lo que con este valor casi
 toda la perturbación queda dentro de la banda del observador, e incluso se podría bajar un poco más.
 
 \paragraph{Polos con la planta nominal.} Los polos de arriba son los del diseño, utilizando la cadena de integradores.
 Con la planta nominal, que no es un integrador
 puro, los valores propios del lazo cerrado \eqref{eq:caso_lazo_cerrado} quedan un poco movidos, y se registran en
-la Tabla~\ref{tab:caso_polos}: los del observador casi no se mueven y el
-del controlador queda un poco más lento, porque el observador no compensa de
+la Tabla~\ref{tab:caso_polos}: los del observador mantienen casi la misma parte real, pero se separan
+en un par complejo, y el del controlador queda un poco más lento, porque el observador no compensa de
 forma perfecta la dinámica de la planta, el término $-y/\tau$ que queda dentro de
 $\xi$. Herbst y Madoński lo mencionan: el lazo cerrado solo es aproximadamente el
 de diseño, porque el lazo interno no es perfecto en la práctica
@@ -1154,7 +1138,7 @@ se conoce muy bien como para realizar un ajuste; simplemente está dentro de un 
  & [rad/h] & [rad/h] \\
 \midrule
 Controlador & $-\omega_c = -12{,}0$ & $-10{,}4$ \\
-Observador (doble) & $-\omega_o = -60{,}0$ & $-62{,}3$ \\
+Observador (doble) & $-\omega_o = -60{,}0$ & $-62{,}3 \pm 16{,}0\,j$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1165,7 +1149,7 @@ Observador (doble) & $-\omega_o = -60{,}0$ & $-62{,}3$ \\
 
 La Figura~\ref{fig:adrc_lazo_cerrado} muestra el lazo cerrado con la planta,
 sin saturación del actuador. La consigna
-sube de $2{,}0$ a $2{,}2$~mg/L en $t = 4000$~s, y en $t = 7000$~s entra una
+sube de $2{,}0$ a $2{,}2$~mg/L en $t = 4000$~s (66,7~min), y en $t = 7000$~s (116,7~min) entra una
 perturbación de entrada $\varepsilon = -15~\%$.
 
 \begin{figure}[H]
@@ -1176,7 +1160,7 @@ perturbación de entrada $\varepsilon = -15~\%$.
   \label{fig:adrc_lazo_cerrado}
 \end{figure}
 
-El oxígeno disuelto sigue la consigna y rechaza la perturbación. En régimen estacionario, el
+El oxígeno disuelto sigue la consigna y rechaza la perturbación. Con el sistema en estacionario, el
 soplador queda en $40~\%$ a $2{,}0$~mg/L y en $44~\%$ a $2{,}2$~mg/L, que es lo
 que cuesta sostener el OD; con la
 perturbación sube a $59~\%$, y el observador también estima la entrada $\varepsilon$
@@ -1198,7 +1182,7 @@ propiedades del rechazo y del seguimiento.
 La Figura~\ref{fig:adrc_frecuencia} muestra el lazo abierto
 $G_L(s) = C(s)\,G(s)$, con $C(s)$ el ADRC visto desde $-e_y$ hasta $u$ (observador más ley de control), cuya función de transferencia se obtiene en la
 Sección~\ref{sec:gpi_eso} \eqref{eq:gpi_eso_general}, y la planta
-$G(s) = k_{dc}/(\tau s + 1)$. El margen de fase es de $65{,}8^{\circ}$ en
+$G(s) = k_{dc}/(\tau s + 1)$. El margen de fase (Tabla~\ref{tab:metricas_robustez}) es de $65{,}8^{\circ}$ en
 $\omega = 0{,}0104$~rad/s ($37{,}5$~rad/h), y el margen de ganancia es infinito,
 porque la fase no cruza $-180^{\circ}$. El panel (c) muestra dónde quedan los
 anchos de banda: la dinámica impuesta al error cae $3$~dB en $\omega_c$, y la
@@ -1220,7 +1204,7 @@ estimación de la perturbación, $\omega_o^2/(s+\omega_o)^2$, en $0{,}64\,\omega
 Con este margen la planta puede variar en fase
 hasta $65{,}8^{\circ}$, por lo que sí tiene un grado de robustez, y aunque la planta tenga un retardo de
 $50$~s el sistema puede seguir funcionando sin desestabilizarse: con $\theta = 50$~s el margen de fase baja a $36{,}0^{\circ}$ y
-aparece un margen de ganancia de $2{,}12$ (Figura~\ref{fig:adrc_margenes_retardo}).
+aparece un margen de ganancia de $2{,}12$, es decir, $6{,}5$~dB (Figura~\ref{fig:adrc_margenes_retardo}).
 
 \begin{figure}[H]
   \centering
@@ -1239,11 +1223,12 @@ aparece un margen de ganancia de $2{,}12$ (Figura~\ref{fig:adrc_margenes_retardo
 
 Para ver qué tanto depende el desempeño de la planta nominal, se repite el
 escalón de consigna de $2{,}0$ a $2{,}2$~mg/L con el controlador fijo  y se varía un parámetro de
-la planta a la vez (Figura~\ref{fig:adrc_variacion}). $K_{dc}$ y $\tau$ se toman
-en los rangos intercuartílicos de los escalones de M2 y M3
-(Sección~\ref{sec:ident_planta_diseno}): $K_{dc}$ entre $0{,}022$ y $0{,}109$~mg/(L$\cdot$\%) y
-$\tau$ entre $11$ y $40$~min; con ellos cambia también el $b_0$ de la
-planta, $b_{0,\mathrm{planta}} = k_{dc}/\tau$, entre $0{,}44$ y $2{,}18$ veces el de diseño. El retardo se
+la planta a la vez (Figura~\ref{fig:adrc_variacion}). La ganancia se mira a través del
+$b_0$ del controlador, en el panel (d): su barrido, de $1/6$ a $6$ veces el nominal, abarca el
+rango intercuartílico de $b_0$ de M2 y M3 (Tabla~\ref{tab:ident_arx} y
+Sección~\ref{sec:ident_planta_diseno}), de $0{,}22$ a $1{,}5$ veces el de diseño; como comprobación
+adicional, en el panel (a) $K_{dc}$ se divide y se multiplica por $2$ y por $4$. $\tau$ se toma en
+los rangos intercuartílicos de M2 y M3, entre $11$ y $40$~min, y el retardo se
 varía entre $0$ y $60$~s (Sección~\ref{sec:ident_retardo}). La referencia es
 siempre la planta nominal ideal, sin retardo.
 
@@ -1259,11 +1244,11 @@ siempre la planta nominal ideal, sin retardo.
   \label{fig:adrc_variacion}
 \end{figure}
 
-Con la $K_{dc}$ más alta, $0{,}109$, el OD se pasa un poco de la consigna, hasta
-$2{,}23$~mg/L. Con la más baja, $0{,}022$, el controlador pide más esfuerzo: $u$
-llega al $138~\%$, por encima de la saturación, y para sostener $2{,}2$~mg/L queda
-justo en el $100~\%$; con una $K_{dc}$ menor, el soplador ya no alcanzaría para
-llegar a la consigna (la Sección~\ref{subsec:sat_variacion} repite estos casos con saturación). La
+Con cuatro veces la ganancia, el OD se pasa un poco de la consigna, hasta
+$2{,}25$~mg/L. Con la mitad, el controlador pide más esfuerzo: $u$ llega al $126~\%$, por
+encima de la saturación, y con la cuarta parte tendría que quedarse en el $176~\%$ para
+sostener $2{,}2$~mg/L, así que el soplador no alcanza la consigna
+(la Sección~\ref{subsec:sat_variacion} repite estos casos con saturación). La
 constante de tiempo apenas cambia la respuesta; con $\tau$ más grande el
 sobreimpulso crece un poco. El retardo es lo que más afecta: con $50$~s el pico
 pasa de $2{,}22$ a $2{,}29$~mg/L, con una oscilación que se amortigua, coherente
@@ -1273,14 +1258,15 @@ El panel (d) repite el escalón con la planta nominal ideal y el $b_0$ del
 controlador dividido y multiplicado por $2$, $4$ y $6$, sin cambiar los anchos de
 banda. Lo que cuenta es la proporción entre el $b_0$ del controlador y el de la
 planta: subestimarlo equivale a una planta con más ganancia, y sobreestimarlo, a
-una con menos. Con $b_0$ subestimado el controlador es más agresivo (con $b_0/6$
+una con menos. Por eso la variación de la ganancia se discute con este barrido, que
+abarca el rango intercuartílico de $b_0$ de los dos módulos (Tabla~\ref{tab:ident_arx}). Con $b_0$ subestimado el controlador es más agresivo (con $b_0/6$
 el OD llega a $2{,}27$~mg/L y $u$ oscila con fuerza); con $b_0$ sobreestimado es
 más suave, pero más lento (con $6\,b_0$ tarda unos $40$~min en asentarse, frente a
 $16$~min del nominal). Para ver hasta dónde aguanta el lazo, se trazó el lugar de
 las raíces variando solo esa proporción, $g = b_{0,\mathrm{planta}}/b_0$
 (Figura~\ref{fig:adrc_rlocus_b0}): sin retardo el lazo es estable para cualquier
 $g$, y con $\theta = 50$~s se vuelve inestable cuando $b_0$ queda por debajo de
-$b_{0,\mathrm{planta}}/2{,}12$. Por eso conviene que, si hay duda, $b_0$ quede algo
+$b_{0,\mathrm{planta}}/2{,}12$ (mismo valor del Margen de ganancia). Por eso conviene que, si hay duda, $b_0$ quede algo
 por encima del de la planta: el lazo pierde velocidad, pero no robustez.
 
 \begin{figure}[H]
@@ -1320,9 +1306,9 @@ y~\ref{tab:adrc_frecuencia_kESO} resumen los indicadores de cada caso.
 
 \paragraph{Escalón de consigna.}
 Se repite el escalón de $2{,}0$ a $2{,}2$~mg/L
-(Figura~\ref{fig:adrc_pasos_anchos}). Con $y_{e}(t)$ la respuesta del
+(Figura~\ref{fig:adrc_pasos_anchos}). Con $y(t)$ la respuesta del
 lazo cerrado $G_o(s) = G_L(s)/\bigl(1 + G_L(s)\bigr)$ al escalón unitario, $\Delta r = 0{,}2$~mg/L y
-$t_f = 20\,000$~s, el error es $e(t) = \Delta r\,\bigl(1 - y_{e}(t)\bigr)$, y el sobrepico y el IAE se
+$t_f = 20\,000$~s (333~min), el error es $e(t) = \Delta r\,\bigl(1 - y_{e}(t)\bigr)$, y el sobrepico y el IAE se
 calculan como en la Tabla~\ref{tab:metricas}.
 
 \begin{figure}[H]
@@ -1332,7 +1318,7 @@ calculan como en la Tabla~\ref{tab:metricas}.
     consigna de $2{,}0$ a $2{,}2$~mg/L con la planta sin retardo ni
     saturación, variando (a) $\omega_c$ con $\omega_o$ fijo, (b) $\omega_o$ con
     $\omega_c$ fijo y (c) los dos con $\omega_o/\omega_c = 5$, por $1/4$, $1/2$,
-    $2$ y $4$. Izquierda, la salida; derecha, la señal de control. En negro, el
+    $2$ y $4$. Primera columna, la salida; Segunda columna, la señal de control. En negro, el
     diseño de la Tabla~\ref{tab:caso_parametros}.}
   \label{fig:adrc_pasos_anchos}
 \end{figure}
@@ -1354,50 +1340,20 @@ referencia, $u^* = \dot{y}^*$ (Sección~\ref{subsec:caso_simulacion}), y entre
 más alto es $\omega_o$, más rápido la estima el observador y con más fuerza la
 compensa el controlador. Esto se puede mejorar ajustando $\omega_o$: al
 disminuirlo, el rechazo no es tan fuerte y la señal de control no crece tanto
-($64~\%$ con $\omega_o/2$), aunque la respuesta se vuelve más lenta. De esta
-manera, con $\omega_o$ se puede manipular un poco la velocidad del transitorio
-del sistema.
+($64~\%$ con $\omega_o/2$), aunque la respuesta se vuelve más lenta. 
+
 
 \paragraph{Funciones de transferencia del lazo.}
 \label{subsec:caso_gang}
-Con la perturbación de entrada $\varepsilon$ y el ruido $n$ a la salida
-(Figura~\ref{fig:caso_lazo_gang}), las funciones de transferencia del lazo son
+Con la perturbación de entrada $\varepsilon$ y el ruido $\eta$ a la salida
+(Figura~\ref{fig:feedbackBlock}), las funciones de transferencia del lazo son
 las de la Tabla~\ref{tab:caso_gang}, con $G(s)$ y $C(s)$ de \eqref{eq:mapa_C}.
-En esta figura, $y$ es la medida, con el ruido incluido.
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}[every path/.style={thick}]
-    \node[sum] (s1) at (1.2,0) {};
-    \node[block, minimum width=1.6cm] (c) at (3.6,0) {$C(s)$};
-    \node[sum] (s2) at (5.8,0) {};
-    \node[block, minimum width=1.6cm] (g) at (7.8,0) {$G(s)$};
-    \node[sum] (s3) at (9.9,0) {};
-    \coordinate (yb) at (10.9,0);
-    \draw[->] (-0.3,0) node[above right] {$r(t)$} -- (s1.west);
-    \node[sgn] at ($(s1.west)+(-0.15,0.25)$) {$+$};
-    \draw[->] (s1.east) -- node[above] {$-e_y(t)$} (c.west);
-    \draw[->] (c.east) -- node[above] {$u(t)$} (s2.west);
-    \draw[->] (s2 |- 0,1.2) node[above] {$\varepsilon(t)$} -- (s2.north);
-    \draw[->] (s2.east) -- (g.west);
-    \draw[->] (s3 |- 0,1.2) node[above] {$n(t)$} -- (s3.north);
-    \draw[->] (g.east) -- (s3.west);
-    \draw (s3.east) -- (yb);
-    \draw[->] (yb) -- (11.9,0) node[above left] {$y(t)$};
-    \fill (yb) circle (1.5pt);
-    \draw[->] (yb) -- (10.9,-1.2) -- (1.2,-1.2) -- (s1.south);
-    \node[sgn] at ($(s1.south)+(-0.25,-0.15)$) {$-$};
-  \end{tikzpicture}
-  \caption[Lazo con perturbación de entrada y ruido]{Lazo con la perturbación
-    de entrada $\varepsilon$ (en \% de $u$) y el ruido $n$ a la salida; $y$ es
-    la medida.}
-  \label{fig:caso_lazo_gang}
-\end{figure}
+En esa figura, $y$ es la medida, con el ruido incluido.
 
 \begin{table}[H]
 \centering
 \caption[Funciones de transferencia del lazo]{Funciones de transferencia del
-  lazo de la Figura~\ref{fig:caso_lazo_gang}.}
+  lazo de la Figura~\ref{fig:feedbackBlock}.}
 \label{tab:caso_gang}
 \renewcommand{\arraystretch}{2.2}
 \begin{tabular}{lccc}
@@ -1406,7 +1362,7 @@ En esta figura, $y$ es la medida, con el ruido incluido.
 \midrule
 $r$           & $\dfrac{1}{1 + CG}$  & $\dfrac{C}{1 + CG}$   & $\dfrac{CG}{1 + CG}$ \\
 $\varepsilon$ & $\dfrac{-G}{1 + CG}$ & $\dfrac{-CG}{1 + CG}$ & $\dfrac{G}{1 + CG}$  \\
-$n$           & $\dfrac{-1}{1 + CG}$ & $\dfrac{-C}{1 + CG}$  & $\dfrac{1}{1 + CG}$  \\
+$\eta$        & $\dfrac{-1}{1 + CG}$ & $\dfrac{-C}{1 + CG}$  & $\dfrac{1}{1 + CG}$  \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1418,7 +1374,7 @@ $n$           & $\dfrac{-1}{1 + CG}$ & $\dfrac{-C}{1 + CG}$  & $\dfrac{1}{1 + CG
     $\omega_o/\omega_c$]{Funciones de transferencia de la
     Tabla~\ref{tab:caso_gang} con la planta sin retardo, $\omega_c$ fijo y
     $\omega_o/\omega_c$ de $1{,}25$ a $20$ (en negro, el diseño,
-    $\omega_o = 5\,\omega_c$). Por filas, de $r$, $\varepsilon$ y $n$; por
+    $\omega_o = 5\,\omega_c$). Por filas, de $r$, $\varepsilon$ y $\eta$; por
     columnas, hacia $-e_y$, $u$ e $y$. La vertical marca $\omega_c$.}
   \label{fig:adrc_gang_kESO}
 \end{figure}
@@ -1457,17 +1413,7 @@ la consigna y se rechaza la perturbación, a cambio de cuánto ruido se filtra.
 
 \paragraph{Margen de fase.}
 La robustez se mide con el margen de fase, el retardo máximo que aguanta el
-lazo y la sensibilidad máxima,
-\begin{equation}
-\begin{gathered}
-\mathrm{MF} = 180^{\circ} + \angle G_L(j\omega_{gc}),\quad |G_L(j\omega_{gc})| = 1 ,
-\qquad
-\theta_{\max} = \frac{\pi}{180^{\circ}}\,\frac{\mathrm{MF}}{\omega_{gc}} ,\\[4pt]
-M_s = \max_{\omega}\,|S(j\omega)|,\quad S(s) = \frac{1}{1 + G_L(s)} .
-\end{gathered}
-\label{eq:mapa_robustez}
-\end{equation}
-La Figura~\ref{fig:adrc_margen_fase_kESO} compara dos formas de cambiar la
+lazo y la sensibilidad máxima (Tabla~\ref{tab:metricas_robustez}). La Figura~\ref{fig:adrc_margen_fase_kESO} compara dos formas de cambiar la
 relación $\omega_o/\omega_c$: moviendo $\omega_o$ con $\omega_c$ fijo
 (izquierda) o moviendo $\omega_c$ con $\omega_o$ fijo (derecha). Al subir la
 relación por encima del diseño se obtiene más fase, pero para una misma
@@ -1486,7 +1432,7 @@ $\omega_c$ antes que subir $\omega_o$.
     $C(s)\,G(s)$ con la planta sin retardo y $\omega_o/\omega_c$ de $1{,}25$ a
     $20$ (en negro, el diseño): (a) y (c) con $\omega_c$ fijo, variando
     $\omega_o$; (b) y (d) con $\omega_o$ fijo, variando $\omega_c$. Arriba, la
-    magnitud; abajo, la fase, con el margen de fase \eqref{eq:mapa_robustez}
+    magnitud; abajo, la fase, con el margen de fase (Tabla~\ref{tab:metricas_robustez})
     como segmento vertical y su valor en la leyenda.}
   \label{fig:adrc_margen_fase_kESO}
 \end{figure}
@@ -1535,15 +1481,15 @@ $\omega_c$ y $\omega_o$ ($\omega_o/\omega_c = 5$) & $1/4$ & $0{,}0$ & $54{,}2$ &
 \centering
 \caption[Indicadores en frecuencia al variar los anchos de banda]{Los mismos
   casos de la Tabla~\ref{tab:adrc_iae_anchos} en frecuencia: margen de fase,
-  cruce de ganancia y retardo máximo \eqref{eq:mapa_robustez}, pico de
+  cruce de ganancia y retardo máximo (Tabla~\ref{tab:metricas_robustez}), pico de
   $1/(1 + CG)$ ($M_s$), pico de $G/(1 + CG)$ ($\varepsilon \to y$) y nivel de
-  $-C/(1 + CG)$ ($n \to u$) a $10^4$~rad/h.}
+  $-C/(1 + CG)$ ($\eta \to u$) a $10^4$~rad/h.}
 \label{tab:adrc_frecuencia_kESO}
 \small
 \begin{tabular}{llrrrrrr}
 \toprule
 \textbf{Variación} & \textbf{Factor} & MF [°] & $\omega_{gc}$ [rad/h] & $\theta_{\max}$ [s] & $M_s$ &
-$\varepsilon \to y$ [dB] & $n \to u$ [dB] \\
+$\varepsilon \to y$ [dB] & $\eta \to u$ [dB] \\
 \midrule
 diseño & $1$ & $65{,}8$ & $37{,}5$ & $110$ & $1{,}202$ & $-48{,}0$ & $10{,}5$ \\
 \midrule

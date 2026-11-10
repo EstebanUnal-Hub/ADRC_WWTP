@@ -1,0 +1,84 @@
+% ============================================================================
+%  Resumen y Abstract
+% ============================================================================
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+\markboth{Resumen}{Resumen}
+
+En los ámbitos industriales, el máximo exponente en simplicidad, desempeño y robustez ha sido el
+controlador PID, que abarca casi todos los lazos de control. Por eso se busca un nuevo paradigma en
+el que se cambie por controladores más avanzados teóricamente, que ofrecen mejores prestaciones, como
+los de rechazo activo de perturbaciones (ADRC) o su equivalencia en control
+proporcional-integral generalizado (GPI). En ellos cambia el enfoque de sintonización por uno donde
+se coloca la dinámica deseada del error de seguimiento y se rechazan las diferentes perturbaciones
+identificadas. Al estar basados en el error de seguimiento, se busca que sean lo más simples posible
+para que puedan llegar a sustituir al PID casi \emph{plug and play}.
+
+Como caso de estudio se toma el lazo de control de oxígeno disuelto en la etapa de lodos activados
+de una planta de tratamiento de aguas residuales, donde se presentan diferentes perturbaciones, como
+los caudales de entrada, los mismos actuadores con sus zonas muertas y algunas endógenas, como las
+cargas orgánicas, que afectan los niveles de oxígeno en el tanque. A partir de 22 meses de datos de
+operación se identificó la planta y se caracterizó la perturbación, y con eso se diseñaron un ADRC
+basado en observador de estado extendido (ESO) y un GPI, que resultan ser el mismo lazo escrito de
+dos maneras.
+
+Se presentan también los aspectos prácticos de implementación, como el manejo de la saturación, el
+acondicionamiento de la referencia, el manejo del ruido y del retardo, junto con una realización en
+tiempo discreto para equipos digitales, tanto para el ESO como para el GPI, además de una metodología
+práctica para llevar estos controladores a entornos industriales, con bloques de función en texto
+estructurado para PLC.
+
+Los controladores se evalúan por medio de simulación con la planta identificada, sin retardo y con un
+retardo de 50~s, frente a un PID ISA con la misma sensibilidad máxima y los mismos cambios de
+referencia. Se comparan el PID y el ADRC con métricas clásicas de desempeño y de robustez, como el IAE,
+el ITAE, el sobrepico y los márgenes de fase y de ganancia, con el fin de validar en qué se destaca
+cada arquitectura.
+
+\vspace{0.4cm}
+\noindent
+\textbf{Palabras clave:} rechazo activo de perturbaciones, observador de estado
+extendido, control proporcional-integral generalizado, oxígeno disuelto, lodos
+activados, identificación a partir de datos de operación, anti-windup,
+PLC, texto estructurado.
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\markboth{Abstract}{Abstract}
+
+\noindent
+\textbf{Active Disturbance Rejection Control for Dissolved Oxygen Regulation in
+the Activated Sludge Stage of a Wastewater Treatment Plant}
+
+\vspace{0.3cm}
+\noindent
+In industry, the PID controller has been the leading choice for simplicity, performance and
+robustness, and it covers almost every control loop. This work therefore looks at replacing it with
+theoretically more advanced controllers that offer better capabilities, such as active disturbance
+rejection control (ADRC) or its equivalent, generalized proportional-integral (GPI) control. These
+controllers change the tuning approach: the desired tracking error dynamics are imposed and the
+identified disturbances are rejected. Since they work on the tracking error, the aim is to keep them
+simple enough to replace a PID almost as plug and play.
+
+The case study is the dissolved oxygen control loop in the activated sludge stage of a wastewater
+treatment plant, which is affected by inlet flows, by the actuators themselves and their dead zones,
+and by endogenous disturbances such as organic loads. From 22 months of operating data, the plant was
+identified and its disturbance characterized, and an ADRC based on an extended state observer (ESO)
+and a GPI were designed, which turn out to be the same loop written in two ways.
+
+Practical implementation issues are also addressed: saturation handling, reference conditioning,
+noise and dead time, together with a discrete-time realization for digital equipment, for both the
+ESO and the GPI, and a practical methodology for taking these controllers to industrial environments,
+with function blocks in structured text for PLCs.
+
+The controllers are evaluated in simulation with the identified plant, without dead time and with a
+50~s dead time, against an ISA PID with the same maximum sensitivity and the same setpoint changes.
+The PID and the ADRC are compared with classical performance and robustness metrics, such as the IAE,
+the ITAE, the overshoot and the phase and gain margins, in order to establish where each architecture
+stands out.
+
+\vspace{0.4cm}
+\noindent
+\textbf{Keywords:} active disturbance rejection control, extended state
+observer, generalized proportional-integral control, dissolved oxygen,
+activated sludge, identification from operating data, anti-windup, PLC,
+structured text.

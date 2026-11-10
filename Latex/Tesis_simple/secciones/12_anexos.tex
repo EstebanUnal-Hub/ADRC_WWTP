@@ -1,0 +1,48 @@
+% ============================================================================
+%  Anexos
+% ============================================================================
+% Cambiar aquí la dirección del repositorio
+\newcommand{\repourl}{https://github.com/EstebanUnal-Hub/ADRC_WWTP}
+\newcommand{\repositorio}{\url{\repourl}}
+% enlace a una sección del README: \readme{ancla}{texto}
+\newcommand{\readme}[2]{\href{\repourl\##1}{#2}}
+
+\chapter{Repositorio de código y datos}
+\label{anx:st}
+\label{anx:archivos}
+
+El código, los cuadernos, los datos procesados y los bloques del PLC de este trabajo están en el
+repositorio \repositorio, cuyo \href{\repourl}{README} los explica en detalle. La
+Tabla~\ref{tab:anx_repo} resume los archivos principales; la última columna enlaza a la sección del
+README que explica cada uno.
+
+{\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{|>{\footnotesize\raggedright\arraybackslash}p{5.6cm}|>{\small\raggedright\arraybackslash}p{6.9cm}|>{\small\centering\arraybackslash}p{1.9cm}|}
+\caption{Archivos principales del repositorio.}
+\label{tab:anx_repo} \\
+\hline
+\rowcolor[gray]{0.9}
+\small\textbf{Archivo} & \textbf{Contenido} & \footnotesize\textbf{README} \\ \hline
+\endfirsthead
+\hline
+\rowcolor[gray]{0.9}
+\small\textbf{Archivo} & \textbf{Contenido} & \footnotesize\textbf{README} \\ \hline
+\endhead
+\texttt{README.md} & Descripción general del repositorio y de cada carpeta. & \href{\repourl}{Inicio} \\ \hline
+\texttt{Datos/analisis/}\newline\texttt{analisis\_dinamica\_limpio.ipynb} & Identificación de la planta
+por ventanas ARX y caracterización con el histórico del SCADA (Capítulo~\ref{cap:caracterizacion}). &
+\readme{3-plant-model-and-identification}{Sec. 3} \\ \hline
+\texttt{Simulaciones/PTAR/02 Diseño/Python/}\newline\texttt{ADRC\_PTAR\_continuo.ipynb} & ADRC con ESO
+y GPI en tiempo continuo: diseño, equivalencia, \emph{anti-windup}, acondicionamiento de la referencia
+y comparación con el PID (Capítulos~\ref{cap:ADRC-ESO} a \ref{cap:comparacion_pid}). &
+\readme{4-error-based-adrc-with-extended-state-observer}{Sec. 4 a 6} \\ \hline
+\texttt{Simulaciones/PTAR/02 Diseño/Python/}\newline\texttt{ADRC\_PTAR\_discreto.ipynb} & ADRC con ESO
+y GPI en tiempo discreto: discretización y simulación con retardo
+(Sección~\ref{sec:impl_discretizacion}). & \readme{64-discretization}{Sec. 6.4} \\ \hline
+\texttt{P\&ID/P\&ID.vsdx} y \texttt{PLANOS BANCO FINAL.pdf} & Plano de la etapa de aireación, con el lazo 100 de
+oxígeno disuelto (Figura~\ref{fig:pid_tikz}). & \readme{2-process-and-control-loop}{Sec. 2} \\ \hline
+\texttt{PLC\_ST/Codigos/*.st}\newline\texttt{PLC\_ST/Libreria\_ADRC/} & Los siete bloques de función en
+texto estructurado (IEC~61131-3), también documentados como librería de ctrlX
+(Sección~\ref{sec:impl_plc}). & \readme{7-plc-implementation}{Sec. 7} \\ \hline
+\end{longtable}
+}

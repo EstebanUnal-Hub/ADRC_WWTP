@@ -1,10 +1,10 @@
 % ============================================================================
 %  Capítulo 4 - Control GPI (filtrado plano)
 % ============================================================================
-\chapter{Control proporcional-integral generalizado (GPI)}
+\chapter{Control proporcional-integral generalizado (GPI) robusto}
 \label{cap:GPI}
 
-En este capítulo se construye el controlador GPI usando la teoría de Sira \cite{fliess2002gpi,sira2017adrc},
+En este capítulo se construye el controlador GPI usando la teoría de Sira \cite{fliess2002gpi,sira2017adrc} y de John Cortés-Romero \cite{cortes2014gpi},
 para la misma dinámica del error del Capítulo~\ref{cap:ADRC-ESO}. Primero se plantea el lazo en forma de fracción,
 con la planta y el controlador escritos como cocientes de polinomios, lo que facilita 
 entender qué debe tener el controlador para rechazar la perturbación. Después se
@@ -75,7 +75,7 @@ error de seguimiento, y el cociente es la
 función de sensibilidad en lazo cerrado del sistema, que traduce el efecto de
 la perturbación sobre el error \cite{sira2017adrc}. Se le pone el
 subíndice $\xi$, $S_{\xi}$, porque es la sensibilidad frente a la perturbación
-total, para no confundirla con la sensibilidad $S(s)$ de \eqref{eq:mapa_robustez}:
+total, para no confundirla con la sensibilidad $S(s)$ de la Tabla~\ref{tab:metricas_robustez}:
 \begin{equation}
 e_y(s) = S_{\xi}(s)\,\xi(s), \qquad
 S_{\xi}(s) = \frac{D_A(s)\,\bar{D}_C(s)\,N_G(s)}{P(s)} .
@@ -338,12 +338,7 @@ b_0\,C(s) = \mathbf{K}\bigl[s\mathbf{I} - \mathbf{A}_c\bigr]^{-1}\mathbf{L} .
 \label{eq:gpi_eso_general}
 \end{equation}
 Este $C(s)$ es una fracción de polinomios y tiene la forma
-\eqref{eq:gpi_ley_general}. Para $m = 1$, la columna de $\mathbf{A}_c$ que
-corresponde a $\hat{\xi}$ queda en ceros: en $\mathbf{A}$ esa columna solo tiene
-el $1$ que conecta la perturbación con la última derivada, y $\mathbf{B}\mathbf{K}$
-pone ahí el $1$ que la cancela. Por eso $\det(s\mathbf{I} - \mathbf{A}_c)$ tiene
-el factor $s$, que es el $D_A = s$ de la forma general: el integrador del
-controlador es el estado $\hat{\xi}$.
+\eqref{eq:gpi_ley_general}.
 
 %--------------------------------------------------------------------
 \subsection{Paso a paso para $n = 1$, $m = 1$}
@@ -359,7 +354,7 @@ y perturbación constante) y las ganancias son
 \mathbf{K} = \begin{bmatrix} k_{p_1} & 1 \end{bmatrix} ,
 \end{equation}
 con $\widehat{\mathbf{X}}(t) = [\hat{e}_y(t) \;\; \hat{\xi}(t)]^{\top}$. La segunda entrada
-de $\mathbf{K}$ es el $1$ que cancela $\hat{\xi}$ en la ley de control.
+de $\mathbf{K}$ es $\mathbf{C_\xi}$, en este caso $1$ para que cancele $\hat{\xi}$ en la ley de control.
 
 \paragraph{Matriz del observador en lazo cerrado.}
 \begin{equation}
@@ -414,7 +409,7 @@ b_0\,C(s) = k_{p_1}\frac{l_1\,s}{s\,(s + k_{p_1} + l_1)} + \frac{l_2\,(s + k_{p_
 = \frac{(k_{p_1} l_1 + l_2)\,s + k_{p_1} l_2}{s\,(s + k_{p_1} + l_1)} ,
 \label{eq:gpi_eso_tf}
 \end{equation}
-que tiene la forma del filtro plano \eqref{eq:gpi_ley}, con
+que tiene la forma GPI robusto \eqref{eq:gpi_ley}, con
 $D_A = s$, $\bar{D}_C = s + k_{p_1} + l_1$ y $N_C = (k_{p_1} l_1 + l_2)\,s + k_{p_1} l_2$.
 
 %--------------------------------------------------------------------
@@ -458,8 +453,7 @@ Tabla~\ref{tab:caso_parametros}).
 \caption[Relación entre las ganancias del ESO y del GPI]{Relación entre las
 ganancias del ADRC con ESO de orden 2 ($n = m = 1$) y las del GPI
 \eqref{eq:gpi_ley}. Los valores numéricos son los del caso PTAR, con
-$\omega_c = 3{,}33\times10^{-3}$~rad/s y $\omega_o = 5\,\omega_c$; entre
-paréntesis, el controlador en las unidades de la planta, dividido por
+$\omega_c = 3{,}33\times10^{-3}$~rad/s y $\omega_o = 5\,\omega_c$; 
 $b_0 = 4{,}17\times10^{-5}$.}
 \label{tab:gpi_eso}
 \begin{tabular}{@{}llll@{}}
@@ -469,9 +463,9 @@ GPI & Desde el ESO & Ancho de banda & Caso PTAR \\
 $k_2$ & $k_{p_1} + l_1$ & $\omega_c + 2\omega_o$
       & $0{,}0367$~s$^{-1}$ \\
 $k_1$ & $k_{p_1} l_1 + l_2$ & $2\omega_c\omega_o + \omega_o^2$
-      & $3{,}89\times10^{-4}$~s$^{-2}$ \quad ($k_1/b_0 = 9{,}33$) \\
+      & $3{,}89\times10^{-4}$~s$^{-2}$ \\
 $k_0$ & $k_{p_1} l_2$ & $\omega_c\,\omega_o^2$
-      & $9{,}26\times10^{-7}$~s$^{-3}$ \quad ($k_0/b_0 = 0{,}0222$) \\
+      & $9{,}26\times10^{-7}$~s$^{-3}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -626,7 +620,7 @@ control no llega a saturarse.
   \centering
   \includegraphics[width=\textwidth]{gpi_perturbacion_retardo.pdf}
   \caption[Rechazo de la perturbación con retardo con el GPI]{Entrada de una
-    perturbación $\varepsilon = -15~\%$ con el OD en régimen en $2{,}0$~mg/L y la
+    perturbación $\varepsilon = -15~\%$ con el sistema en estacionario en $2{,}0$~mg/L y la
     planta nominal con retardo $\theta$, con el GPI; en negro, sin retardo.
     (a) Salida. (b) Señal de control.}
   \label{fig:gpi_perturbacion_retardo}
@@ -677,24 +671,24 @@ Figura~\ref{fig:gpi_variacion} al variar $k_0$, $k_1$ y $k_2$.}
 \small
 \begin{tabular}{llrrrr}
 \toprule
-\textbf{Ganancia} & \textbf{Factor} & $M_p$ [\%] & $t_s$ [min] & IAE [mg$\cdot$min/L] & $u_{\max}$ [\%] \\
+\textbf{Ganancia} & \textbf{Factor} & $M_p$ [\%] & $t_s$ [min] & IAE [mg$\cdot$s/L] & $u_{\max}$ [\%] \\
 \midrule
-nominal & $1$    & $10{,}2$  & $15{,}7$  & $0{,}448$ & $79{,}8$ \\
+nominal & $1$    & $10{,}2$  & $15{,}7$  & $26{,}9$ & $79{,}8$ \\
 \midrule
-$k_0$   & $1/4$  & $0{,}0$   & $5{,}9$   & $0{,}423$ & $77{,}4$ \\
-        & $1/2$  & $2{,}6$   & $10{,}4$  & $0{,}382$ & $78{,}2$ \\
-        & $2$    & $22{,}2$  & $10{,}4$  & $0{,}458$ & $83{,}3$ \\
-        & $4$    & $40{,}1$  & $11{,}3$  & $0{,}531$ & $91{,}2$ \\
+$k_0$   & $1/4$  & $0{,}0$   & $5{,}9$   & $25{,}4$ & $77{,}4$ \\
+        & $1/2$  & $2{,}6$   & $10{,}4$  & $22{,}9$ & $78{,}2$ \\
+        & $2$    & $22{,}2$  & $10{,}4$  & $27{,}5$ & $83{,}3$ \\
+        & $4$    & $40{,}1$  & $11{,}3$  & $31{,}9$ & $91{,}2$ \\
 \midrule
-$k_1$   & $1/4$  & $45{,}9$  & $43{,}6$  & $1{,}531$ & $62{,}1$ \\
-        & $1/2$  & $25{,}4$  & $22{,}4$  & $0{,}796$ & $65{,}8$ \\
-        & $2$    & $8{,}2$   & $4{,}0$   & $0{,}233$ & $105{,}7$ \\
-        & $4$    & $18{,}4$  & $3{,}6$   & $0{,}171$ & $148{,}4$ \\
+$k_1$   & $1/4$  & $45{,}9$  & $43{,}6$  & $91{,}9$ & $62{,}1$ \\
+        & $1/2$  & $25{,}4$  & $22{,}4$  & $47{,}8$ & $65{,}8$ \\
+        & $2$    & $8{,}2$   & $4{,}0$   & $14{,}0$ & $105{,}7$ \\
+        & $4$    & $18{,}4$  & $3{,}6$   & $10{,}3$ & $148{,}4$ \\
 \midrule
-$k_2$   & $1/4$  & $57{,}3$  & $16{,}8$  & $0{,}604$ & $115{,}9$ \\
-        & $1/2$  & $28{,}8$  & $10{,}6$  & $0{,}368$ & $98{,}7$ \\
-        & $2$    & $11{,}1$  & $23{,}1$  & $0{,}722$ & $63{,}6$ \\
-        & $4$    & $13{,}2$  & $33{,}1$  & $1{,}229$ & $52{,}8$ \\
+$k_2$   & $1/4$  & $57{,}3$  & $16{,}8$  & $36{,}3$ & $115{,}9$ \\
+        & $1/2$  & $28{,}8$  & $10{,}6$  & $22{,}1$ & $98{,}7$ \\
+        & $2$    & $11{,}1$  & $23{,}1$  & $43{,}3$ & $63{,}6$ \\
+        & $4$    & $13{,}2$  & $33{,}1$  & $73{,}8$ & $52{,}8$ \\
 \bottomrule
 \end{tabular}
 \end{table}

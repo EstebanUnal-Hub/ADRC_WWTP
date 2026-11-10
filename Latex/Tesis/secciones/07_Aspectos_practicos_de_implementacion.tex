@@ -144,8 +144,8 @@ manejar la saturación.
 La Figura~\ref{fig:adrc_lazo_cerrado_saturacion} repite la simulación de la
 Figura~\ref{fig:adrc_lazo_cerrado} con el soplador limitado y el observador
 realimentado con $b_0\,u_{\mathrm{sat}}$. Al arrancar, el soplador se queda en
-$100~\%$ unos $325$~s y el oxígeno sube más despacio (alcanza el $63~\%$ del
-primer escalón en $354$~s, frente a $98$~s sin saturación), pero sin
+$100~\%$ unos $5{,}4$~min y el oxígeno sube más despacio (alcanza el $63~\%$ del
+primer escalón en $5{,}9$~min, frente a $1{,}6$~min sin saturación), pero sin
 sobreimpulso ni \emph{windup}: en cuanto la salida se acerca a la consigna, $u$
 deja el límite y vuelve la dinámica diseñada. En el panel (c) se ve la perturbación exógena
 aplicada y la perturbación total estimada: al entrar un cambio de referencia, el observador lo
@@ -177,35 +177,8 @@ de control se sature (Sección~\ref{sec:impl_referencia}).
 \end{figure}
 
 %--------------------------------------------------------------------
-\subsection{Saturación GPI}
+\subsection{Saturación del GPI robusto}
 \label{subsec:sat_gpi}
-
-\paragraph{Implementación con realimentación de la saturación.} Todo
-controlador lineal puede escribirse como un cociente de polinomios, con $L(s)$
-mónico de grado $n$ \cite[sec.~19.1.3]{levine2011handbook}, el mismo punto de partida que usan
-Cortés-Romero y colaboradores para el \emph{anti-windup} de un GPI robusto
-\cite{vargas2026microgrids}, mostrado con un esquema de saturación del Handbook:
-\begin{equation}
-u(s) = C(s)\,\bigl(-e_y(s)\bigr) = \frac{P(s)}{L(s)}\,\bigl(-e_y(s)\bigr),
-\qquad L(s) = s^{n} + l_{n-1}s^{n-1} + \cdots + l_0 .
-\end{equation}
-Se puede implementar realimentando la señal saturada, con un polinomio mónico y estable
-$E_1(s)$ del mismo grado $n$ (Figura~\ref{fig:gpi_antiwindup}), esquema obtenido de
-\cite[sec.~19.1.3]{levine2011handbook}:
-\begin{equation}
-v(s) = \frac{P(s)}{E_1(s)}\,\bigl(-e_y(s)\bigr) - \frac{L(s) - E_1(s)}{E_1(s)}\,u_{\mathrm{sat}}(s),
-\qquad u_{\mathrm{sat}}(t) = \operatorname{sat}\bigl(v(t)\bigr) .
-\label{eq:aw_handbook}
-\end{equation}
-Cuando el actuador no se satura, $v = u_{\mathrm{sat}} = u$, y se recupera el
-controlador original:
-\begin{align}
-u(s) &= \frac{P(s)}{E_1(s)}\,\bigl(-e_y(s)\bigr) - \frac{L(s) - E_1(s)}{E_1(s)}\,u(s) \nonumber\\[4pt]
-u(s)\left[1 + \frac{L(s) - E_1(s)}{E_1(s)}\right] &= \frac{P(s)}{E_1(s)}\,\bigl(-e_y(s)\bigr) \nonumber\\[4pt]
-u(s)\left[\frac{L(s)}{E_1(s)}\right] &= \frac{P(s)}{E_1(s)}\,\bigl(-e_y(s)\bigr) \nonumber\\[4pt]
-u(s) &= \frac{P(s)}{L(s)}\,\bigl(-e_y(s)\bigr) .
-\end{align}
-
 \begin{figure}[H]
   \centering
   \resizebox{\textwidth}{!}{%
@@ -264,6 +237,34 @@ u(s) &= \frac{P(s)}{L(s)}\,\bigl(-e_y(s)\bigr) .
     $E_1(s)$ llega la señal aplicada $u_{\mathrm{sat}}$, no la pedida $v$.}
   \label{fig:gpi_antiwindup}
 \end{figure}
+
+\paragraph{Implementación con realimentación de la saturación.} Se utiliza el esquema de saturación del Handbook; para ello, primero 
+es necesario saber que todo
+controlador lineal puede escribirse como un cociente de polinomios, con $L(s)$
+mónico de grado $n$, el mismo punto de partida que usan
+Cortés-Romero y colaboradores para el \emph{anti-windup} de un GPI robusto
+\cite{vargas2026microgrids}, 
+\begin{equation}
+u(s) = C(s)\,\bigl(-e_y(s)\bigr) = \frac{P(s)}{L(s)}\,\bigl(-e_y(s)\bigr),
+\qquad L(s) = s^{n} + l_{n-1}s^{n-1} + \cdots + l_0 .
+\end{equation}
+y se puede reescribir realimentando la señal saturada, con un polinomio mónico y estable
+$E_1(s)$ del mismo grado $n$ (Figura~\ref{fig:gpi_antiwindup}), esquema obtenido de
+\cite[sec.~19.1.3]{levine2011handbook}:
+\begin{equation}
+v(s) = \frac{P(s)}{E_1(s)}\,\bigl(-e_y(s)\bigr) - \frac{L(s) - E_1(s)}{E_1(s)}\,u_{\mathrm{sat}}(s),
+\qquad u_{\mathrm{sat}}(t) = \operatorname{sat}\bigl(v(t)\bigr) .
+\label{eq:aw_handbook}
+\end{equation}
+Cuando el actuador no se satura, $v = u_{\mathrm{sat}} = u$, y se recupera el
+controlador original:
+\begin{align}
+u(s) &= \frac{P(s)}{E_1(s)}\,\bigl(-e_y(s)\bigr) - \frac{L(s) - E_1(s)}{E_1(s)}\,u(s) \nonumber\\[4pt]
+u(s)\left[1 + \frac{L(s) - E_1(s)}{E_1(s)}\right] &= \frac{P(s)}{E_1(s)}\,\bigl(-e_y(s)\bigr) \nonumber\\[4pt]
+u(s)\left[\frac{L(s)}{E_1(s)}\right] &= \frac{P(s)}{E_1(s)}\,\bigl(-e_y(s)\bigr) \nonumber\\[4pt]
+u(s) &= \frac{P(s)}{L(s)}\,\bigl(-e_y(s)\bigr) .
+\end{align}
+
 
 
 \paragraph{Anti-windup escrito con las ganancias del GPI.} Para el GPI
@@ -490,6 +491,11 @@ momento de variar los controladores.
   \label{fig:simulink_gpi}
 \end{figure}
 
+La Figura~\ref{fig:sat_arranque} compara el arranque desde $0$~mg/L con el soplador limitado. Sin
+\emph{anti-windup}, el GPI se queda unos $16$~min en $100~\%$ y el oxígeno sube hasta $2{,}79$~mg/L;
+con él, llega a la consigna sin pasarse, y con el polinomio del observador,
+$E_1 = s^2 + l_1 s + l_2$, su respuesta se superpone a la del ADRC.
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{saturacion_arranque.pdf}
@@ -516,8 +522,9 @@ de $110$~s (Sección~\ref{subsec:caso_margenes}): el oxígeno sube hasta
 $2{,}42$~mg/L y el soplador llega a $100~\%$ y a $0~\%$, pero con la
 realimentación de la saturación el controlador no se desestabiliza,
 y la oscilación se amortigua lentamente. En caso de que la ganancia de la planta sea muy pequeña
-(caso $K_{dc} = 0{,}022$ de la Figura~\ref{fig:sat_adrc_gpi_variacion}(a)), el controlador se
-mantiene saturado, es decir, el sistema no llega a la referencia; y cuando el controlador vuelva a
+(un cuarto de la nominal en la Figura~\ref{fig:sat_adrc_gpi_variacion}(a)), el controlador se
+mantiene saturado, es decir, el sistema no llega a la referencia: con el soplador al $100~\%$ el
+OD cae hasta $1{,}25$~mg/L; y cuando el controlador vuelva a
 responder, la salida se irá acercando lentamente a la referencia a medida que el sistema se
 recupere, sin sobrepicos agresivos ni enormes, gracias al \emph{anti-windup}.
 
@@ -567,7 +574,7 @@ y el rechazo de la perturbación sigue siendo el mismo.
 \label{subsec:impl_bezier}
 Se presenta el esquema de la Figura~\ref{fig:lazo_bezier}, donde se muestra un
 acondicionamiento previo de la señal de referencia: la entrada es suavizada por un
-polinomio de Bézier, que se busca que inicie lento, es decir, con derivadas en cero,
+polinomio de Bézier \cite{sira2017adrc,abadi2024robust}, que se busca que inicie lento, es decir, con derivadas en cero,
 y que termine lento, también con derivadas en cero.
 
 \begin{figure}[H]
@@ -829,10 +836,10 @@ que no tiene ese cero y no cambia con $F(s)$. Es decir, el filtro solo se ve en 
 la referencia y no en el rechazo de la perturbación.
 
 En el escalón de $2{,}0$ a $2{,}2$~mg/L con la planta (Figura~\ref{fig:pref_escalon}), sin
-retardo el prefiltro quita el sobrepico ($10{,}3$ a $0~\%$), baja el pico de $u$ de $80$ a $50~\%$
-y la energía de la señal de control $E_u$ (Tabla~\ref{tab:metricas}) de $2132$ a $203~\%^2\cdot$min. Con
-$\theta = 50$~s el sobrepico baja de $46$ a $0~\%$, el pico de $u$ de $93$ a $54~\%$ y $E_u$ de $4844$ a
-$320~\%^2\cdot$min. A
+retardo el prefiltro quita el sobrepico ($10{,}2$ a $0~\%$), baja el pico de $u$ de $80$ a $50~\%$
+y la energía de la señal de control $E_u$ (Tabla~\ref{tab:metricas}) de $126\,544$ a $12\,209~\%^2\cdot$s. Con
+$\theta = 50$~s el sobrepico baja de $44{,}6$ a $0~\%$, el pico de $u$ de $93$ a $54~\%$ y $E_u$ de $286\,035$ a
+$19\,036~\%^2\cdot$s. A
 cambio llega más tarde: entra a la banda de $2~\%$ en $24{,}4$~min en vez de $15{,}7$ sin retardo, y
 en $24{,}7$ en vez de $14{,}7$ con $\theta = 50$~s. La perturbación de $-15~\%$ da la misma caída con
 y sin prefiltro: el oxígeno baja hasta $2{,}15$~mg/L sin retardo y hasta $2{,}13$~mg/L con
@@ -853,7 +860,8 @@ una rampa, o por el orden de la planta, es necesario reajustar el filtro según 
 controlador, para anular los ceros del numerador de $y/r$. No es una regla exacta: poniendo un
 filtro libre se pueden obtener buenos resultados suavizando la referencia, como en el ejemplo de
 Herbst y Madoński \cite[sec.~6.4.2]{herbst2024adrc}; pero si se quiere la dinámica exacta del
-diseño, sí es necesario reajustar el filtro con polos que cancelen los ceros del lazo cerrado.
+diseño, sí es necesario reajustar el filtro con polos que cancelen los ceros del lazo cerrado. Además, con
+referencias más suaves el prefiltro deja de ser necesario.
 
 %--------------------------------------------------------------------
 \section{Manejo del ruido}
@@ -920,13 +928,12 @@ Tabla~\ref{tab:pid_escalon}).
 
 Herbst y Madoński presentan la misma idea: el controlador del ADRC, que es el mismo en el enfoque
 basado en el error, es estrictamente propio \cite[ecs.~4.20 y 6.30]{herbst2024adrc}, y el máximo de
-$\omega_o$ lo pone el ruido admisible en $u$
-\cite[secs.~5.3.3 y 9.3]{herbst2024adrc}. Es decir, al pasar de $\omega_o = 5\,\omega_c$ a
+$\omega_o$ lo pone el ruido admisible en $u$.  Es decir, al pasar de $\omega_o = 5\,\omega_c$ a
 $10\,\omega_c$, el ruido llega al soplador con $3{,}4$ veces más ganancia
 (Figura~\ref{fig:adrc_gang_kESO}(h)). Con $\omega_o = 5\,\omega_c$ y un
 controlador estrictamente propio no hacen falta filtros adicionales. Por ende, con el ADRC, ya sea basado en
 observador de estado extendido o en su forma GPI, se puede ajustar el ruido admisible con el ancho de banda
-del observador, $\omega_o$. Queda entonces la anotación de que el ajuste de $\omega_o$ dependerá de
+del observador, $\omega_o$. Por ende, el ajuste de $\omega_o$ dependerá de
 las frecuencias de las perturbaciones que se desean rechazar y del tope máximo de ruido admisible
 que se deja pasar a la señal de control.
 
@@ -1021,7 +1028,8 @@ valor de $T_s$ se obtiene la Figura~\ref{fig:disc_metodos_bode_40}. Se observa
 que, en las frecuencias del lazo de control, las magnitudes se mantienen juntas,
 mientras que en la fase algunos métodos empiezan a separarse del continuo. El
 método que mantuvo un comportamiento más parecido al continuo, en magnitud y en
-fase, a la frecuencia del lazo cerrado es Tustin.
+fase, a la frecuencia del lazo cerrado es Tustin: en el cruce de ganancia se separa
+$0{,}13^{\circ}$, frente a $1^{\circ}$ a $3^{\circ}$ de Euler y casi $17^{\circ}$ de ZOH.
 
 \begin{figure}[H]
   \centering
@@ -1325,8 +1333,7 @@ de $T_s$. Con la sintonía por ancho de banda,
 $\Delta_c(z) = (z - z_c)^{n}$ y $\Delta_o(z) = (z - z_o)^{n+m}$, con
 $z_c = e^{-\omega_c T_s}$ y $z_o = e^{-\omega_o T_s}$.
 El muestreo conserva la controlabilidad de la planta y la observabilidad del
-sistema aumentado, porque todos los valores propios están en $s = 0$, es decir, en $z = 1$ en el discreto,
-dado que son cadenas de integradores expresadas en discreto. Ahora bien, las matrices de controlabilidad y observabilidad
+sistema aumentado, porque todos los valores propios están en $s = 0$, es decir, en $z = 1$ en el discreto. Ahora bien, las matrices de controlabilidad y observabilidad
 son las de \cite[sec.~12.6.1]{chen1993analog}.
 
 \paragraph{Caso $n = 1$, $m = 1$ con $T_s = 50$~ms.} Con $n = m = 1$,
@@ -1381,8 +1388,8 @@ satura en el arranque (panel d), y la estimación de la perturbación total logr
 perturbación exógena (panel c) y, por ende, rechazarla. Finalmente, en los paneles (e) y (f),
 ante el escalón de $2{,}0$ a $2{,}2$~mg/L, con $T_s = 50$~ms el sobrepico es básicamente el mismo
 del continuo, $10{,}2~\%$, mientras que con $T_s = 40$~s crece un poco, hasta $14{,}2~\%$. Por lo
-tanto, la discretización sí puede llegar a afectar la respuesta, y por eso Chen recomienda
-muestrear a unas 20 veces el ancho de banda del lazo cerrado \cite[sec.~13.3.1]{chen1993analog}.
+tanto, la discretización sí puede llegar a afectar la respuesta, y por eso Chen menciona muestrear como mínimo a 10 veces y, como recomendación,
+a unas 20 veces el ancho de banda del lazo cerrado \cite[sec.~13.3.1]{chen1993analog}.
 
 
 \begin{table}[H]
@@ -1509,7 +1516,7 @@ $\omega_c$, $2\omega_o$ y $\omega_o^2$ en menos de $0{,}1~\%$
 (Tabla~\ref{tab:disc_matrices}).
 \paragraph{Realización con retardos.} Las ecuaciones \eqref{eq:disc_filas_retardos}
 y \eqref{eq:disc_ley_escalar} se realizan con dos retardos, uno por estado del
-observador (Figura~\ref{fig:adrc_discreto_retardos}); en resumen, son necesarios dos retardos y
+observador (Figura~\ref{fig:adrc_discreto_retardos}); es decir, son necesarios dos retardos y
 tres bloques de suma para implementarlo en cualquier equipo digital.
 
 \begin{figure}[H]
@@ -1584,7 +1591,7 @@ tres bloques de suma para implementarlo en cualquier equipo digital.
 \end{figure}
 
 %--------------------------------------------------------------------
-\subsection{GPI discreto}
+\subsection{GPI robusto discreto}
 \label{subsec:disc_gpi}
 
 Cada función de transferencia del lazo de las
@@ -1781,7 +1788,7 @@ Son seis retardos y un solo sumador. Los estados son señales del lazo, con
 rangos conocidos, y se pueden inicializar al arrancar. Hay que trabajar en doble precisión (LREAL en el PLC, de 64 bits, y no REAL de 32 bits): con $T_s = 50$~ms los polos de
 $E_1(z)$ están en $|z| = 0{,}99908$ con las ganancias y en $0{,}99917$ (doble) con el
 observador, y $1 + \alpha_1 + \alpha_2$ vale $9{,}7\times10^{-7}$ y $6{,}9\times10^{-7}$; por
-eso $\alpha_1$ y $\alpha_2$ llevan ocho decimales.
+eso $\alpha_1$ y $\alpha_2$ llevan ocho decimales, y para evitar problemas posteriores de precisión es mejor usar LREAL. 
 
 \begin{figure}[H]
   \centering
@@ -1852,7 +1859,7 @@ eso $\alpha_1$ y $\alpha_2$ llevan ocho decimales.
   \caption[Realización en forma directa I del GPI discreto]{Realización en
     forma directa I de los dos bloques del GPI discreto juntos
     \eqref{eq:disc_gpi_fd1}: entradas $-e_y[k]$ y $u_{\mathrm{sat}}[k]$,
-    salida $v[k]$; todas las entradas del sumador suman. Es la misma con los dos $E_1$, con los
+    salida $v[k]$. Es la misma estructura con los dos $E_1$; solo cambian los
     coeficientes de la Tabla~\ref{tab:disc_gpi_coef}.}
   \label{fig:disc_formas_directas}
 \end{figure}
@@ -1914,10 +1921,10 @@ Con $T_s = 50$~ms, $\beta_f$ es del orden de $10^{-5}$, así que hay que trabaja
 
 La Figura~\ref{fig:disc_prefiltro_retardo} muestra el cambio de consigna con el prefiltro discreto, con
 la planta exacta y con $\theta = 0$ y $50$~s, y la Tabla~\ref{tab:disc_prefiltro_indices} resume sus
-índices. En ningún caso hay sobrepico. Con $T_s = 50$~ms, el ADRC y el GPI discretos se comportan
+índices. En ningún caso hay sobrepico. Con $T_s = 50$~ms, el ADRC con ESO y el GPI discretos se comportan
 igual: tienen el mismo tiempo de asentamiento y el mismo pico de la señal de control, y el retardo
 solo alarga un poco el transitorio y sube el pico de $u$. Cuando se aumenta el tiempo de muestreo a
-$T_s = 40$~s ya se ven diferencias: el ADRC se asienta un poco antes, el pico de $u$ sube, sobre todo
+$T_s = 40$~s ya se ven diferencias: el ADRC  con ESO se asienta un poco antes, el pico de $u$ sube, sobre todo
 con el GPI, y con $\theta = 50$~s aparece una pequeña oscilación en la señal de control. Aun así, en
 todos los casos el prefiltro discreto funciona adecuadamente: la salida llega a la consigna sin
 sobrepico y la señal de control queda lejos de la saturación. Además, el $t_s$ coincide con el que se
@@ -1933,7 +1940,7 @@ lazo cerrado, según el criterio que se use, lo cual es adecuado y se comprueba 
     limitado entre $0$ y $100~\%$: ADRC discreto (banda) y GPI discreto con
     $E_1 = (s + \omega_o)^2$ (discontinua), con $T_s = 50$~ms (negro) y $T_s = 40$~s (azul),
     dibujados en escalones. (a) y (c) Sin retardo; (b) y (d) con $\theta = 50$~s. Arriba, la
-    salida $y[k]$ con la banda de $2~\%$ del escalón; abajo, la señal de control $u[k]$.}
+    salida $y[k]$; abajo, la señal de control $u[k]$.}
   \label{fig:disc_prefiltro_retardo}
 \end{figure}
 
@@ -1992,7 +1999,7 @@ $\theta = 20$, $40$, $50$, $60$ y $100$~s, con el escalón de consigna de $2{,}0
 $2{,}2$~mg/L y la perturbación $\varepsilon = -15~\%$ a los 40~min. Con
 $\theta = 50$~s, el pico de oxígeno baja de $2{,}29$ a $2{,}24$~mg/L y la señal
 de control deja de oscilar (sin sincronizar baja hasta $29~\%$; sincronizado no
-pasa por debajo del $40~\%$ del régimen). En el caso extremo de $100$~s, sin
+pasa por debajo del $40~\%$ del estacionario). En el caso extremo de $100$~s, sin
 sincronizar el lazo oscila y el soplador llega a $0$ y a $100~\%$;
 sincronizado, el pico es de $2{,}26$~mg/L y la orden no pasa del $86~\%$. A
 cambio, la respuesta es algo más lenta ($t_s$ de $17{,}4$ frente a $14{,}7$~min
@@ -2003,7 +2010,7 @@ sincronizar el observador da mejores respuestas.
 El retardo real no se conoce con exactitud: solo se obtuvo visualmente
 (Sección~\ref{sec:ident_retardo}), y los diseños se hicieron con $\theta = 50$~s en la planta. Ahora
 bien, sobreestimarlo es seguro: con $n_d T_s = 100$~s el pico es de $2{,}23$~mg/L y $t_s$ sube a
-$20{,}7$~min. Subestimarlo mejora menos, pero sigue ayudando: con $n_d T_s = 25$~s el pico es de
+$20{,}7$~min. Subestimarlo no mejora, pero sigue ayudando: con $n_d T_s = 25$~s el pico es de
 $2{,}26$~mg/L, frente a $2{,}29$. Por eso es mejor sobreestimar $\theta$ y elegir un valor un poco más
 grande.
 
@@ -2028,7 +2035,7 @@ Esta sección contiene el desarrollo de los diseños propuestos anteriormente, l
 de saturación y algunas de las realizaciones que se obtuvieron en discreto a una forma que se pueda
 implementar en un PLC. Se parte de una idea de alto nivel, donde se fundamentan las ideas
 principales, y cada vez se va formalizando más con los resultados teóricos de las secciones
-anteriores, hasta obtener un producto con una metodología bien definida para su implementación.
+anteriores, hasta obtener un producto con una metodología definida para su implementación.
 
 %--------------------------------------------------------------------
 \subsection{Producto digital}
@@ -2066,7 +2073,7 @@ los anchos de banda (Tablas~\ref{tab:plc_adrc_eso}, \ref{tab:plc_gpi} y \ref{tab
 ADRC se sintoniza con $\omega_c$, $\omega_o$ y $b_0$
 (Sección~\ref{subsec:sintonia}). El GPI recibe directamente $k_0$, $k_1$, $k_2$
 y $b_0$: si se conocen $\omega_c$ y $\omega_o$, las ganancias salen de
-\eqref{eq:eso2gpi} y los dos bloques dan el mismo lazo; si no, se sintoniza
+\eqref{eq:eso2gpi} y los dos bloques dan el mismo lazo; o si se quiere se sintoniza
 como un PI con filtro (Figura~\ref{fig:gpi_pi_filtro}), con $k_1$ y $k_0$ como
 acciones proporcional e integral y $k_2$ como polo del filtro. En ese caso nada
 garantiza la estabilidad, así que el bloque verifica que $k_0, k_1, k_2 > 0$ y
@@ -2084,7 +2091,7 @@ seguimiento; la salida \texttt{U} es la orden al soplador, ya limitada entre \te
 El estado \texttt{RESET} funciona como el de un PID industrial, que lleva la salida a un valor fijo
 (\texttt{Y\_OFFSET}) y borra la parte integral: aquí la salida va a cero, dentro de los límites, y los estados se reinician. Las
 ganancias solo se actualizan en \texttt{RESET}, y el bloque sale de ese estado cuando ya tiene
-parámetros válidos (\texttt{Ready}). Cada tabla muestra el símbolo del bloque, qué hace cada entrada
+parámetros válidos (\texttt{Ready}). Seguidamente, Cada tabla muestra el símbolo del bloque, qué hace cada entrada
 y salida, y las ecuaciones que implementa; el código está en el repositorio del Anexo~\ref{anx:st}. Todas las entradas
 son reales salvo \texttt{TS}, de tipo \texttt{TIME}, y \texttt{RESET}, que es booleana.
 
@@ -2287,8 +2294,7 @@ Las realizaciones discretas de las Figuras~\ref{fig:adrc_discreto_retardos} y
 \ref{fig:disc_formas_directas} solo tienen sumas, ganancias y retardos. Las sumas y las ganancias
 existen en todos los lenguajes de la norma IEC~61131-3 \cite{iec61131}, así que lo único que hay que
 resolver es el retardo $z^{-1}$, es decir, guardar un valor para usarlo en el ciclo siguiente. Incluso
-hay plataformas que ya traen un bloque de retardo, como \texttt{IL\_DeadtimeType01} en ctrlX PLC
-\cite[sec.~14.5.2]{ctrlxLibraries}. Aun así, se puede construir con cualquiera de los lenguajes de la
+hay plataformas que ya traen un bloque de retardo. Aun así, se puede construir con cualquiera de los lenguajes de la
 norma, y la
 regla es la misma en todos: la variable debe conservar su valor entre ciclos, por lo que va en un
 bloque de función o en un programa y no en una función; se lee antes de escribirla, y en una cadena
@@ -2296,8 +2302,7 @@ de retardos se actualiza primero el más viejo. La norma define los lenguajes te
 los gráficos FBD y LD, además de SFC para organizar secuencias; el CFC no hace parte de la norma,
 sino que es un editor gráfico que CODESYS, y por lo tanto ctrlX PLC, ofrece como extensión del FBD
 \cite{codesysHelp}. La Tabla~\ref{tab:plc_lenguajes} muestra cómo se hace el retardo en cada uno. En
-este trabajo se usó ST para los bloques y CFC solo para visualizarlos y conectarlos; las demás filas
-muestran cómo se haría.
+este trabajo se usó ST para los bloques y CFC solo para visualizarlos.
 
 \begin{table}[H]
 \centering
@@ -2376,15 +2381,15 @@ Figura~\ref{fig:plc_codesys} muestra las instancias de los bloques ya creados.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.68\textwidth]{codesys_bloques.png}
-  \caption[Instancias de los bloques en CODESYS]{Instancias de los bloques de función en CODESYS.}
+  \caption[Instancias de los bloques en CODESYS]{Instancias de los bloques de función}
   \label{fig:plc_codesys}
 \end{figure}
 
 Para probar el lazo completo se conectó cada combinación de consigna y controlador al bloque
-\texttt{PLANT}, configurado como la planta de diseño, $\tau = 1200$~s y $k_{dc} = 0{,}05$~mg/(L$\cdot$\%),
+\texttt{PLANT}, configurado como la planta de diseño, $\tau = 1200$~s (20~min) y $k_{dc} = 0{,}05$~mg/(L$\cdot$\%),
 y con la misma sintonía de las secciones anteriores: $\omega_c = 4/\tau$, $\omega_o = 5\,\omega_c$,
 $b_0 = k_{dc}/\tau$ y $T_s = 50$~ms. La
-Figura~\ref{fig:plc_en_linea} muestra dos de estas pruebas en línea, ya en régimen: la orden de
+Figura~\ref{fig:plc_en_linea} muestra dos de estas pruebas en línea, con el sistema ya en estacionario: la orden de
 $40~\%$ sostiene $2$~mg/L y la de $44~\%$ sostiene $2{,}2$~mg/L, que es lo que da $k_{dc}$. Así se valida que el comportamiento sea el
 correspondiente.
 
@@ -2399,12 +2404,12 @@ correspondiente.
 
 La Figura~\ref{fig:plc_trazas} muestra las trazas registradas por el PLC en dos corridas, con cambios
 de consigna de $0$ a $2$~mg/L y de $2$ a $2{,}2$~mg/L, y la Tabla~\ref{tab:plc_trazas} resume la
-información. Con Bézier se usó $t_f = 2400$~s para el primer cambio de referencia y $t_f = 1200$~s
+información. Con Bézier se usó $t_f = 2400$~s (40~min) para el primer cambio de referencia y $t_f = 1200$~s (20~min)
 para el segundo. La curva de Bézier no lleva el control a la saturación en el primer escalón, que era
 el que requería mayor esfuerzo, y deja un sobrepico de $4{,}4~\%$ en el segundo, porque el cero sigue
 en el lazo. Aun así, no se pierde robustez ni rechazo, ya que la curva de Bézier solo ayuda a que la
 salida llegue a la referencia suavemente. El prefiltro no tiene sobrepico en ninguno de los dos, pero en el escalón
-grande la orden llega a $100~\%$ durante $30{,}6$~s. En el escalón pequeño, el prefiltro con el ADRC se
+grande la orden llega a $100~\%$ durante $30{,}6$~s, por lo que reducir $\omega_c$ a $3/\tau$ (tres veces más rápido que la planta en lazo abierto) ayudaría a no saturar, y $4/\tau$ sería el límite. En el escalón pequeño, el prefiltro con el ADRC se
 asienta en $24{,}5$~min con una orden máxima de $50{,}1~\%$, prácticamente los mismos valores de la
 Tabla~\ref{tab:disc_prefiltro_indices} para $T_s = 50$~ms sin retardo.
 
@@ -2444,7 +2449,7 @@ Tabla~\ref{tab:disc_prefiltro_indices} para $T_s = 50$~ms sin retardo.
 
 En esta sección se organiza lo desarrollado para implementar el ADRC y el GPI dentro de un dispositivo
 digital como un PLC, en cuatro recetas: el ADRC con observador de estado extendido a nivel general, el
-GPI, los aspectos prácticos de implementación y, por último, la implementación en el PLC. Cada paso
+GPI Robusto, los aspectos prácticos de implementación y, por último, la implementación en el PLC. Cada paso
 dice qué hacer y remite a la ecuación o la sección donde está el detalle.
 
 \subsection{Implementación del ADRC con observador de estado extendido: caso general}
@@ -2458,7 +2463,7 @@ dice qué hacer y remite a la ecuación o la sección donde está el detalle.
   otros órdenes sale de \cite[tabla~3.1]{herbst2024adrc}. Luego se reescribe la planta sobre el error:
   con $u_0 = b_0\,u$, la dinámica del error queda como una cadena de $n$ integradores excitada por
   $u_0 + \xi$ \eqref{eq:error_norm}.
-  \item \textbf{Perturbación.} Se elige el modelo interno según la señal que se desea rechazar:
+  \item \textbf{Perturbación.} Se elige el modelo interno según la señal que se desea rechazar o seguir:
   escalones $1/s$ ($m = 1$), rampas $1/s^2$ ($m = 2$) o polinomios de mayor grado. Las perturbaciones
   que no siguen ese modelo también se rechazan, en la medida en que lo permita el ancho de banda del
   observador.
@@ -2481,7 +2486,7 @@ dice qué hacer y remite a la ecuación o la sección donde está el detalle.
 \end{enumerate}
 \end{recuadro}
 
-\subsection{Implementación del GPI}
+\subsection{Implementación del GPI robusto}
 
 \begin{recuadro}{Receta 2}
 \begin{enumerate}\setlength{\itemsep}{2pt}
@@ -2558,10 +2563,10 @@ Tablas~\ref{tab:disc_matrices} y \ref{tab:disc_gpi_coef}, en texto estructurado
   $b_0 = k_{dc}/\tau$ \eqref{eq:car_b0}.
   \item \textbf{Sintonía del controlador.} $\omega_c = 4/\tau$, cuatro veces más rápido que la planta
   en lazo abierto; se puede modificar según la velocidad de respuesta deseada, siempre que el sistema
-  no se sature con cambios de referencia cerca del punto de operación.
+  no se sature con cambios de referencia cerca del punto de operación o con perturbaciones exógenas. 
   \item \textbf{Sintonía del observador.} En el ADRC, $\omega_o$ entre $3$ y $10$ veces $\omega_c$,
   según qué tanto se quiera rechazar la perturbación. Para este caso, con $\omega_o = 5\,\omega_c$
-  queda por debajo de $\omega_o$ el $99~\%$ de la energía de la perturbación; el tope lo pone el ruido,
+  ; el tope lo pone el ruido,
   es decir, qué tanto ruido admisible deja pasar el observador a la señal de control. El GPI se puede sintonizar como un PI clásico
   con \emph{pole placement}, y manejar el cero del numerador con el prefiltro o con Bézier para
   reducir el esfuerzo de control.

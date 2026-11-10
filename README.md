@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# ADRC_WWTP
-=======
 # ADRC_WWTP
 
 **Active disturbance rejection control for dissolved oxygen regulation in the activated sludge stage of a wastewater treatment plant**
@@ -12,7 +9,8 @@ MSc thesis, Master's in Engineering – Industrial Automation, Universidad Nacio
 - Co-director: M.Sc. Harvey David Rojas Cala
 
 This repository holds the code, processed data, PLC function blocks and LaTeX source of the thesis.
-The thesis itself (in Spanish) is [`Latex/Tesis/main.pdf`](Latex/Tesis/main.pdf).
+The thesis itself (in Spanish) is [`Latex/Tesis/main.pdf`](Latex/Tesis/main.pdf); a shorter layout of the
+same document, with the same data, is [`Latex/Tesis_simple/main.pdf`](Latex/Tesis_simple/main.pdf).
 
 The case study is the dissolved oxygen (DO) loop of the activated sludge tanks of the Tunja WWTP
 (Colombia). The plant was identified from 22 months of SCADA data. On that model, an error-based ADRC
@@ -50,6 +48,7 @@ a plant model and compared in simulation with an ISA PID of the same robustness.
 │   └── txtCtrl/               ctrlX PLC traces of the first closed-loop tests (ADRC and GPI)
 ├── Documentos/                thesis proposal and the author's working notes (PDF)
 ├── Latex/Tesis/               LaTeX source of the thesis, its figures and the compiled PDF
+├── Latex/Tesis_simple/        shorter layout of the same thesis (fewer pages, same data)
 ├── P&ID/                      P&ID of the aeration stage (Visio and PDF) and drawing guides
 ├── PLC_ST/                    PLC implementation in structured text (IEC 61131-3)
 │   ├── Codigos/               the 7 function blocks (.st)
@@ -72,7 +71,8 @@ a plant model and compared in simulation with an ISA PID of the same robustness.
 | [`Datos/txtCtrl/`](Datos/txtCtrl/) | Traces exported from ctrlX PLC of the ADRC and GPI in closed loop with a simulated plant. |
 | [`Documentos/`](Documentos/) | Thesis proposal, the bibliography spreadsheet and the author's notes 00–05 (equations of the plant, ADRC theory, digital ADRC on a DC motor, ADRC on the ASM model). |
 | [`Latex/Tesis/`](Latex/Tesis/) | `main.tex`, `secciones/` (one file per chapter), `figuras/`, `references.bib` and `main.pdf`. Its [README](Latex/Tesis/README.md) (Spanish) tells which notebook cell produces each figure and number. |
-| [`P&ID/`](P%26ID/) | `P&ID.vsdx` (Visio) and `P&ID.pdf`, used as Figure 2.1 of the thesis; `Guias/`: ISA-5.1 drawing guides. |
+| [`Latex/Tesis_simple/`](Latex/Tesis_simple/) | Same structure and the same data in fewer pages: tighter spacing, condensed text and a few figures left out. Its [README](Latex/Tesis_simple/README.md) lists the differences. |
+| [`P&ID/`](P%26ID/) | `P&ID.vsdx` (Visio) and `PLANOS BANCO FINAL.pdf`, used as Figure 2.1 of the thesis; `Guias/`: ISA-5.1 drawing guides. |
 | [`PLC_ST/Codigos/`](PLC_ST/Codigos/) | `ADRC_ESO`, `GPI`, `ADRC_GPI`, `PREFILTER_ADRC`, `PREFILTER_GPI`, `BEZIER_REF` and `PLANT` (section 7). |
 | [`PLC_ST/Libreria_ADRC/`](PLC_ST/Libreria_ADRC/) | Same code with the documentation shown by the ctrlX Library Manager; `_Images/` has the equations, block diagrams and CFC wiring of each block. |
 | [`PLC_ST/Library_platform/`](PLC_ST/Library_platform/) | `Library/ADRC.library` and `ADRC.compiled-library` (the ADRC library) and `Example/ADRC_Module.project`. |
@@ -89,7 +89,7 @@ a plant model and compared in simulation with an ISA PID of the same robustness.
 
 The plant has three identical aeration modules (M1, M2 and M3). In each one, the water from the grit
 chamber (FIT-101) reaches the activated sludge tank directly and through the UASB reactor; it leaves
-to the clarifiers, and part of the sludge returns to the tank (RAS, FIT-102, pumps P-102-A/B).
+to the clarifiers, and part of the sludge returns to the tank (RAS, FIT-102, pumps P-102-A/B/C).
 
 Loop 100 is the dissolved oxygen loop, the one studied here:
 
@@ -97,7 +97,7 @@ Loop 100 is the dissolved oxygen loop, the one studied here:
 |---|---|
 | AIT-100-A, AIT-100-B | DO transmitters at the inlet and outlet of the tank, 4–20 mA to the PLC |
 | AIC-100 | Controller in the local PLC: averages the two measurements and computes the command $u$ (0–100 %) |
-| AR-100 | SCADA: records the DO and sends the setpoint to the PLC over Ethernet (OPC UA) |
+| SCADA | Workstation: records the DO and sends the setpoint to the PLC over Ethernet (OPC UA) |
 | SC-100-A/B/C | Variable frequency drives of the blower motors (4–20 mA) |
 | B-100-A/B/C | Blowers; the air goes to the diffusers at the bottom of the tank |
 
@@ -129,7 +129,9 @@ G(s) = \frac{Y(s)}{U(s)} = \frac{k_{dc}}{\tau s + 1}\,e^{-\theta s}
 
 **Data.** 22 months of the SCADA historian, converted with `Datos/tools`. The 0–100 % command sent
 to the drives was not historized, so the electric power of the aeration panel, as a percentage of full
-load, is used as the control signal: $u = 100\,P/P_{\max}$.
+load, is used as the control signal: $u = 100\,P/P_{\max}$. $P_{\max}$ (106.3 kW in M2, 110.1 kW in M3) is
+close to the 99th percentile of the power, not its maximum: with the second blower running, the power can
+exceed it and $u$ goes above 100 %.
 
 **Identification.** On the open-loop days, a first-order ARX model with a constant term is fitted by
 least squares in 3-hour windows:
@@ -696,4 +698,3 @@ To cite this work:
   type   = {Tesis de Maestría en Ingeniería -- Automatización Industrial}
 }
 ```
->>>>>>> e26d38e (Thesis code, PLC function blocks, processed data and documentation)

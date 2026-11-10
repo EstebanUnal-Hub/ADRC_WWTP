@@ -48,7 +48,7 @@ de ganancia, pero es más lento (Tabla~\ref{tab:pid_robustez} y Figura~\ref{fig:
 
 \begin{table}[H]
 \centering
-\caption[Robustez del ADRC y del PID ISA]{Robustez del ADRC y del PID ISA, sin
+\caption[Robustez del ADRC y del PID ISA]{Robustez del ADRC y del PID ISA (Tabla~\ref{tab:metricas_robustez}), sin
   retardo (diseño) y con $\theta = 50$~s (evaluación).}
 \label{tab:pid_robustez}
 \renewcommand{\arraystretch}{1.3}
@@ -82,14 +82,12 @@ $2{,}2$~mg/L, sin retardo, que es el caso de diseño, y con $\theta = 50$~s
 de la Sección~\ref{sec:ident_ruido} ($\sigma = 0{,}0011$~mg/L, blanco, a 50~ms)
 sumado a la medida. El soplador se limita entre $0$ y $100~\%$: el ADRC
 realimenta $b_0\,u_{\mathrm{sat}}$ al observador, y el PID usa el mismo esquema de anti-\emph{windup}
-que el GPI \eqref{eq:aw_gpi} \cite[ec.~19.3]{levine2011handbook}, con $E_1$ formado por dos polos del lazo
-cerrado, los más rápidos que se pueden tomar sin partir un par complejo, para que sus coeficientes
-sean reales. Con
+que el GPI \eqref{eq:aw_gpi} \cite[ec.~19.3]{levine2011handbook}. Con
 este escalón ninguno de los dos llega al límite del soplador: el pico del ADRC es
 de $80~\%$ sin retardo y de $93~\%$ con $\theta = 50$~s, y el del PID es de
 $80~\%$ en los dos casos. La Tabla~\ref{tab:pid_escalon} reúne las métricas de la
 Tabla~\ref{tab:metricas}: IAE, ITAE, $M_p$, $t_s$, los valores extremos de $u$, la variación total TV y
-$\sigma_u$, esta última en régimen.
+$\sigma_u$, esta última con el sistema en estacionario.
 
 \begin{figure}[H]
   \centering
@@ -113,13 +111,13 @@ $\sigma_u$, esta última en régimen.
  & $\boldsymbol{\theta}$ & \textbf{IAE} & \textbf{ITAE} & $\boldsymbol{M_p}$ & $\boldsymbol{t_s}$ &
  $\boldsymbol{u_{\max}}$ & $\boldsymbol{u_{\min}}$ &
  \textbf{TV} & $\boldsymbol{\sigma_u}$ & \textbf{TV} \\
- & [s] & [mg$\cdot$s/L] & [mg$\cdot$s$^2$/L] & [\%] & [s] & [\%] & [\%] & [\%] & [\%] & [\%] \\
+ & [s] & [mg$\cdot$s/L] & [mg$\cdot$s$^2$/L] & [\%] & [min] & [\%] & [\%] & [\%] & [\%] & [\%] \\
 \midrule
-ADRC & 0  & 26,9 & 6\,909  & 10,2 & 942    & 79,8 & 40,0 & 77  & 0,009 & 96 \\
-PID  & 0  & 69,2 & 40\,127 & 26,7 & 1\,972 & 80,0 & 40,0 & 84  & 0,220 & 13\,876 \\
+ADRC & 0  & 26,9 & 6\,909  & 10,2 & 15,7   & 79,8 & 40,0 & 77  & 0,009 & 96 \\
+PID  & 0  & 69,2 & 40\,127 & 26,7 & 32,9   & 80,0 & 40,0 & 84  & 0,220 & 13\,876 \\
 \midrule
-ADRC & 50 & 42,7 & 9\,308  & 44,6 & 879    & 92,8 & 29,0 & 142 & 0,010 & 158 \\
-PID  & 50 & 88,4 & 56\,567 & 36,4 & 2\,562 & 80,0 & 39,9 & 90  & 0,220 & 13\,873 \\
+ADRC & 50 & 42,7 & 9\,308  & 44,6 & 14,7   & 92,8 & 29,0 & 142 & 0,010 & 158 \\
+PID  & 50 & 88,4 & 56\,567 & 36,4 & 42,7   & 80,0 & 39,9 & 90  & 0,220 & 13\,873 \\
 \bottomrule
 \end{tabular}%
 }
@@ -135,8 +133,7 @@ PID, como ya era lento, no oscila tanto, pero tampoco tiene un buen desempeño y
 asentarse. De hecho, con el retardo de la planta los dos tienen casi el mismo margen de fase
 (Tabla~\ref{tab:pid_robustez}), pero el PID tiene un mayor margen de ganancia, pagando con un sistema
 más lento. Ahora bien, el desempeño del ADRC es mejor, con un IAE y un ITAE mucho menores, tanto sin
-retardo como con retardo y con la misma $M_s$; con retardo el PID queda con mejor $M_s$, pero paga con
-un desempeño muy pobre. El otro tema es el ruido: en la Figura~\ref{fig:pid_adrc_escalon} y en la
+retardo como con retardo y con la misma $M_s$; con retardo el PID queda con mejor $M_s$. El otro tema es el ruido: en la Figura~\ref{fig:pid_adrc_escalon} y en la
 Tabla~\ref{tab:pid_escalon} se ve que el ruido que alcanza a pasar a la señal de control es mucho mayor
 en el PID que en el ADRC.
 
@@ -144,7 +141,7 @@ en el PID que en el ADRC.
 \section{Perturbación de entrada}
 \label{sec:pid_perturbacion_escalon}
 
-Con el lazo en régimen en $2{,}0$~mg/L entra una perturbación de entrada $\varepsilon = -15~\%$, una
+Con el sistema en estacionario en $2{,}0$~mg/L entra una perturbación de entrada $\varepsilon = -15~\%$, una
 pérdida de eficiencia del soplador, sin retardo y con $\theta = 50$~s
 (Figura~\ref{fig:pid_adrc_perturbacion_escalon}). La Tabla~\ref{tab:pid_pert_escalon} reúne el IAE, la
 caída máxima del OD y cuánto se pasa la salida por encima de la consigna al recuperarse, en porcentaje
@@ -154,7 +151,7 @@ de la caída (Tabla~\ref{tab:metricas}).
   \centering
   \includegraphics[width=\textwidth]{pid_adrc_perturbacion_escalon.pdf}
   \caption[PID ISA contra ADRC: perturbación de entrada]{PID ISA contra ADRC ante una perturbación de
-    entrada $\varepsilon = -15~\%$ con el lazo en régimen en $2{,}0$~mg/L, el ruido del sensor y el soplador
+    entrada $\varepsilon = -15~\%$ con el sistema en estacionario en $2{,}0$~mg/L, el ruido del sensor y el soplador
     limitado entre $0$ y $100~\%$. (a) y (c) Salida y señal de control sin retardo; (b) y (d) con
     $\theta = 50$~s.}
   \label{fig:pid_adrc_perturbacion_escalon}
@@ -195,7 +192,7 @@ Para este caso el IAE es mejor en el ADRC, lo que se traduce en un mejor desempe
 \label{sec:pid_perturbacion}
 
 La perturbación total sintética se obtuvo a partir de los datos de M2 (Sección~\ref{sec:ident_perturbacion}),
-$\bar{\xi}(t) = \bar{\xi}_0 + c(t) + \eta(t)$ en mg/(L$\cdot$h), está evaluada en
+$\bar{\xi}(t) = \bar{\xi}_0 + c(t) + w(t)$ en mg/(L$\cdot$h), está evaluada en
 2,0~mg/L \eqref{eq:ident_xi2} y entra como perturbación de entrada en \% de
 $u$; la usaremos para validar el desempeño que tienen los controladores. 
 \begin{equation}
@@ -210,7 +207,7 @@ $0$~mg/L, con el soplador apagado, hasta 2,0~mg/L, cambio a 2,2~mg/L a las
 dibuja también la perturbación que estima el observador del ADRC, llevada a
 las mismas unidades que $\bar{\xi}$ (Figura~\ref{fig:pid_adrc_perturbacion}). La perturbación que se dibuja es
 $\bar{\xi}$, la que actúa sobre la salida, y por eso no tiene los cambios de consigna; el observador, en
-cambio, trabaja sobre el error y estima $\xi = \bar{\xi} - \dot{r}$, de modo que en su estimación aparecen
+cambio, trabaja sobre el error y estima $\xi = \bar{\xi} - \dot{y^*}$, de modo que en su estimación aparecen
 picos a las 4 y a las 8~h, justo en los cambios de consigna. Los resultados de las métricas se registran en la
 Tabla~\ref{tab:pid_cambios}.
 
@@ -218,7 +215,7 @@ Tabla~\ref{tab:pid_cambios}.
   \centering
   \includegraphics[width=\textwidth]{pid_adrc_perturbacion.pdf}
   \caption[PID ISA contra ADRC con la perturbación sintética]{PID ISA contra
-    ADRC con 12~h de la perturbación sintética de M2, arranque desde
+    ADRC con 12~h de la perturbación sintética de M2,solo arranque desde
     $0$~mg/L y cambios de consigna a las 4 y a las 8~h, con $\theta = 50$~s y
     el soplador limitado entre $0$ y $100~\%$, con el ruido del sensor.
     (a) Salida. (b) Señal de control. (c) Perturbación total sobre la salida $\bar{\xi}$, aplicada y
@@ -253,7 +250,7 @@ $2{,}2 \rightarrow 1{,}8$ & 8 & 281    & 581    & 281    & 581    & 18,5 & 53,7 
 
 En la perturbación sintética se alcanza a ver el mismo resultado. Con los mismos valores de
 robustez ($M_s$), el PID rechaza peor la perturbación y su IAE en las 12~h es mayor que el del ADRC,
-$2{,}23$ frente a $1{,}86$~mg$\cdot$h/L; la mayor parte de ese
+$8\,028$ frente a $6\,685$~mg$\cdot$s/L; la mayor parte de ese
 error sale del tramo de las 4 a las 6~h, donde el soplador se satura y ninguno de los dos puede
 sostener la consigna. Aun así, gracias a sus esquemas de anti-\emph{windup}, los dos controladores
 aguantan ese tramo saturados y, cuando la perturbación cede, el sistema vuelve a recuperar su
@@ -347,6 +344,6 @@ suave, sin el salto del PI ni del PID en el cambio de consigna (Figura~\ref{fig:
 Y en el ruido, el ADRC casi no lo deja pasar, mientras que el PI y el PID sí
 (Figura~\ref{fig:pid_mejores}(e) a (h)). La diferencia entre este ADRC y el PI está en su filtro en
 cascada: el ADRC se puede escribir como un PI con un filtro del error \eqref{eq:gpi_pi_filtro}, y es ese
-filtro el que no deja pasar el ruido. Además, el ADRC puede llegar a superarlo en seguimiento con solo
-subir el grado del modelo de la perturbación, tanto con el ESO como con el GPI
-(Tabla~\ref{tab:gpi_conteo}). 
+filtro el que no deja pasar el ruido. Además, el ADRC puede llegar a superarlo en seguimiento cuando la referencia es de mayor orden:
+con solo subir el grado del modelo de la perturbación se sigue mejor, tanto con el ESO como con el GPI
+(Tabla~\ref{tab:gpi_conteo}), y conceptualmente es más simple. 

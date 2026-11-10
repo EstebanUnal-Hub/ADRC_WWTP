@@ -30,7 +30,8 @@ CACHE = os.path.join(AQUI, 'maestra.pkl')
 pd.set_option('display.width', 200)
 pd.set_option('display.max_columns', 40)
 
-# Potencia del tablero de aireacion a plena carga (maximo del registro).
+# Potencia consumida por la aireacion a plena carga: percentil 99 del registro con el soplador
+# encendido, no el maximo (con el segundo soplador la potencia llega a 115-124 kW).
 # OJO: es potencia electrica, no la consigna del PLC.
 PMAX = {'M2': 106.3, 'M3': 110.1}
 MODS = ('M1', 'M2', 'M3')

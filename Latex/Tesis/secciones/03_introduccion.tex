@@ -20,7 +20,7 @@ Dentro de la operación de una PTAR, específicamente en el proceso de lodos
 activados, la concentración de oxígeno disuelto (OD) es uno de los parámetros
 críticos. Un nivel adecuado de OD es indispensable para el equilibrio
 microbiológico y la degradación de materia orgánica, con un valor de
-referencia de 2,0~mg/L y un rango de operación de 1,5 a 2,5~mg/L. Sin embargo,
+referencia de 2,0~mg/L. Sin embargo,
 su dinámica es altamente no lineal y con múltiples variaciones debido a factores
 como el clima, el caudal de entrada y la carga orgánica, o a factores de
 operación como el ruido en las señales de medida, la activación de sopladores
@@ -72,7 +72,7 @@ a la misma perturbación, obtenida y sintetizada a partir de los datos reales de
 pueden mejorar el desempeño transitorio, con una sintonización más sencilla y
 un menor movimiento de la señal de control que el PID convencional, sino que también son viables técnicamente para ser embebidas en
 la infraestructura de automatización existente, contribuyendo de esta forma a
-los Objetivos de Desarrollo Sostenible y a la investigación de técnicas de
+la investigación de técnicas de
 control emergentes que aún no son comunes a nivel industrial
 \cite{wei2022scalable,Sangregorio2023}.
 
@@ -95,11 +95,8 @@ ADRC en este lazo, bajo condiciones reales de operación, con variabilidad de
 carga e instrumentación limitada, permite validar su desempeño y su grado de
 robustez frente a la estrategia convencional.
 
-Este proyecto se justifica en su contribución ambiental, técnica y social:
-ambiental, porque mejora la eficiencia en la remoción de contaminantes y reduce
-el impacto sobre cuerpos de agua; técnica, por introducir una estrategia de
-control avanzada con alto potencial de replicabilidad; y social, al fortalecer
-la seguridad hídrica en este tipo de procesos y contribuir al cumplimiento de los ODS~6 y~11. Además, su
+Este proyecto se justifica en su contribución técnica por introducir una estrategia de
+control avanzada con alto potencial de replicabilidad. Además, su
 carácter innovador radica en llevar técnicas de control avanzado como el ADRC
 desde el ámbito teórico hacia una implementación práctica, como caso de
 estudio en un proceso de tratamiento de aguas residuales, generando evidencia a
@@ -119,27 +116,11 @@ evaluación comparativa de estrategias de control, porque captura las no
 linealidades y los acoplamientos hidráulicos típicos de un proceso de lodos
 activados real \cite{wei2020disturbance}.
 
-Como se ilustra en la Figura~\ref{fig:bsm1}, el BSM1 se divide en un
-biorreactor de cinco compartimientos y un clarificador secundario, con
-recirculación interna de nitratos y externa de lodos. Las unidades 1 y 2
-($1000\,\mathrm{m}^3$ cada una) son anóxicas y sostienen la desnitrificación;
-las unidades 3, 4 y 5 ($1333\,\mathrm{m}^3$ cada una) son aerobias y reciben
-aire. En este documento, al igual que en la PTAR del caso de estudio, solo se
-tiene en cuenta el tanque de aireación (tanque 5 del BSM1). El clarificador
-($6000\,\mathrm{m}^3$) se modela en diez capas según Takács
-\cite{takacs1991settler}, y la biología según el ASM1 \cite{henze1987asm1}.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.88\textwidth]{mode.png}
-    \caption[Estructura del BSM1]{Los cinco compartimientos del reactor
-    biológico, el clarificador secundario y los lazos de recirculación de
-    nitratos y lodos (adaptado de Wei et al. \cite{wei2020disturbance}). En la
-    PTAR de Tunja, aunque están presentes todas las etapas del proceso, el
-    reactor aerobio n.\textsuperscript{o}~5 es el de mayor interés para este
-    estudio, porque es el que permite una adaptación directa del modelo.}
-    \label{fig:bsm1}
-\end{figure}
+El BSM1 se divide en un biorreactor de cinco compartimientos, dos anóxicos y tres aerobios, y un
+clarificador secundario, con recirculación interna de nitratos y externa de lodos; el clarificador se
+modela en diez capas según Takács \cite{takacs1991settler}, y la biología según el ASM1
+\cite{henze1987asm1}. En este documento, al igual que en la PTAR del caso de estudio, solo se tiene en
+cuenta el tanque de aireación (tanque 5 del BSM1).
 
 \subsubsection*{Dinámica del oxígeno disuelto en el tanque 5}
 
@@ -153,32 +134,9 @@ Siguiendo a Wei et al. \cite{wei2020disturbance} y la descripción del BSM1
     \label{eq:intro_do}
 \end{equation}
 
-donde la tasa neta de consumo de oxígeno por la biomasa es
-
-\begin{equation}
-    r_{Z,5} = -\frac{1 - Y_{H}}{Y_{H}}\,\rho_{1}
-              - \frac{4{,}57 - Y_{A}}{Y_{A}}\,\rho_{3},
-    \label{eq:intro_rz5}
-\end{equation}
-
-con las velocidades de crecimiento aerobio de heterótrofos ($\rho_1$) y de
-autótrofos ($\rho_3$) del ASM1 \cite{henze1987asm1}:
-
-\begin{equation}
-    \rho_{1} = \mu_{H}\,\frac{S_{S}}{K_{S}+S_{S}}\,
-               \frac{\SOc}{K_{O,H}+\SOc}\,X_{B,H},
-    \qquad
-    \rho_{3} = \mu_{A}\,\frac{S_{NH}}{K_{NH}+S_{NH}}\,
-               \frac{\SOc}{K_{O,A}+\SOc}\,X_{B,A}.
-    \label{eq:intro_rho}
-\end{equation}
-
-El valor 4,57 es la demanda estequiométrica de oxígeno de la nitrificación
-(g~O$_2$ por g~N oxidado). La Tabla~\ref{tab:intro_variables} recoge el
-significado de las variables, la Tabla~\ref{tab:intro_parametros} los
-parámetros estequiométricos y cinéticos con sus valores, y la
-Tabla~\ref{tab:intro_operacion} las constantes del punto de operación del
-BSM1.
+donde $r_{Z,5}$ es la tasa neta de consumo de oxígeno por la biomasa, que en el BSM1 se calcula con
+el ASM1 \cite{henze1987asm1}. La Tabla~\ref{tab:intro_variables} recoge el significado de las
+variables.
 
 \begin{table}[H]
 \centering
@@ -196,62 +154,13 @@ $Q_4$, $Q_5$ & Caudal que entra y sale del tanque 5 & m$^3$/d \\ \hline
 $V_5$ & Volumen del tanque 5 & m$^3$ \\ \hline
 $S_O^{*}$ & Concentración de saturación de oxígeno & g~O$_2$/m$^3$ \\ \hline
 $r_{Z,5}$ & Tasa neta de consumo de oxígeno por la biomasa & g~O$_2$/(m$^3$\,d) \\ \hline
-$\rho_1$, $\rho_3$ & Crecimiento aerobio de heterótrofos y de autótrofos & g~DQO/(m$^3$\,d) \\ \hline
-$S_S$ & Sustrato fácilmente biodegradable & g~DQO/m$^3$ \\ \hline
-$S_{NH}$ & Nitrógeno amoniacal & g~N/m$^3$ \\ \hline
-$X_{B,H}$, $X_{B,A}$ & Biomasa heterótrofa y autótrofa activa & g~DQO/m$^3$ \\ \hline
-\end{tabular}
-\end{table}
-
-\begin{table}[H]
-\centering
-\caption{Parámetros estequiométricos y cinéticos del ASM1 usados en
-\eqref{eq:intro_rz5}--\eqref{eq:intro_rho} (valores del BSM1 a
-15~$^\circ$C \cite{alex2008bsm1}).}
-\label{tab:intro_parametros}
-\renewcommand{\arraystretch}{1.25}
-\small
-\begin{tabular}{|c|p{6.8cm}|c|c|}
-\hline
-\rowcolor[gray]{0.9}
-\textbf{Símbolo} & \textbf{Descripción} & \textbf{Valor} & \textbf{Unidad} \\ \hline
-$Y_H$ & Rendimiento heterótrofo & 0,67 & g~DQO/g~DQO \\ \hline
-$Y_A$ & Rendimiento autótrofo & 0,24 & g~DQO/g~N \\ \hline
-$\mu_H$ & Tasa máxima de crecimiento heterótrofo & 4,0 & d$^{-1}$ \\ \hline
-$\mu_A$ & Tasa máxima de crecimiento autótrofo & 0,5 & d$^{-1}$ \\ \hline
-$K_S$ & Semisaturación de sustrato & 10,0 & g~DQO/m$^3$ \\ \hline
-$K_{O,H}$ & Semisaturación de oxígeno, heterótrofos & 0,2 & g~O$_2$/m$^3$ \\ \hline
-$K_{NH}$ & Semisaturación de amonio & 1,0 & g~N/m$^3$ \\ \hline
-$K_{O,A}$ & Semisaturación de oxígeno, autótrofos & 0,4 & g~O$_2$/m$^3$ \\ \hline
-\end{tabular}
-\end{table}
-
-\begin{table}[H]
-\centering
-\caption{Constantes del punto de operación del tanque 5 usadas en el diseño
-($\SOc \approx 2$~g/m$^3$, influente constante del BSM1).}
-\label{tab:intro_operacion}
-\renewcommand{\arraystretch}{1.25}
-\small
-\begin{tabular}{|c|p{7.2cm}|c|c|}
-\hline
-\rowcolor[gray]{0.9}
-\textbf{Símbolo} & \textbf{Descripción} & \textbf{Valor} & \textbf{Unidad} \\ \hline
-$V_5$ & Volumen del tanque 5 & 1333 & m$^3$ \\ \hline
-$Q_4=Q_5$ & Caudal por el reactor ($Q_{in}+Q_r+Q_a$) & 92\,230 & m$^3$/d \\ \hline
-$S_O^{*}$ & Saturación de oxígeno & 8,0 & g/m$^3$ \\ \hline
-$S_{O,4}$ & Oxígeno en el tanque 4 & 2,63 & g/m$^3$ \\ \hline
-$S_S$ & Sustrato en el tanque 5 & 0,854 & g~DQO/m$^3$ \\ \hline
-$S_{NH}$ & Amonio en el tanque 5 & 0,866 & g~N/m$^3$ \\ \hline
-$X_{B,H}$ & Biomasa heterótrofa en el tanque 5 & 2561 & g~DQO/m$^3$ \\ \hline
-$X_{B,A}$ & Biomasa autótrofa en el tanque 5 & 150,5 & g~DQO/m$^3$ \\ \hline
-$\KLa$ & Aireación en el punto de operación (rango 0--240) & 141,7 & d$^{-1}$ \\ \hline
 \end{tabular}
 \end{table}
 
 La ecuación de la dinámica servirá solo como guía, para identificar las perturbaciones que pueden
 afectar el lazo de control y para analizar la estimación de la perturbación total realizada mediante el
-observador de estado extendido.
+observador de estado extendido; su desarrollo para la planta del caso de estudio está en la
+Sección~\ref{sec:car_modelo}.
 
 \subsection{Limitaciones del control convencional}
 
@@ -268,9 +177,10 @@ sobre-aireación permanente para mantener margen (ineficiencia energética)
 
 El Capítulo~\ref{cap:caracterizacion} añade a ese diagnóstico general una
 evidencia local y cuantitativa: en la planta estudiada, la ganancia incremental
-del lazo varía unas 4 veces entre ventanas de operación. Un PID de
-parámetros fijos no está mal sintonizado; está sintonizado para un punto de un
-rango que la planta recorre entero todos los días, por lo que requiere una resintonización cada vez.
+del lazo varía entre ventanas, es decir, cada vez que se trate de hacer una identificación
+práctica se pueden obtener diferentes valores en sus parámetros. Y un PID de
+parámetros fijos puede parecer que está mal sintonizado; está sintonizado para un punto de un
+rango que la planta recorre y varía todos los días, por lo que requiere una resintonización cada vez.
 
 
 
@@ -304,47 +214,24 @@ entra a la planta sumada a la entrada de control,
 \end{equation}
 
 de modo que la planta, vista desde $u$, es una cadena de $n$ integradores
-(Figura~\ref{fig:intro_perturbacion}). Como $u$ y $\bar{\xi}$ entran por el mismo
-punto (en la figura se toma $b_0 = 1$ para simplificar), si se conoce $\bar{\xi}$
+(Figura~\ref{fig:cadena_integradores}). Como $u$ y $\bar{\xi}$ entran por el mismo
+punto, si se conoce $\bar{\xi}$
 basta con restarla en $u$ para que la planta se comporte como los integradores
 puros; rechazar la perturbación consiste, por
 tanto, en estimar $\bar{\xi}$ y cancelarla antes de que llegue a la salida. Con la
 estimación $\hat{\bar{\xi}}$ que entrega el ESO, la ley de control linealizante es
 
 \begin{equation}
-    u(t) = \frac{u_0(t) - \hat{\bar{\xi}}(t)}{b_0}
+    u(t) = \frac{v(t) - \hat{\bar{\xi}}(t)}{b_0}
     \qquad\Longrightarrow\qquad
-    y^{(n)}(t) = u_0(t) + \big(\bar{\xi}(t) - \hat{\bar{\xi}}(t)\big) \;\approx\; u_0(t) ,
+    y^{(n)}(t) = v(t) + \big(\bar{\xi}(t) - \hat{\bar{\xi}}(t)\big) \;\approx\; u_0(t) ,
     \label{eq:intro_linealizante}
 \end{equation}
 
-donde $u_0$ es una nueva entrada virtual. Si la estimación es buena, el error
-$\bar{\xi}-\hat{\bar{\xi}}$ es pequeño y la planta, vista desde $u_0$, queda reducida a
+donde $v$ es una nueva entrada virtual. Si la estimación es buena, el error
+$\bar{\xi}-\hat{\bar{\xi}}$ es pequeño y la planta, queda reducida a
 $n$ integradores puros, que se controlan con una simple realimentación de
 estados.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[>=Stealth, thick, node distance=1.6cm,
-        bloque/.style={draw, minimum width=1.6cm, minimum height=1.0cm},
-        suma/.style={draw, circle, inner sep=0pt, minimum size=0.55cm}]
-        \node (u) {$u(t)$};
-        \node[suma, right=1.6cm of u] (s) {$+$};
-        \node[above=1.5cm of s] (xi) {$\bar{\xi}$};
-        \node[bloque, right=1.6cm of s] (int) {$\dfrac{1}{s^{n}}$};
-        \node[right=1.6cm of int] (y) {$y(t)$};
-        \draw[->] (u) -- node[pos=0.8, below] {\small $+$} (s);
-        \draw[->] (xi) -- node[pos=0.8, left] {\small $+$} (s);
-        \draw[->] (s) -- node[above] {$y^{(n)}(t)$} (int);
-        \draw[->] (int) -- (y);
-        \draw[dashed] ($(s)+(-1.0,-1.3)$) rectangle ($(int)+(1.2,1.0)$);
-        \node[anchor=south east] at ($(int)+(1.2,-1.3)$) {\small Planta};
-    \end{tikzpicture}
-    \caption[Forma canónica del ADRC]{Planta en la forma canónica del ADRC, con
-    $b_0 = 1$: la perturbación total $\bar{\xi}$ entra por el mismo punto que la
-    entrada de control $u$, seguida de una cadena de $n$ integradores.}
-    \label{fig:intro_perturbacion}
-\end{figure}
 
 \subsubsection*{ADRC basado en el error}
 
@@ -353,7 +240,7 @@ referencia $r$. Por otro lado, los bloques de control industriales, en cambio, s
 reciben el error de seguimiento, igual que un PID. Herbst y Madoński
 \cite{herbst2024adrc} muestran que el ADRC puede reescribirse para que el
 observador trabaje directamente sobre el error $e = y - r$, como se ve en la
-Figura~\ref{fig:intro_eadrc} (Se aclara que Herbst y Madoński toman el error al contrario, $e = r - y$, pero en las secciones de diseño se tomará como $e = y - r$, es decir, con la referencia negativa).
+Figura~\ref{fig:adrc} del Capítulo~\ref{cap:ADRC-ESO} (Se aclara que Herbst y Madoński toman el error al contrario, $e = r - y$, pero en las secciones de diseño se tomará como $e = y - r$, es decir, con la referencia negativa).
 
 El funcionamiento se explica de la siguiente forma: el ESO recibe el error $e$ y la señal de control
 realmente aplicada $u_{\text{lim}}$ (después del limitador), y con ellas
@@ -366,69 +253,6 @@ el error a cero y cancela la perturbación estimada, y el bloque $1/\bo$ la
 convierte en la señal física $u$. Como el observador se alimenta con
 $u_{\text{lim}}$, la saturación del actuador no hace que la estimación se
 desvíe, es decir que este tipo de controlador ya viene con un manejo de saturación incorporado, un anti-windup natural. 
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}[>=Stealth, thick, font=\small,
-        blq/.style={draw, fill=white, minimum width=1.0cm, minimum height=0.75cm},
-        sum/.style={draw, fill=white, circle, inner sep=0pt, minimum size=0.32cm},
-        pto/.style={circle, fill, inner sep=0pt, minimum size=3.5pt}]
-        % fondos
-        \fill[brown!15, rounded corners=6pt]
-            (0.0,-1.55) -- (8.75,-1.55) -- (8.75,3.65) -- (2.05,3.65)
-            -- (2.05,4.95) -- (0.0,4.95) -- cycle;
-        \fill[gray!30, rounded corners=6pt] (1.15,-0.4) rectangle (8.45,3.05);
-        \node[anchor=south east] at (8.4,-0.35) {\textbf{ESO}};
-        \node[anchor=south west] at (2.0,-1.5) {\textbf{ADRC basado en el error}};
-        % camino directo
-        \node[blq] (ib0) at (1.0,4.2) {$\dfrac{1}{\bo}$};
-        \node[blq, minimum width=1.6cm] (lim) at (4.0,4.2) {Limitador};
-        \node[pto] (pul) at (5.5,4.2) {};
-        \node[blq, minimum width=1.6cm] (pl) at (7.55,4.2) {Planta};
-        \node[pto] (py) at (9.4,4.2) {};
-        \node (y) at (10.4,4.2) {$y(t)$};
-        \draw[->] (ib0) -- node[above] {$u(t)$} (lim);
-        \draw (lim) -- (pul);
-        \draw[->] (pul) -- node[above] {$u_{\text{lim}}(t)$} (pl);
-        \draw[->] (pl) -- (y);
-        % error
-        \node[sum] (se) at (9.4,2.4) {};
-        \draw[->] (py) -- (se);
-        \node (r) at (-0.6,4.6) {$r(t)$};
-        \draw[->] (r) -- (-0.3,4.6) -- (-0.3,-1.9) -- (9.4,-1.9)
-            -- node[pos=0.95, right] {$-$} (se);
-        % ESO
-        \node[sum] (s2) at (7.6,2.4) {};
-        \node[blq] (l) at (5.3,2.4) {$\boldsymbol{l}$};
-        \node[blq] (b) at (1.9,1.3) {$\boldsymbol{b}$};
-        \node[sum] (s1) at (3.3,1.3) {};
-        \node[blq] (int) at (4.6,1.3) {$\displaystyle\int$};
-        \node[pto] (px) at (6.0,1.3) {};
-        \node[blq] (c) at (7.6,1.3) {$\boldsymbol{c}^{\top}$};
-        \node[blq] (A) at (4.6,0.15) {$\boldsymbol{A}$};
-        \node[pto] (pa) at (6.0,0.15) {};
-        \draw[->] (se) -- node[above] {$e(t)$} (s2);
-        \draw[->] (s2) -- (l);
-        \draw[->] (l) -- (3.3,2.4) -- (s1);
-        \draw[->] (pul) -- (5.5,3.35) -- (1.9,3.35) -- (b);
-        \draw[->] (b) -- node[pos=0.8, below] {$-$} (s1);
-        \draw[->] (s1) -- (int);
-        \draw (int) -- node[above] {$\hat{\boldsymbol{x}}(t)$} (px);
-        \draw[->] (px) -- (c);
-        \draw[->] (c) -- node[pos=0.8, right] {$-$} (s2);
-        \draw (px) -- (pa);
-        \draw[->] (pa) -- (A);
-        \draw[->] (A) -- (3.3,0.15) -- (s1);
-        % realimentacion
-        \node[blq] (k) at (1.0,-1.0) {$(\boldsymbol{k}^{\top}\;\;1)$};
-        \draw[->] (pa) -- (6.0,-1.0) -- (k);
-        \draw[->] (k) -- (ib0);
-    \end{tikzpicture}
-    \caption[ADRC basado en el error]{Estructura del ADRC basado en el error:
-    el ESO solo recibe el error $e = y - r$ y la señal aplicada
-    $u_{\text{lim}}$ (adaptado de Herbst y Madoński \cite{herbst2024adrc}).}
-    \label{fig:intro_eadrc}
-\end{figure}
 
 \subsection{Control GPI (A Flat Filtering Approach)}
 
@@ -518,7 +342,7 @@ recopilan las equivalencias ya conocidas entre el ADRC y otras estructuras,
 como los filtros planos y el PID. Siguiendo la línea de la equivalencia entre
 el ADRC y los filtros planos, en este trabajo se busca la correspondencia entre el GPI construido con
 reconstructores integrales y el ADRC con ESO, es decir, el cambio de
-ganancias de $(\wc,\wo)$ a $(k_0,k_1,k_2)$ y de vuelta. Ambas son formas
+ganancias de $(\wc,\wo)$ a $(k_0,k_1,k_2)$. Ambas son formas
 equivalentes que solo difieren en su implementación y en el manejo de la
 saturación, y se explora cómo integrar las dos estructuras en un solo bloque de
 PLC que pueda configurarse como cualquiera de ellas.
@@ -595,7 +419,7 @@ central.
 \end{tabular}
 \end{table}
 
-\subsection{Métricas de desempeño}
+\subsection{Métricas de desempeño y robustez}
 \label{subsec:metricas}
 
 Para comparar los controladores a lo largo del documento se usan las métricas clásicas de desempeño y
@@ -624,8 +448,32 @@ $t_s$ & menor $t_s$ con $|e(t)| \le 0{,}02\,|\Delta r|$ para todo $t \ge t_0 + t
 $u_{\max}$, $u_{\min}$ & $\max_t\,u(t)$, \ $\min_t\,u(t)$ & Valores extremos de la señal de control. \\
 $E_u$ & $\displaystyle\int_{t_0}^{t_f} \bigl(u(t) - u_\infty\bigr)^2\,dt$ & Energía de la señal de control respecto a su valor final. \\
 TV & $\displaystyle\sum_k \bigl|u[k] - u[k-1]\bigr|$ & Variación total, el recorrido del actuador; TV/h, por hora. \\
-$\sigma_u$ & $\operatorname{std}\bigl(u_{\text{con ruido}} - u_{\text{sin ruido}}\bigr)$ en régimen & Ruido del sensor que llega a la señal de control. \\
+$\sigma_u$ & $\operatorname{std}\bigl(u_{\text{con ruido}} - u_{\text{sin ruido}}\bigr)$ en estacionario & Ruido del sensor que llega a la señal de control. \\
 $\sigma_{\Delta u}/\sqrt{2}$ & $\operatorname{std}\bigl(u[k] - u[k-1]\bigr)/\sqrt{2}$ & Movimiento de $u$ de una muestra a la siguiente. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Para la robustez se usan las métricas clásicas de la Tabla~\ref{tab:metricas_robustez}, calculadas
+sobre el lazo abierto $G_L(s) = C(s)\,G(s)$, con la planta $G(s)$ y el controlador $C(s)$;
+$\omega_{gc}$ es el cruce de ganancia y $\omega_{pc}$, el cruce de fase.
+
+\begin{table}[H]
+\centering
+\caption{Métricas de robustez usadas en el documento.}
+\label{tab:metricas_robustez}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}l>{\centering\arraybackslash}p{6.0cm}>{\raggedright\arraybackslash}p{7.0cm}@{}}
+\toprule
+\textbf{Métrica} & \textbf{Definición} & \textbf{Qué mide} \\
+\midrule
+MF & $180^{\circ} + \angle G_L(j\omega_{gc})$, \newline con $|G_L(j\omega_{gc})| = 1$ & Margen de fase: la fase que puede perder el lazo antes de volverse inestable. \\
+MG & $1/|G_L(j\omega_{pc})|$, \newline con $\angle G_L(j\omega_{pc}) = -180^{\circ}$ & Margen de ganancia: cuánto puede crecer la ganancia del lazo. \\
+$\theta_{\max}$ & $\dfrac{\pi}{180^{\circ}}\,\dfrac{\mathrm{MF}}{\omega_{gc}}$ & Retardo máximo que aguanta el lazo. \\
+$M_s$ & $\max_{\omega}\,|S(j\omega)|$, \newline con $S(s) = 1/\bigl(1 + G_L(s)\bigr)$ & Pico de la sensibilidad; entre más bajo, más robusto. \\
+$M_t$ & $\max_{\omega}\,|T(j\omega)|$, \newline con $T(s) = G_L(s)/\bigl(1 + G_L(s)\bigr)$ & Pico de la sensibilidad complementaria; resonancia del lazo cerrado. \\
+$\omega_{BW}$ & $|T(j\omega)| < 1/\sqrt{2}$ para $\omega > \omega_{BW}$ & Ancho de banda del lazo cerrado ($-3$~dB); qué tan rápido es el lazo. \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -650,18 +498,13 @@ no lineal, incierto en algunos parámetros y está sometido a perturbaciones com
 orgánica, la activación de sopladores y el ruido en las señales de medida, y
 debe mantenerse en un rango de operación de 1,5 a 2,5~mg/L. Por ende, un PID
 convencional ISA sintonizado empíricamente puede resultar en una regulación
-imprecisa del OD, un consumo energético
-ineficiente y un mayor riesgo de incumplir los parámetros de vertimiento. Es
+imprecisa del OD y un consumo energético
+ineficiente.  Es
 decir, el problema no es solo mejorar la regulación del OD, sino demostrar que
 algoritmos de control más avanzados pueden implementarse en un PLC, competir
 directamente contra el PID y ofrecer algunas ventajas dadas por su estructura,
 su forma de sintonización y su funcionamiento.
 
-Finalmente, mejorar este lazo tiene un impacto que va más allá del control: el
-agua es un recurso esencial para la vida y el desarrollo sostenible, y su
-disponibilidad y calidad se ven comprometidas por la contaminación y el cambio
-climático. En ese marco, las PTAR desempeñan un papel fundamental en la
-recuperación del recurso hídrico.
 
 \section{Objetivos}
 \label{sec:objetivos}
@@ -739,18 +582,5 @@ y a los objetivos específicos (Tabla~\ref{tab:metodologia}).
 \end{tabular}
 \end{table}
 
-\section{Estructura del documento}
-\label{sec:estructura}
-
-El Capítulo~\ref{cap:caracterizacion} presenta la planta, su modelo y la identificación a partir de los
-datos de operación, junto con la caracterización de las perturbaciones y del ruido del sensor. El
-Capítulo~\ref{cap:ADRC-ESO} desarrolla el ADRC con observador de estado extendido sobre el error de
-seguimiento, en el caso general y en el caso de la planta, y el Capítulo~\ref{cap:GPI} hace lo mismo con
-el GPI y muestra su equivalencia con el ADRC. El Capítulo~\ref{cap:implementacion} reúne los aspectos
-prácticos de implementación: saturación, acondicionamiento de la referencia, ruido, discretización, retardo
-y PLC. El Capítulo~\ref{cap:comparacion_pid} compara el ADRC con un PID ISA, el
-Capítulo~\ref{cap:discusion} discute los resultados y el Capítulo~\ref{cap:conclusiones} presenta las
-conclusiones. Los anexos contienen los bloques de función en texto estructurado, la equivalencia ESO--GPI
-paso a paso y el mapa de código y datos.
 
 

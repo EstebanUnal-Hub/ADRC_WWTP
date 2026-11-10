@@ -1,0 +1,99 @@
+% ============================================================================
+%  Capítulo 8 — Conclusiones
+% ============================================================================
+\chapter{Conclusiones}
+\label{cap:conclusiones}
+
+\section{Conclusiones por objetivo}
+
+\textbf{OE1 --- Caracterizar las perturbaciones.} Con los 22 meses de datos de operación y los
+escalones del soplador se obtuvo el espectro de $b_0$ y de los demás parámetros de la planta, que
+cambian de una ventana a otra y entre la subida y la bajada del oxígeno (Figura~\ref{fig:ident_pob});
+esa variación también hace parte de la perturbación que el controlador debe rechazar. Aun así, con la
+planta recorriendo ese rango y el controlador fijo, el lazo sigue funcionando adecuadamente
+(Figura~\ref{fig:adrc_variacion}), es decir, el controlador no necesita una identificación tan precisa
+de la planta para funcionar.
+
+\textbf{OE2 --- Diseñar un GPI robusto sobre el error.} El GPI de orden $n=1$, $m=1$ quedó diseñado y
+discretizado, con un esquema de \emph{anti-windup} deducido de sus propias ganancias que elimina el
+sobrepaso por saturación (Figura~\ref{fig:sat_arranque}). Soporta las variaciones de $b_0$ y del retardo
+probadas, una a la vez, sin desestabilizarse (Figura~\ref{fig:sat_adrc_gpi_variacion}), y se puede
+sintonizar por anchos de banda o directamente con $k_0$, $k_1$ y $k_2$, como un PI con filtro del error
+\eqref{eq:gpi_pi_filtro}.
+
+\textbf{OE3 --- Diseñar un ADRC basado en ESO sobre el error.} El controlador quedó sintonizado con
+criterio físico en sus dos perillas: $\wc = 4/\tau$, cuatro veces más rápido que la planta en lazo
+abierto, y $\wo = 5\,\wc$, por encima de la energía de la perturbación y por debajo del límite que ponen
+el ruido del sensor y el retardo. Con el retardo de diseño el lazo sigue siendo estable, aunque con
+menos margen de fase y más sobrepico (Figura~\ref{fig:adrc_margenes_retardo}).
+
+\textbf{OE4 --- Metodología de implementación en PLC.} Se documentó una metodología de sintonía y uso
+(Sección~\ref{sec:impl_resumen}) con bloques de función en texto estructurado formulados sobre el error,
+que reciben las mismas señales que el PID y lo sustituyen sin modificar la arquitectura del lazo
+(Anexo~\ref{anx:st}). Los dos controladores, con el manejo de la saturación, la curva de Bézier y el
+prefiltro, se ejecutaron en plataformas basadas en CODESYS (Figura~\ref{fig:plc_codesys}).
+
+\textbf{OE5 --- Validación frente a un PID convencional.} La validación se hizo en simulación, con la
+planta identificada, y no en campo (Sección~\ref{sec:limitaciones}). Frente a un PID ISA con el mismo
+salto inicial de la señal de control y la misma sensibilidad máxima sin retardo, el ADRC sigue mejor la
+consigna, rechaza mejor la perturbación de entrada y deja pasar mucho menos ruido al soplador
+(Tablas~\ref{tab:pid_escalon} y \ref{tab:pid_pert_escalon}). El PID solo queda mejor en robustez con retardo, a cambio de menos
+de un tercio del ancho de banda (Tabla~\ref{tab:pid_robustez}).
+
+\section{Conclusión general}
+
+Para este proceso, y con las ganancias correspondientes, el GPI y el ADRC con ESO son el mismo
+controlador escrito de dos maneras; lo que cambia es la forma de sintonizarlos y su esquema de
+saturación. Su ventaja frente al PID no está estrictamente en el IAE, ya que un PI con el mismo margen
+de fase rechaza la perturbación con menos error (Figura~\ref{fig:pid_mejores}), sino en el precio que
+cada uno paga por ese IAE: el ADRC lo logra con una señal de control que arranca suave y casi sin ruido,
+con el seguimiento y el rechazo sintonizados por separado con dos anchos de banda, y con la posibilidad
+de subir el orden del modelo de la perturbación sin cambiar su estructura. Además, se llegó a una
+metodología y a unos aspectos prácticos para ponerlos en marcha en lugar del PID, en plataformas basadas
+en CODESYS.
+
+\section{Aportes principales}
+
+\begin{enumerate}
+
+  \item \textbf{Controladores de rechazo activo diseñados sobre los datos de una planta en operación.}
+  El ADRC y el GPI tienen ventajas conocidas en el manejo del ruido y en una sintonía ligada a los anchos
+  de banda de la planta y de la perturbación, pero se ven poco en procesos industriales, donde el PID
+  sigue siendo el estándar. Aquí se diseñaron y se llevaron a un PLC a partir de la planta y de las
+  perturbaciones identificadas en una PTAR en operación.
+
+  \item \textbf{La equivalencia ESO--GPI, también en discreto y con saturación.} La equivalencia
+  \eqref{eq:eso2gpi} se mantiene en tiempo continuo, en discreto y con saturación, al elegir el
+  \emph{anti-windup} del GPI con los polos del observador (Figuras~\ref{fig:gpi_vs_adrc},
+  \ref{fig:sat_arranque} y \ref{fig:gpi_discreto_vs_adrc}).
+
+  \item \textbf{Bloques para PLC y sus aspectos prácticos de implementación.} Códigos en texto
+  estructurado según la norma IEC~61131-3, verificados en CODESYS (Anexo~\ref{anx:st}), junto con lo que
+  se debe considerar al integrarlos en un entorno industrial: el manejo de la saturación, el
+  acondicionamiento de la referencia y el ruido del sensor (Sección~\ref{sec:impl_resumen}).
+
+\end{enumerate}
+
+\section{Trabajo futuro}
+
+\begin{enumerate}
+
+  \item \textbf{Puesta en marcha y operación prolongada en campo.} Con los esquemas simulados y los
+  códigos listos, falta ponerlos en marcha y observarlos en lazo cerrado durante meses: con lluvias y
+  cambios de caudal que modifican la biología de la planta, con cambios en los actuadores, como difusores
+  o sopladores nuevos, que cambian la ganancia, y con las posibles zonas muertas de los motores.
+
+  \item \textbf{Reducción del esfuerzo de control.} En el esquema sobre el error, ante un escalón de
+  consigna el controlador debe compensar su derivada, que es un impulso, y la señal de control da un
+  salto grande. Aquí se redujo con Bézier y con el prefiltro; otra forma es un \emph{clutch} que no
+  inyecte todo ese esfuerzo a la planta \cite{quecan2026clutch}.
+
+  \item \textbf{Modelos de perturbación de orden mayor.} Llevar a bloques implementables en PLC modelos
+  de perturbación con $m > 1$, para seguir rampas o señales oscilatorias sin error de seguimiento; la
+  teoría existe, y el esfuerzo está en facilitar su implementación.
+
+  \item \textbf{Implementación analógica en circuitos dedicados.} Validar estos controladores en un
+  circuito integrado de señal mixta (ASIC), con una parte digital para la interacción con el usuario y
+  el ajuste de las ganancias por software, y una realización del controlador completamente analógica.
+
+\end{enumerate}

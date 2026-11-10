@@ -1,0 +1,71 @@
+% ============================================================================
+%  Lista de símbolos y abreviaturas
+% ============================================================================
+\chapter*{Lista de Símbolos y Abreviaturas}
+\addcontentsline{toc}{chapter}{Lista de Símbolos y Abreviaturas}
+\markboth{Lista de Símbolos y Abreviaturas}{Lista de Símbolos y Abreviaturas}
+
+\section*{Siglas y abreviaturas}
+
+\begin{longtable}{p{2.6cm}p{12.5cm}}
+ADRC & Control con rechazo activo de perturbaciones (\textit{active disturbance rejection control}). \\
+ARX & Modelo autorregresivo con entrada exógena (\textit{autoregressive with exogenous input}). \\
+ASM1 & Modelo de lodos activados n.\textsuperscript{o}~1 de la IWA. \\
+BSM1 & \textit{Benchmark Simulation Model} n.\textsuperscript{o}~1 de la IWA. \\
+eADRC & ADRC formulado sobre el error de seguimiento (\textit{error-based ADRC}). \\
+ESO & Observador de estado extendido (\textit{extended state observer}). \\
+GPI & Control proporcional-integral generalizado. \\
+IAE / ITAE & Integral del error absoluto / absoluto ponderado por el tiempo. \\
+IWA & \textit{International Water Association}. \\
+MPC & Control predictivo basado en modelo. \\
+OD & Oxígeno disuelto. \\
+OE1--OE5 & Objetivos específicos 1 a 5 de este trabajo. \\
+PID / PI & Controlador proporcional-integral-derivativo / proporcional-integral. \\
+PLC & Controlador lógico programable. \\
+PTAR & Planta de tratamiento de aguas residuales. \\
+SCADA & Sistema de supervisión, control y adquisición de datos. \\
+ST & Texto estructurado (lenguaje de la norma IEC 61131-3). \\
+UASB & Reactor anaerobio de flujo ascendente (\textit{upflow anaerobic sludge blanket}). \\
+ZOH & Retenedor de orden cero (\textit{zero-order hold}). \\
+\end{longtable}
+
+\section*{Símbolos del proceso}
+
+\begin{longtable}{p{2.6cm}p{12.5cm}}
+$S_{O,i}$ & Concentración de oxígeno disuelto en el reactor $i$ [mg/L o g/m$^3$]. \\
+$S_O^{*}$ & Concentración de saturación de oxígeno; 8~g/m$^3$ en el BSM1. \\
+$\KLa$ & Coeficiente de transferencia de oxígeno del reactor 5 [d$^{-1}$]; variable manipulada en el BSM1. \\
+$r_{Z,5}$ & Tasa neta de respiración biológica en el reactor 5 [g/(m$^3\cdot$d)]. \\
+$V_i$ & Volumen del reactor $i$ [m$^3$]. \\
+\end{longtable}
+
+\section*{Símbolos del control}
+
+\begin{longtable}{p{2.6cm}p{12.5cm}}
+$y$ & Salida medida: oxígeno disuelto según el sensor instalado [mg/L]. \\
+$r$ & Referencia de oxígeno disuelto [mg/L]. \\
+$e$ & Error de seguimiento; en el texto $e_y = y-r$ y $e = r-y$ se distinguen explícitamente. \\
+$u$ & Señal de control en unidades del PLC [\% de consigna del soplador]. \\
+$u_0$ & Señal de control virtual, antes de dividir por $\bo$. \\
+$\varepsilon$ & Perturbación a la entrada de la planta, en las mismas unidades de $u$ [\%]. \\
+$\eta$ & Ruido de medida del sensor de OD, sumado a la salida [mg/L]. \\
+$\bar{\varepsilon}$ & Perturbación equivalente a la entrada: $\varepsilon$ más la dinámica de la planta que no es un integrador; en primer orden, $\bar{\varepsilon} = \varepsilon - y/k_{dc}$ [\%]. \\
+$\bar{\xi}$ & Perturbación total sobre la salida: todo lo que mueve $\dot y$ y no es $\bo u$, $\bar{\xi} = \bo\,\bar{\varepsilon}$ [mg/(L$\cdot$h)]. \\
+$\xi$ & Perturbación total vista desde el error, $\xi = \bar{\xi} - u^*$; con referencia constante, $\xi = \bar{\xi}$ [mg/(L$\cdot$h)]. \\
+$\hat{\xi},\ \hat{y}$ & Estimaciones del observador de la perturbación total y de la salida. \\
+$\bar{\xi}_0,\ c(t),\ w(t)$ & Nivel, ciclo diario y parte aleatoria de la perturbación total sintética, $\bar{\xi} = \bar{\xi}_0 + c + w$. \\
+$\sigma_w,\ \tau_w$ & Desviación y constante de tiempo de la parte aleatoria $w$. \\
+$\bo$ & Ganancia de alta frecuencia del modelo $\dot y=\bar{\xi}+\bo u$ [mg/L/(\%$\cdot$h)]. \\
+$K$ & Ganancia estática incremental [mg/L por punto de señal de control]. \\
+$\tau$ & Constante de tiempo del lazo abierto [min]. \\
+$\theta$ & Retardo de transporte y de medida [s]. \\
+$\wc$ & Ancho de banda del lazo cerrado (polo del controlador) [rad/s o h$^{-1}$]. \\
+$\wo$ & Ancho de banda del observador [rad/s, h$^{-1}$ o d$^{-1}$]. \\
+$L=[l_1\ l_2]^{\!\top}$ & Ganancias del observador de estado extendido. \\
+$k_0,k_1,k_2$ & Ganancias del controlador GPI. \\
+$K_p,\,T_i,\,T_d,\,N$ & Ganancia, tiempo integral, tiempo derivativo y filtro de la derivada del PID. \\
+$E_1(s)$ & Polinomio mónico estable del esquema de anti-\emph{windup}. \\
+$\Ts$ & Periodo de muestreo [s]. \\
+$\sigma(u)$ & Desviación típica de la señal de control; medida de esfuerzo. \\
+MG, MF & Margen de ganancia, como factor, y margen de fase [grados]. \\
+\end{longtable}
