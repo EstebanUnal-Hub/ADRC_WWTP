@@ -2239,8 +2239,8 @@ regla es la misma en todos: la variable debe conservar su valor entre ciclos, po
 bloque de función o en un programa y no en una función; se lee antes de escribirla, y en una cadena
 de retardos se actualiza primero el más viejo. La norma define los lenguajes textuales, como ST, y
 los gráficos FBD y LD, además de SFC para organizar secuencias; el CFC no hace parte de la norma,
-sino que es un editor gráfico que CODESYS, y por lo tanto ctrlX PLC, ofrece como extensión del FBD
-\cite{codesysHelp}. La Tabla~\ref{tab:plc_lenguajes} muestra cómo se hace el retardo en cada uno. En
+sino que es un editor gráfico que CODESYS, y por lo tanto ctrlX PLC, ofrece como extensión del FBD.
+La Tabla~\ref{tab:plc_lenguajes} muestra cómo se hace el retardo en cada uno. En
 este trabajo se usó ST para los bloques y CFC solo para visualizarlos.
 
 \begin{table}[H]
@@ -2301,8 +2301,8 @@ SFC, derivado del GRAFCET &
     \node[right] at (1.075,-0.75) {RESET};
   \end{tikzpicture} &
   Organiza la secuencia, no calcula: el retardo va dentro de la acción de la etapa, escrita en ST,
-  FBD o LD. Con el calificador \texttt{N} la acción corre mientras la etapa esté activa
-  \cite{codesysHelp}. Las etapas pueden ser las de la Figura~\ref{fig:plc_estados}. \\
+  FBD o LD. Con el calificador \texttt{N} la acción corre mientras la etapa esté activa.
+  Las etapas pueden ser las de la Figura~\ref{fig:plc_estados}. \\
 \bottomrule
 \end{tabular}
 \end{table}
