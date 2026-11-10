@@ -1786,13 +1786,12 @@ v[k] = {} & \frac{\beta_0\,x[k] + \beta_1\,x[k-1] + \beta_2\,x[k-2]}{b_0}
 \label{eq:disc_gpi_fd1}
 \end{equation}
 Son seis retardos y un solo sumador. Los estados son señales del lazo, con
-rangos conocidos, y se pueden inicializar al arrancar. Hay que trabajar en doble precisión (LREAL en el PLC, de 64 bits, y no REAL de 32 bits): con $T_s = 50$~ms los polos de
+rangos conocidos, y se pueden inicializar al arrancar. Conviene trabajar en doble precisión (LREAL en el PLC, de 64 bits, y no REAL de 32 bits): con $T_s = 50$~ms los polos de
 $E_1(z)$ están en $|z| = 0{,}99908$ con las ganancias y en $0{,}99917$ (polo doble) con el
 observador, y $1 + \alpha_1 + \alpha_2$ vale $9{,}7\times10^{-7}$ y $6{,}9\times10^{-7}$; por
 eso $\alpha_1$ y $\alpha_2$ llevan ocho decimales: un REAL guarda unas siete cifras, y con él esa
 suma cambia varios por ciento. El controlador funcionaría de igual forma, pero su dinámica diferiría
-un poco de la del diseño, y más cuando las ganancias son muy pequeñas frente al periodo de
-muestreo, como en este caso.
+un poco de la del diseño, y más cuando las ganancias son muy pequeñas, como en este caso.
 
 \begin{figure}[H]
   \centering
@@ -1920,7 +1919,7 @@ r_f[k] = -\alpha_f\,r_f[k-1] + \beta_f\,\bigl(r[k] + r[k-1]\bigr),
 e_y[k] = y[k] - r_f[k] .
 \label{eq:disc_pref_dif}
 \end{equation}
-Con $T_s = 50$~ms, $\beta_f$ es del orden de $10^{-5}$, así que hay que trabajar en doble precisión
+Con $T_s = 50$~ms, $\beta_f$ es del orden de $10^{-5}$, así que conviene trabajar en doble precisión
 (LREAL), como en el GPI.
 
 La Figura~\ref{fig:disc_prefiltro_retardo} muestra el cambio de consigna con el prefiltro discreto, con
