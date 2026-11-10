@@ -49,7 +49,7 @@ Las rutas son relativas a la carpeta `PTAR/`.
   `Simulaciones/PTAR/02 Diseño/Python/ADRC_PTAR_discreto.ipynb`.
 - Los dos cuadernos buscan la carpeta `PTAR/` al arrancar (primeras líneas de la celda de
   importaciones), así que sus rutas siguen siendo relativas a `PTAR/` aunque estén en otra carpeta.
-- **P&ID (Figura 2.1)**: `P&ID/P&ID.vsdx`, exportado a `P&ID/PLANOS BANCO FINAL.pdf` y copiado como
+- **P&ID (Figura 2.1)**: `P&ID/P&ID.vsdx`, exportado a `P&ID/P&ID.pdf` y copiado como
   `figuras/pid_ptar.pdf`. El P&ID usa el lazo 100 (OD) y los lazos 101 y 102 (caudales).
 - **Bloques del PLC**: `PLC_ST/Codigos/`; la librería documentada para ctrlX está en
   `PLC_ST/Libreria_ADRC/`.

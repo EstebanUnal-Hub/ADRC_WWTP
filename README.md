@@ -72,7 +72,7 @@ a plant model and compared in simulation with an ISA PID of the same robustness.
 | [`Documentos/`](Documentos/) | Thesis proposal, the bibliography spreadsheet and the author's notes 00–05 (equations of the plant, ADRC theory, digital ADRC on a DC motor, ADRC on the ASM model). |
 | [`Latex/Tesis/`](Latex/Tesis/) | `main.tex`, `secciones/` (one file per chapter), `figuras/`, `references.bib` and `main.pdf`. Its [README](Latex/Tesis/README.md) (Spanish) tells which notebook cell produces each figure and number. |
 | [`Latex/Tesis_simple/`](Latex/Tesis_simple/) | Same structure and the same data in fewer pages: tighter spacing, condensed text and a few figures left out. Its [README](Latex/Tesis_simple/README.md) lists the differences. |
-| [`P&ID/`](P%26ID/) | `P&ID.vsdx` (Visio) and `PLANOS BANCO FINAL.pdf`, used as Figure 2.1 of the thesis; `Guias/`: ISA-5.1 drawing guides. |
+| [`P&ID/`](P%26ID/) | `P&ID.vsdx` (Visio) and `P&ID.pdf`, used as Figure 2.1 of the thesis; `Guias/`: ISA-5.1 drawing guides. |
 | [`PLC_ST/Codigos/`](PLC_ST/Codigos/) | `ADRC_ESO`, `GPI`, `ADRC_GPI`, `PREFILTER_ADRC`, `PREFILTER_GPI`, `BEZIER_REF` and `PLANT` (section 7). |
 | [`PLC_ST/Libreria_ADRC/`](PLC_ST/Libreria_ADRC/) | Same code with the documentation shown by the ctrlX Library Manager; `_Images/` has the equations, block diagrams and CFC wiring of each block. |
 | [`PLC_ST/Library_platform/`](PLC_ST/Library_platform/) | `Library/ADRC.library` and `ADRC.compiled-library` (the ADRC library) and `Example/ADRC_Module.project`. |
