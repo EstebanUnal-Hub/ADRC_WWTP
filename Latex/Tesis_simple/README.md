@@ -59,7 +59,8 @@ Las rutas son relativas a la carpeta `PTAR/`.
   el prefiltro con la planta, en la última celda):
   `Simulaciones/PTAR/02 Diseño/Python/ADRC_PTAR_continuo.ipynb`. En las Figuras 6.4 y 6.5 el
   simulador no deja bajar el OD de 0 mg/L.
-- **Discretización** (Bode de los métodos, ADRC y GPI discretos con retardo):
+- **Discretización** (Bode de los métodos, ADRC y GPI discretos con retardo, y la comprobación de
+  REAL frente a LREAL en la última celda):
   `Simulaciones/PTAR/02 Diseño/Python/ADRC_PTAR_discreto.ipynb`.
 - Los dos cuadernos buscan la carpeta `PTAR/` al arrancar (primeras líneas de la celda de
   importaciones), así que sus rutas siguen siendo relativas a `PTAR/` aunque estén en otra carpeta.

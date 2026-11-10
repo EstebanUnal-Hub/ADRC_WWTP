@@ -1730,7 +1730,9 @@ $E_1(z)$ están en $|z| = 0{,}99908$ con las ganancias y en $0{,}99917$ (polo do
 observador, y $1 + \alpha_1 + \alpha_2$ vale $9{,}7\times10^{-7}$ y $6{,}9\times10^{-7}$; por
 eso $\alpha_1$ y $\alpha_2$ llevan ocho decimales: un REAL guarda unas siete cifras, y con él esa
 suma cambia varios por ciento. El controlador funcionaría de igual forma, pero su dinámica diferiría
-un poco de la del diseño, y más cuando las ganancias son muy pequeñas, como en este caso.
+un poco de la del diseño. Ocurre al muestrear un proceso lento con un periodo muy corto; si el equipo
+no tiene LREAL, basta ejecutar el bloque más despacio: con $T_s = 1$~s, el mismo controlador con REAL
+da la respuesta del diseño.
 
 \begin{figure}[H]
   \centering
@@ -2484,7 +2486,9 @@ dice qué hacer y remite a la ecuación o la sección donde está el detalle.
   $\mathbf{K}_d$ y $\mathbf{L}_d$ se calculan desde $\omega_c$ y $\omega_o$
   \eqref{eq:disc_ganancias_wc_wo} al inicio del algoritmo. Para el GPI se usa la forma directa I de la
   Figura~\ref{fig:disc_formas_directas}, con los coeficientes de la Tabla~\ref{tab:disc_gpi_coef}, sea
-  con $k_0$, $k_1$ y $k_2$, tipo PI con filtro, o con anchos de banda.
+  con $k_0$, $k_1$ y $k_2$, tipo PI con filtro, o con anchos de banda. Tipo de dato: LREAL. Con REAL,
+  ejecutar el bloque con un $T_s$ mayor, de modo que $\omega_o T_s$ sea $0{,}01$ o más (aquí, $T_s$ de
+  $1$~s o más).
 \end{enumerate}
 \end{recuadro}
 
