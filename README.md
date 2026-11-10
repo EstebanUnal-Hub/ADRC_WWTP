@@ -198,7 +198,10 @@ faster than the open-loop plant, and $\omega_o = 5\,\omega_c = 1.67\times10^{-2}
 inside the usual range of 3 to 10 times $\omega_c$. A larger $\omega_o$ rejects the disturbance better,
 but lets more sensor noise into the blower command and loses phase margin with dead time. With
 $\theta = 50$ s the phase margin of this tuning is already 36°, which limits how fast $\omega_c$ can
-be. The robustness was checked over the interquartile ranges of $k_{dc}$, $\tau$ and $\theta$.
+be. The robustness to the plant gain was checked by sweeping the controller's $b_0$ from $1/6$ to $6$
+times the design value, which covers the interquartile range of the plant's $b_0$ in both modules
+(0.22 to 1.5 times the design value); $\tau$ was varied over its interquartile ranges (11 to 40 min)
+and the dead time from 0 to 60 s.
 
 ---
 
@@ -358,9 +361,9 @@ plant and the blower limited to 0–100 %:
 
 | | Overshoot | Peak of $u$ | Settling time (2 %) |
 |---|---|---|---|
-| Without prefilter, $\theta = 0$ | 10.3 % | 80 % | 15.7 min |
+| Without prefilter, $\theta = 0$ | 10.2 % | 80 % | 15.7 min |
 | With prefilter, $\theta = 0$ | 0 % | 50 % | 24.4 min |
-| Without prefilter, $\theta = 50$ s | 46 % | 93 % | 14.7 min |
+| Without prefilter, $\theta = 50$ s | 44.6 % | 93 % | 14.7 min |
 | With prefilter, $\theta = 50$ s | 0 % | 54 % | 24.7 min |
 
 The disturbance gives the same dip with and without the prefilter. The price is a slower arrival at
