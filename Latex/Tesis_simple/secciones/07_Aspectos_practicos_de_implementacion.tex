@@ -722,7 +722,8 @@ con $y^* = y_f$ y $\dot{y}^* = 0$ para $\tau > 1$. Con $\dot{y}_c = 0$,
 \eqref{eq:bz_cerrada}. En el PLC, $\tau = n\,T_s/t_f$, con $n$ los ciclos desde
 el inicio del tramo; al cambiar la consigna se recalcula \eqref{eq:bz_c} y se
 reinicia $n = 0$, y al salir de \texttt{RESET} se toma $y_c = y$ medido y
-$\dot{y}_c = 0$.
+$\dot{y}_c = 0$. Replanificar no añade carga por ciclo: los tres coeficientes se recalculan una
+sola vez, cuando cambia la consigna.
 
 %--------------------------------------------------------------------
 \subsubsection{Simulación en lazo cerrado}
@@ -1725,9 +1726,10 @@ v[k] = {} & \frac{\beta_0\,x[k] + \beta_1\,x[k-1] + \beta_2\,x[k-2]}{b_0}
 \end{equation}
 Son seis retardos y un solo sumador. Los estados son señales del lazo, con
 rangos conocidos, y se pueden inicializar al arrancar. Hay que trabajar en doble precisión (LREAL en el PLC, de 64 bits, y no REAL de 32 bits): con $T_s = 50$~ms los polos de
-$E_1(z)$ están en $|z| = 0{,}99908$ con las ganancias y en $0{,}99917$ (doble) con el
+$E_1(z)$ están en $|z| = 0{,}99908$ con las ganancias y en $0{,}99917$ (polo doble) con el
 observador, y $1 + \alpha_1 + \alpha_2$ vale $9{,}7\times10^{-7}$ y $6{,}9\times10^{-7}$; por
-eso $\alpha_1$ y $\alpha_2$ llevan ocho decimales, y para evitar problemas posteriores de precisión es mejor usar LREAL. 
+eso $\alpha_1$ y $\alpha_2$ llevan ocho decimales: un REAL guarda unas siete cifras, y con él esa
+suma cambia varios por ciento y el integrador deja de ser exacto.
 
 \begin{figure}[H]
   \centering
