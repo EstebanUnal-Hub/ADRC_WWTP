@@ -1790,7 +1790,9 @@ rangos conocidos, y se pueden inicializar al arrancar. Hay que trabajar en doble
 $E_1(z)$ están en $|z| = 0{,}99908$ con las ganancias y en $0{,}99917$ (polo doble) con el
 observador, y $1 + \alpha_1 + \alpha_2$ vale $9{,}7\times10^{-7}$ y $6{,}9\times10^{-7}$; por
 eso $\alpha_1$ y $\alpha_2$ llevan ocho decimales: un REAL guarda unas siete cifras, y con él esa
-suma cambia varios por ciento y el integrador deja de ser exacto.
+suma cambia varios por ciento. El controlador funcionaría de igual forma, pero su dinámica diferiría
+un poco de la del diseño, y más cuando las ganancias son muy pequeñas frente al periodo de
+muestreo, como en este caso.
 
 \begin{figure}[H]
   \centering
