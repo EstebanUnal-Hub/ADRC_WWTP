@@ -415,33 +415,31 @@ su forma de sintonización y su funcionamiento.
 
 \subsection{Objetivo general}
 
-Comparar dos estrategias de control basadas en rechazo activo de
-perturbaciones para la regulación del oxígeno disuelto en la etapa de lodos
-activados de una planta de tratamiento de aguas residuales, con el fin de
-mejorar el desempeño frente a perturbaciones operativas como el caudal de
-entrada, el ruido de los sensores de oxígeno, la activación de aireadores
-auxiliares, y las asociadas a variaciones en la carga orgánica y en los
-parámetros químicos del afluente.
+Comparar dos estrategias de control basadas en rechazo activo de perturbaciones, un controlador GPI
+robusto y un controlador basado en observador de estado extendido, para la regulación del oxígeno
+disuelto en la etapa de lodos activados de una Planta de Tratamiento de Aguas Residuales (PTAR),
+mediante la caracterización de las perturbaciones del proceso, el diseño de ambos controladores, una
+metodología para su implementación en controladores lógicos programables y su validación en
+simulación frente a un controlador PID convencional.
 
 \subsection{Objetivos específicos}
 
 \begin{itemize}
-  \item[\textbf{OE1}] Caracterizar las perturbaciones que afectan el sistema de
-  dosificación de oxígeno en la etapa de lodos activados, con el propósito de
-  apoyar el diseño y la evaluación de los controladores basados en rechazo
-  activo de perturbaciones.
-  \item[\textbf{OE2}] Diseñar un primer controlador proporcional-integral
-  generalizado (GPI) robusto basado en el error de seguimiento para el proceso
-  de dosificación de oxígeno.
-  \item[\textbf{OE3}] Diseñar un segundo controlador con rechazo activo de
-  perturbaciones basado en observador de estado extendido (ESO) enfocado en el
-  error de seguimiento.
-  \item[\textbf{OE4}] Desarrollar una metodología para la implementación de
-  controladores basados en rechazo activo de perturbaciones en entornos
-  industriales mediante PLC, considerando aspectos prácticos como el manejo de
-  saturación y la facilidad de implementación.
-  \item[\textbf{OE5}] Validar experimentalmente los controladores propuestos
-  frente a un PID convencional, empleando métricas clásicas de desempeño y
+  \item[\textbf{OE1}] Caracterizar las perturbaciones que afectan el sistema de dosificación de
+  oxígeno en la etapa de lodos activados, con el propósito de apoyar el diseño y la evaluación de los
+  controladores basados en rechazo activo de perturbaciones.
+  \item[\textbf{OE2}] Diseñar un primer controlador Proporcional-Integral Generalizado (GPI) robusto
+  basado en el error de seguimiento para el proceso de dosificación de oxígeno (DO) en la etapa de
+  lodos activados.
+  \item[\textbf{OE3}] Diseñar un segundo controlador con rechazo activo de perturbaciones basado en
+  observador de estado extendido (ESO) enfocado en el error de seguimiento, para el proceso de
+  dosificación de oxígeno.
+  \item[\textbf{OE4}] Desarrollar una metodología para la implementación de controladores basados
+  en rechazo activo de perturbaciones en entornos industriales mediante controladores lógicos
+  programables (PLC), considerando aspectos prácticos como el manejo de saturación y la facilidad de
+  implementación.
+  \item[\textbf{OE5}] Validar mediante simulación los controladores propuestos, comparando su
+  desempeño frente a un controlador PID convencional con métricas clásicas de desempeño y
   robustez.
 \end{itemize}
 
