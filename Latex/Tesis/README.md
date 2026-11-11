@@ -10,7 +10,7 @@ preámbulo de la propuesta.
 latexmk -pdf main.tex          # o: pdflatex -> bibtex -> pdflatex x2
 ```
 
-Salida: `main.pdf` (175 páginas, 77 entradas en la lista de figuras, 39 tablas, 39 referencias citadas).
+Salida: `main.pdf` (175 páginas, 77 entradas en la lista de figuras, 39 tablas, 40 referencias citadas).
 
 ## Archivos
 
@@ -30,7 +30,7 @@ Salida: `main.pdf` (175 páginas, 77 entradas en la lista de figuras, 39 tablas,
 | `secciones/10_conclusiones.tex` | Cap. 8: Conclusiones |
 | `secciones/11_declaracion_ia.tex` | Declaración del uso de IA |
 | `secciones/12_anexos.tex` | Anexo: tabla de los archivos principales, con enlaces al README del repositorio |
-| `references.bib` | 39 entradas, todas citadas (sin diapositivas ni notas de clase); las principales (libros, Sira, Herbst y Madoński, Cortés-Romero) van primero con `\nocite` en `main.tex` |
+| `references.bib` | 40 entradas, todas citadas (sin diapositivas ni notas de clase); las principales (libros, Sira, Herbst y Madoński, Cortés-Romero) van primero con `\nocite` en `main.tex` |
 | `figuras/` | Solo las figuras que usa el documento |
 
 ## De dónde sale cada número
