@@ -10,7 +10,7 @@ preámbulo de la propuesta.
 latexmk -pdf main.tex          # o: pdflatex -> bibtex -> pdflatex x2
 ```
 
-Salida: `main.pdf` (158 páginas, 73 entradas en la lista de figuras, 37 tablas, 39 referencias citadas).
+Salida: `main.pdf` (157 páginas, 73 entradas en la lista de figuras, 37 tablas, 39 referencias citadas).
 
 ## Versión reducida
 

@@ -389,25 +389,19 @@ En la industria, la mayoría de los lazos de control se siguen cerrando con
 controladores PID sintonizados de forma empírica, que al ser lineales y de
 parámetros fijos solo quedan bien ajustados para un punto de operación. Esto
 se vuelve una limitación en procesos no lineales, con múltiples perturbaciones
-asociadas y múltiples incertidumbres, en los que se plantea la necesidad de un
-cambio de paradigma: buscar nuevos controladores que dejen de lado el PID y
-compitan directamente con él, en vista de una mejora en el desempeño y de un
-avance tecnológico. El ADRC ofrece esa posibilidad, ya que permite implementar
+e incertidumbres, y plantea la necesidad de controladores que compitan
+directamente con el PID. El ADRC ofrece esa posibilidad, ya que permite implementar
 un controlador lineal sobre un sistema no lineal, agrupando las perturbaciones
 y las incertidumbres en una sola señal que se estima y se cancela en línea.
 
-Ahora bien, un caso donde este paradigma puede implementarse es el lazo de
-oxígeno disuelto en la etapa de lodos activados de una PTAR. Este proceso es
-no lineal, incierto en algunos parámetros y está sometido a perturbaciones como el caudal de entrada, la carga
-orgánica, la activación de sopladores y el ruido en las señales de medida, y
-debe mantenerse en un rango de operación de 1,5 a 2,5~mg/L. Por ende, un PID
-convencional ISA sintonizado empíricamente puede resultar en una regulación
-imprecisa del OD y un consumo energético
-ineficiente.  Es
-decir, el problema no es solo mejorar la regulación del OD, sino demostrar que
-algoritmos de control más avanzados pueden implementarse en un PLC, competir
-directamente contra el PID y ofrecer algunas ventajas dadas por su estructura,
-su forma de sintonización y su funcionamiento.
+Un caso donde esto puede implementarse es el lazo de oxígeno disuelto en la etapa de lodos
+activados de una PTAR. Este proceso es no lineal, incierto en algunos parámetros y está sometido a
+perturbaciones como el caudal de entrada, la carga orgánica, la activación de sopladores y el ruido
+en las señales de medida, y debe mantenerse entre 1,5 y 2,5~mg/L; un PID ISA sintonizado
+empíricamente puede dar una regulación imprecisa del OD y un consumo energético ineficiente. Es
+decir, el problema no es solo mejorar la regulación del OD, sino demostrar que controladores más
+avanzados pueden implementarse en un PLC, competir con el PID y ofrecer ventajas por su estructura,
+su sintonización y su funcionamiento.
 
 
 \section{Objetivos}
@@ -447,8 +441,7 @@ simulación frente a un controlador PID convencional.
 \section{Metodología}
 \label{sec:metodologia}
 
-El trabajo se desarrolló en seis fases, cada una asociada a uno o varios capítulos del documento
-y a los objetivos específicos (Tabla~\ref{tab:metodologia}).
+El trabajo se desarrolló en seis fases, con sus capítulos y objetivos (Tabla~\ref{tab:metodologia}).
 
 \begin{table}[H]
 \centering
