@@ -826,7 +826,7 @@ para elegir la perturbación de entrada de las simulaciones, $\varepsilon = -15~
 Si bien para sintonizar los controladores no es necesario conocer la
 perturbación completa, sí se puede usar para simularlos y para sintonizar el
 observador. Por ende, la perturbación total $\bar{\xi}$ de $\dot y = \bar{\xi} + \bo u$ se
-saca de los datos de M2, despejándola de esa misma ecuación con la derivada del OD
+saca de los datos de M2, despejándola de esa misma ecuación, con la derivada del OD
 aproximada por la diferencia centrada:
 \begin{equation}
 \bar{\xi}[k] = \frac{y[k+1] - y[k-1]}{2\,T_s} - \bo\,u[k-1],
@@ -836,29 +836,30 @@ con $T_s = 1$~min, $y$ el OD medido, $u = 100\,P/P_{\max}$ la señal de control
 equivalente (Sección~\ref{sec:ident}) y el $\bo$ de diseño, $0{,}15$~mg/(L$\cdot$h$\cdot$\%);
 $u$ entra con una muestra de atraso por el retardo. La diferencia centrada es el promedio de
 la diferencia hacia adelante, $(y[k+1]-y[k])/T_s$, y la de hacia atrás; sin agregar ningún otro
-filtro, reduce casi a la mitad los saltos entre minutos frente a la primera. Así, $\bar{\xi}$ es una señal medida, sin modelo: todo lo que
-mueve el OD sin depender de $u$.
+filtro, reduce casi a la mitad los saltos entre minutos frente a la primera. Así, $\bar{\xi}$ es una
+señal medida, sin modelo: todo lo que mueve el OD sin depender de $u$.
 
-Se calcula en los días limpios de M2, con el registro completo, el OD entre 0,3 y 5~mg/L y
-el soplador sin quedarse saturado ni apagado: 57 días, 52 con el PID y 5 en manual. En ellos
-$\bar{\xi}$ es negativa, porque la biomasa consume oxígeno; su nivel y su variación se guardan
-en la Tabla~\ref{tab:ident_resumen}. El ruido de la sonda no se suma a $\bar{\xi}$, sino a la
-salida simulada (Sección~\ref{sec:ident_ruido}).
+Se calcula en los días limpios de M2, con el registro completo, el OD entre 0,3 y 5~mg/L y el
+soplador sin quedarse saturado ni apagado: quedan 57 días, 52 con el PID y 5 en manual. En ellos,
+$\bar{\xi}$ es negativa, porque la biomasa consume oxígeno, y además los caudales de entrada y de
+recirculación mueven el OD \eqref{ecu:disturbance}; su nivel y su variación se guardan en la
+Tabla~\ref{tab:ident_resumen}. El ruido de la sonda no se suma a $\bar{\xi}$, sino a la salida
+simulada (Sección~\ref{sec:ident_ruido}).
 
 La Figura~\ref{fig:ident_perturbacion} muestra el tramo que se usa en las simulaciones del
-Capítulo~\ref{cap:comparacion_pid}: 12~h del 1 de mayo de 2025, desde las 09:30. Al principio
-el soplador no se satura; de la hora 1,5 a la 6 se queda en su máximo, porque $\bar{\xi}$ queda
-por debajo de lo que el soplador alcanza a compensar, y el OD cae; después la perturbación
-cede y el OD vuelve a la referencia.
+Capítulo~\ref{cap:comparacion_pid}. Al principio el soplador no se satura; de la hora 1,5 a la 6
+se queda en el máximo que tenía en ese momento (en automático, en algunos casos los operarios no
+dejaban que los motores llegaran al 100~\%, por eso aquí se satura antes), porque $\bar{\xi}$ queda
+por debajo de lo que el soplador alcanza a compensar, y el OD cae.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\linewidth]{ident_17_perturbacion.pdf}
-    \caption[La perturbación total medida]{Perturbación total medida en M2, 12~h del 1 de
-    mayo de 2025 desde las 09:30, a 1~min: (a) OD medido y referencia; (b) señal de control
-    equivalente; (c) $\bar{\xi}$ de \eqref{eq:ident_xi_medida}, sin filtro y con una media
-    móvil de 10~min solo para la visualización. La línea discontinua de (c),
-    $-\bo \cdot 100~\%$, es lo que compensa el soplador al 100~\%.}
+    \caption[La perturbación total medida]{Perturbación total medida en M2, 12~h a 1~min:
+    (a) OD medido y referencia; (b) señal de control equivalente; (c) $\bar{\xi}$ de
+    \eqref{eq:ident_xi_medida}, sin filtro y con una media móvil de 10~min solo para la
+    visualización. La línea discontinua de (c), $-\bo \cdot 100~\%$, es lo que compensa el
+    soplador al 100~\%.}
     \label{fig:ident_perturbacion}
 \end{figure}
 
