@@ -10,7 +10,7 @@ preámbulo de la propuesta.
 latexmk -pdf main.tex          # o: pdflatex -> bibtex -> pdflatex x2
 ```
 
-Salida: `main.pdf` (175 páginas, 77 entradas en la lista de figuras, 39 tablas, 40 referencias citadas).
+Salida: `main.pdf` (174 páginas, 77 entradas en la lista de figuras, 39 tablas, 38 referencias citadas).
 
 ## Archivos
 
@@ -30,7 +30,7 @@ Salida: `main.pdf` (175 páginas, 77 entradas en la lista de figuras, 39 tablas,
 | `secciones/10_conclusiones.tex` | Cap. 8: Conclusiones |
 | `secciones/11_declaracion_ia.tex` | Declaración del uso de IA |
 | `secciones/12_anexos.tex` | Anexo: tabla de los archivos principales, con enlaces al README del repositorio |
-| `references.bib` | 40 entradas, todas citadas (sin diapositivas ni notas de clase); las principales (libros, Sira, Herbst y Madoński, Cortés-Romero) van primero con `\nocite` en `main.tex` |
+| `references.bib` | 38 entradas, todas citadas (sin diapositivas ni notas de clase); las principales (libros, Sira, Herbst y Madoński, Cortés-Romero) van primero con `\nocite` en `main.tex` |
 | `figuras/` | Solo las figuras que usa el documento |
 
 ## De dónde sale cada número
@@ -39,7 +39,9 @@ Las rutas son relativas a la carpeta `PTAR/`.
 
 - **Capítulo 2** (identificación, perturbaciones, caudales, ruido, segundo soplador):
   `Datos/analisis/analisis_dinamica_limpio.ipynb`. La celda 1 define el estilo común
-  de las figuras.
+  de las figuras. La perturbación total medida (derivada centrada del OD menos `b0·u`, Figuras 2.14
+  y 2.15) sale de las celdas 70 y 72; la celda 70 exporta las 12 h del 1 de mayo de 2025 desde las
+  09:30 a `Datos/analisis/xi_medida_M2_1min.csv`, que leen las Figuras 6.4 y 6.5.
 - **Capítulos 3 a 6** (diseños del ADRC y del GPI, anti-windup, discretización, trazas
   del PLC en la celda 6.1, comparación con el PID, la Figura 6.5 en la celda 7.3b y la Figura 5.14,
   el prefiltro con la planta, en la última celda):

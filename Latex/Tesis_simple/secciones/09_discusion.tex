@@ -52,9 +52,9 @@ de la saturación, el controlador se demora más en salir del límite y muestra 
 como el GPI sin \emph{anti-windup} de la Figura~\ref{fig:sat_arranque}. Lo que ningún esquema evita es
 que, mientras el soplador está en el límite, el oxígeno suba más despacio que en el diseño
 (Figura~\ref{fig:adrc_lazo_cerrado_saturacion}): el \emph{anti-windup} evita que el controlador acumule
-error, pero no le da al soplador más capacidad. Con la perturbación sintética se ve lo mismo: el
-soplador se satura de las 4 a las 6~h y, cuando la perturbación cede, el sistema vuelve a la consigna
-sin problemas (Figura~\ref{fig:pid_adrc_perturbacion}).
+error, pero no le da al soplador más capacidad. Con la perturbación medida se ve lo mismo: el
+soplador se satura de la hora 1,5 a la 5,5 y, cuando la perturbación cede, el sistema vuelve a la
+consigna sin problemas (Figura~\ref{fig:pid_adrc_perturbacion}).
 
 \paragraph{Manejo del ruido.} Para estos controladores con enfoque de rechazo de perturbaciones se
 tiene un manejo del ruido muy adecuado, ya que la función de transferencia del ADRC basado en ESO es
@@ -68,9 +68,9 @@ más grande la relación $\omega_o/\omega_c$, más ruido dejamos pasar a $u$
 (Tabla~\ref{tab:adrc_frecuencia_kESO}). Por lo que el ruido, junto con el retardo, es quien realmente
 pone la cota superior al ancho de banda del observador, que es el compromiso entre atenuación del ruido
 de la sonda y recuperación ante la carga que plantean Cao et al.\ \cite{cao2025cascaded}. Con la
-sintonía de diseño, $\omega_o$ queda por encima de la frecuencia bajo la cual está el 99~\% de la
-energía de $\bar{\xi}$ (Sección~\ref{sec:ident_espectro}), así que el observador estima casi toda la
-perturbación sin abrirse más al ruido (Figura~\ref{fig:pid_adrc_perturbacion}c).
+sintonía de diseño, por debajo de $\omega_o$ queda el 87~\% de la energía de la perturbación medida
+(Sección~\ref{sec:ident_espectro}); el resto es variación de minuto a minuto, así que el observador
+estima la mayor parte de la perturbación sin abrirse más al ruido (Figura~\ref{fig:pid_adrc_perturbacion}c).
 
 \paragraph{Discretización.} Con $T_s = 50$~ms cualquiera de los métodos (ZOH, Tustin, Euler hacia
 adelante o hacia atrás) sirve (Figura~\ref{fig:disc_metodos_bode}), como anticipa Chen cuando el
@@ -91,7 +91,7 @@ pico de $|S_{\xi}|$ lo baja sobre todo $k_1$, pero a costa del retardo máximo q
 decir, lo que se gana en rechazo se paga en robustez, igual que con $\omega_o$ en el ADRC. Con la
 sintonía nominal, el pico de $|S_{\xi}|$ queda por encima de donde está la mayor parte de la energía de
 la perturbación (Tabla~\ref{tab:ident_resumen}), y una perturbación de entrada de $-15~\%$ apenas mueve
-el oxígeno (Figura~\ref{fig:pref_escalon}). Con la perturbación sintética el lazo también la rechaza:
+el oxígeno (Figura~\ref{fig:pref_escalon}). Con la perturbación medida el lazo también la rechaza:
 el oxígeno se mantiene en la consigna, salvo en el tramo en que el soplador se satura
 (Figura~\ref{fig:pid_adrc_perturbacion}).
 

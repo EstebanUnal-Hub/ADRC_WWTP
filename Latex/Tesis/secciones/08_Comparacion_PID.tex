@@ -7,7 +7,7 @@ En este capítulo se compara un PID ISA ideal, con filtro en la acción derivati
 capítulos anteriores, bajo un mismo grado de robustez, y se mide su desempeño con métricas clásicas,
 para ver en qué casos el ADRC puede llegar a ser más beneficioso de implementar que el PID y qué
 ventajas y desventajas tiene frente a un PID convencional. Para ello también se usa la perturbación
-sintética que se obtuvo a partir de los datos en la Sección~\ref{sec:ident_perturbacion}.
+total medida en M2 en la Sección~\ref{sec:ident_perturbacion}.
 %--------------------------------------------------------------------
 \section{PID con misma robustez}
 \label{sec:pid_robustez}
@@ -188,19 +188,19 @@ Para este caso el IAE es mejor en el ADRC, lo que se traduce en un mejor desempe
 
 
 %--------------------------------------------------------------------
-\section{Perturbación sintética}
+\section{Perturbación medida}
 \label{sec:pid_perturbacion}
 
-La perturbación total sintética se obtuvo a partir de los datos de M2 (Sección~\ref{sec:ident_perturbacion}),
-$\bar{\xi}(t) = \bar{\xi}_0 + c(t) + w(t)$ en mg/(L$\cdot$h), está evaluada en
-2,0~mg/L \eqref{eq:ident_xi2} y entra como perturbación de entrada en \% de
-$u$; la usaremos para validar el desempeño que tienen los controladores. 
+La perturbación total medida en M2 (Sección~\ref{sec:ident_perturbacion}), $\bar{\xi}$ en
+mg/(L$\cdot$h), entra como perturbación de entrada en \% de $u$; la usaremos para validar el
+desempeño que tienen los controladores:
 \begin{equation}
-\varepsilon(t) = \frac{\bar{\xi}(t)/3600 + 2{,}0/\tau}{b_0} .
+\varepsilon(t) = \frac{\bar{\xi}(t)/3600 + y_{\mathrm{med}}(t)/\tau}{b_0} ,
 \label{eq:pid_eps}
 \end{equation}
-Se toman 12~h de perturbación de la señal sintética, donde está la perturbación
-más fuerte, con $\theta = 50$~s y el soplador limitado entre $0$ y $100~\%$,
+con $y_{\mathrm{med}}$ el OD medido en la planta. Se toman las 12~h de la
+Figura~\ref{fig:ident_perturbacion}, en las que la perturbación primero deja trabajar al
+soplador, luego lo satura y después cede, con $\theta = 50$~s y el soplador limitado entre $0$ y $100~\%$,
 con el mismo manejo de la saturación: arranque desde
 $0$~mg/L, con el soplador apagado, hasta 2,0~mg/L, cambio a 2,2~mg/L a las
 4~h y a 1,8~mg/L a las 8~h. Se corre con el ruido del sensor, y se
@@ -214,19 +214,19 @@ Tabla~\ref{tab:pid_cambios}.
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{pid_adrc_perturbacion.pdf}
-  \caption[PID ISA contra ADRC con la perturbación sintética]{PID ISA contra
-    ADRC con 12~h de la perturbación sintética de M2,solo arranque desde
+  \caption[PID ISA contra ADRC con la perturbación medida]{PID ISA contra
+    ADRC con las 12~h de la perturbación medida en M2 de la Figura~\ref{fig:ident_perturbacion}, arranque desde
     $0$~mg/L y cambios de consigna a las 4 y a las 8~h, con $\theta = 50$~s y
     el soplador limitado entre $0$ y $100~\%$, con el ruido del sensor.
-    (a) Salida. (b) Señal de control. (c) Perturbación total sobre la salida $\bar{\xi}$, aplicada y
+    (a) Salida. (b) Señal de control. (c) Perturbación total sobre la salida $\bar{\xi}$, medida y
     estimada por el observador del ADRC.}
   \label{fig:pid_adrc_perturbacion}
 \end{figure}
 
 \begin{table}[H]
 \centering
-\caption[Índices por cambio de consigna con la perturbación sintética]{Índices
-  de cada cambio de consigna con la perturbación sintética, en una ventana de
+\caption[Índices por cambio de consigna con la perturbación medida]{Índices
+  de cada cambio de consigna con la perturbación medida, en una ventana de
   2~h desde el cambio. El IAE incluye el efecto de la perturbación en esa
   ventana.}
 \label{tab:pid_cambios}
@@ -239,30 +239,31 @@ Tabla~\ref{tab:pid_cambios}.
 \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
 \textbf{Cambio} [mg/L] & $\boldsymbol{t}$ [h] & \textbf{ADRC} & \textbf{PID} & \textbf{ADRC} & \textbf{PID} & \textbf{ADRC} & \textbf{PID} \\
 \midrule
-$0 \rightarrow 2{,}0$     & 0 & 1\,176 & 1\,504 & 1\,176 & 1\,505 & 3,0  & 15,4 \\
-$2{,}0 \rightarrow 2{,}2$ & 4 & 4\,407 & 4\,531 & 4\,407 & 4\,531 & 24,0 & 78,4 \\
-$2{,}2 \rightarrow 1{,}8$ & 8 & 281    & 581    & 281    & 581    & 18,5 & 53,7 \\
+$0 \rightarrow 2{,}0$     & 0 & 1\,727 & 1\,793 & 1\,727 & 1\,793 & 3,2  & 8,6  \\
+$2{,}0 \rightarrow 2{,}2$ & 4 & 2\,657 & 2\,631 & 2\,657 & 2\,631 & 24,9 & 24,6 \\
+$2{,}2 \rightarrow 1{,}8$ & 8 & 247    & 303    & 247    & 303    & 51,8 & 25,1 \\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
 
 
-En la perturbación sintética se alcanza a ver el mismo resultado. Con los mismos valores de
-robustez ($M_s$), el PID rechaza peor la perturbación y su IAE en las 12~h es mayor que el del ADRC,
-$8\,028$ frente a $6\,685$~mg$\cdot$s/L; la mayor parte de ese
-error sale del tramo de las 4 a las 6~h, donde el soplador se satura y ninguno de los dos puede
-sostener la consigna. Aun así, gracias a sus esquemas de anti-\emph{windup}, los dos controladores
-aguantan ese tramo saturados y, cuando la perturbación cede, el sistema vuelve a recuperar su
-comportamiento; los dos lo cumplen, aunque el PID se pasa más al recuperarse por su bajo desempeño (se puede mejorar el desempeño, pero a
-costa de bajar la robustez). En los cambios de consigna el PID se pasa varias veces más
-(Tabla~\ref{tab:pid_cambios}), y con el ruido del sensor mueve mucho más el soplador, como ya se vio en
-el escalón de consigna (Tabla~\ref{tab:pid_escalon}), además de que en estacionario tiende a tener más oscilación alrededor de la consigna.
+Con la perturbación medida se alcanza a ver un resultado parecido, aunque más ajustado. Con los
+mismos valores de robustez ($M_s$), el IAE del PID en las 12~h es un poco mayor que el del ADRC,
+$7\,333$ frente a $7\,043$~mg$\cdot$s/L; la mayor parte de ese error sale del tramo de la hora 1,5 a
+la 5,5, donde el soplador se satura y ninguno de los dos puede sostener la consigna. Aun así, gracias
+a sus esquemas de anti-\emph{windup}, los dos controladores aguantan ese tramo saturados y, cuando la
+perturbación cede, el sistema vuelve a recuperar su comportamiento. En el arranque el PID se pasa más
+(Tabla~\ref{tab:pid_cambios}); en la bajada a 1,8~mg/L de las 8~h, en cambio, es el ADRC el que más
+se pasa, porque el cambio de consigna lleva su señal de control a 0~\% unos segundos y, con el retardo,
+el OD baja de más. Con el ruido del sensor, el PID mueve mucho más el soplador, como ya se vio en el
+escalón de consigna (Tabla~\ref{tab:pid_escalon}).
 
 Por último, se probó el acondicionamiento de la referencia con el prefiltro y con la curva de Bézier,
-usando la misma perturbación sintética (Figura~\ref{fig:adrc_acond_perturbacion}). Con los dos, el
+usando la misma perturbación medida (Figura~\ref{fig:adrc_acond_perturbacion}). Con los dos, el
 sistema llega más acondicionado a la referencia y aun así logra un buen rechazo de la perturbación,
-porque el acondicionamiento queda por fuera del lazo. Con el prefiltro, el sistema se comporta más
+porque el acondicionamiento queda por fuera del lazo; en la bajada de las 8~h el sobrepico baja a la
+tercera parte y queda por debajo del del PID. Con el prefiltro, el sistema se comporta más
 parecido a uno de primer orden, debido a la cancelación del cero; con el Bézier la respuesta es más
 suave, a cambio de un tiempo final de $2\,\tau$, que se puede acortar si se quiere una respuesta más
 rápida.
@@ -271,11 +272,11 @@ rápida.
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{adrc_acond_perturbacion.pdf}
-  \caption[ADRC con Bézier y con prefiltro, con la perturbación sintética]{ADRC con la referencia
-    acondicionada por la curva de Bézier y por el prefiltro, con la misma perturbación sintética,
+  \caption[ADRC con Bézier y con prefiltro, con la perturbación medida]{ADRC con la referencia
+    acondicionada por la curva de Bézier y por el prefiltro, con la misma perturbación medida,
     consignas, retardo y ruido de la Figura~\ref{fig:pid_adrc_perturbacion}. (a) Salida, con la referencia
     de Bézier y la del prefiltro en punteado. (b) Señal de
-    control. (c) Perturbación total sobre la salida $\bar{\xi}$ aplicada.}
+    control. (c) Perturbación total sobre la salida $\bar{\xi}$, medida.}
   \label{fig:adrc_acond_perturbacion}
 \end{figure}
 

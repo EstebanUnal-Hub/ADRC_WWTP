@@ -777,7 +777,7 @@ superponen al ciclo diario (la media de los datos medidos en cada hora durante l
 robusta de 13,6~L/s. Es decir, el caudal de entrada es sobre todo aleatorio, con un ciclo
 diario débil que está alrededor de un valor de DC de aproximadamente 34~L/s. Por ende, la perturbación, que depende de los caudales de entrada
 según la ecuación~\eqref{ecu:disturbance} que se modela en la sección
-siguiente tiene la misma estructura: un nivel $\bar{\xi}_0$, un ciclo diario y una parte
+siguiente tiene la misma estructura: un nivel, un ciclo diario débil y una parte
 aleatoria de mayor magnitud.
 
 \begin{figure}[H]
@@ -820,75 +820,45 @@ para elegir la perturbación de entrada de las simulaciones, $\varepsilon = -15~
 
 
 % ----------------------------------------------------------------------------
-\subsection{Reconstrucción de la perturbación total (sintética)}
+\subsection{Perturbación total medida}
 \label{sec:ident_perturbacion}
 
 Si bien para sintonizar los controladores no es necesario conocer la
 perturbación completa, sí se puede usar para simularlos y para sintonizar el
 observador. Por ende, la perturbación total $\bar{\xi}$ de $\dot y = \bar{\xi} + \bo u$ se
-define como señal en el tiempo. Como no se puede medir, se reconstruye una señal
-que no es la real, pero que conserva lo principal de ella (su nivel DC, su
-variación y algo del contenido en frecuencia) y que sale de datos reales de la
-planta: los coeficientes del ARX de cada ventana de lazo abierto de M2
-(Sección~\ref{sec:ident_arx}). De $\varphi$ y $\gamma$ salen $\tau$ y $\bo$; el
-tercer coeficiente, el término constante $\delta$, es lo que mueve el OD sin
-depender de $u$. Llevado a tiempo continuo, el modelo de cada ventana es
+saca de los datos de M2, despejándola de esa misma ecuación con la derivada del OD
+aproximada por la diferencia centrada:
 \begin{equation}
-\dot y = -\frac{y}{\tau} + \bo\,u + d,
-\qquad
-d = \frac{\delta}{\tau\,(1-\varphi)},
-\label{eq:ident_arx_continuo}
+\bar{\xi}[k] = \frac{y[k+1] - y[k-1]}{2\,T_s} - \bo\,u[k-1],
+\label{eq:ident_xi_medida}
 \end{equation}
-donde $d$ se obtiene al exigir que el ARX y el modelo continuo lleguen al mismo
-estacionario. Todo lo que no multiplica a $u$ es la perturbación,
-$\bar{\xi} = d - y/\tau$, que depende del OD de cada ventana; para que las ventanas
-sean comparables, se evalúa en la referencia:
-\begin{equation}
-\bar{\xi}_2 = d - \frac{2{,}0}{\tau} .
-\label{eq:ident_xi2}
-\end{equation}
-Es la velocidad a la que cambiaría el OD en 2,0~mg/L con el soplador apagado, y
-es negativa porque la biomasa consume oxígeno. Las ventanas se toman cada hora
-en los días manuales y, tras los filtros de la Sección~\ref{sec:ident_arx},
-quedan 1225 valores de $\bar{\xi}_2$, cada uno fechado en el centro de su ventana.
+con $T_s = 1$~min, $y$ el OD medido, $u = 100\,P/P_{\max}$ la señal de control
+equivalente (Sección~\ref{sec:ident}) y el $\bo$ de diseño, $0{,}15$~mg/(L$\cdot$h$\cdot$\%);
+$u$ entra con una muestra de atraso por el retardo. La diferencia centrada es el promedio de
+la diferencia hacia adelante, $(y[k+1]-y[k])/T_s$, y la de hacia atrás; sin agregar ningún otro
+filtro, reduce casi a la mitad los saltos entre minutos frente a la primera. Así, $\bar{\xi}$ es una señal medida, sin modelo: todo lo que
+mueve el OD sin depender de $u$.
 
-Con esos valores, la señal se arma con tres piezas \cite{martin2014influent}:
-\begin{equation}
-\bar{\xi}(t) = \bar{\xi}_0 + c(t) + w(t),
-\label{eq:ident_generador}
-\end{equation}
-\begin{itemize}
-  \item \textbf{Nivel DC}, $\bar{\xi}_0 = -8{,}49$~mg/(L$\cdot$h): la mediana de todas
-  las $\bar{\xi}_2$.
-  \item \textbf{Ciclo diario}, $c(t)$: la mediana de las $\bar{\xi}_2$ de cada hora del
-  día, centrada en cero, unida con rectas entre horas y repetida cada 24~h. Varía 3,46~mg/(L$\cdot$h) pico a
-  pico (Figura~\ref{fig:ident_perturbacion}a).
-  \item \textbf{Parte aleatoria}, $w(t)$: una señal que varía lentamente,
-  generada cada minuto como un proceso de Ornstein--Uhlenbeck, con su discretización
-  exacta \cite{gillespie1996} (Figura~\ref{fig:ident_perturbacion}b). Sus dos parámetros,
-  la desviación $\sigma_w$ y la constante de tiempo $\tau_w$
-  (Tabla~\ref{tab:ident_resumen}), se miden en el residuo de cada ventana,
-  $r = \bar{\xi}_2 - \bar{\xi}_0 - c$: $\sigma_w$ con el rango intercuartílico, para que
-  las colas largas no la inflen, y $\tau_w$ con la correlación entre residuos
-  separados 1~h.
-\end{itemize}
-Se arranca con $w[0] = 0$ y, para las simulaciones, se generan 14 días, sin
-filtro. La
-Figura~\ref{fig:ident_perturbacion} muestra los tres primeros, pieza por pieza,
-y su panel d, el tipo de cambio que el controlador debe rechazar: en media hora,
-$\bar{\xi}$ sube 13,7~mg/(L$\cdot$h), que con $\bo = 0{,}15$ son unos 91 puntos de
-soplador. El ruido de la sonda no se suma a $\bar{\xi}$, sino a la salida simulada
-(Sección~\ref{sec:ident_ruido}).
+Se calcula en los días limpios de M2, con el registro completo, el OD entre 0,3 y 5~mg/L y
+el soplador sin quedarse saturado ni apagado: 57 días, 52 con el PID y 5 en manual. En ellos
+$\bar{\xi}$ es negativa, porque la biomasa consume oxígeno; su nivel y su variación se guardan
+en la Tabla~\ref{tab:ident_resumen}. El ruido de la sonda no se suma a $\bar{\xi}$, sino a la
+salida simulada (Sección~\ref{sec:ident_ruido}).
+
+La Figura~\ref{fig:ident_perturbacion} muestra el tramo que se usa en las simulaciones del
+Capítulo~\ref{cap:comparacion_pid}: 12~h del 1 de mayo de 2025, desde las 09:30. Al principio
+el soplador no se satura; de la hora 1,5 a la 6 se queda en su máximo, porque $\bar{\xi}$ queda
+por debajo de lo que el soplador alcanza a compensar, y el OD cae; después la perturbación
+cede y el OD vuelve a la referencia.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\linewidth]{ident_17_perturbacion.pdf}
-    \caption[La perturbación total]{Perturbación total de M2, tres días
-    generados a 1~min: (a) nivel y ciclo diario, $\bar{\xi}_0 + c(t)$, con la mediana
-    medida de cada hora; (b) parte aleatoria $w(t)$; (c) su suma, $\bar{\xi}(t)$; (d)
-    las 4~h sombreadas en (c), minuto a minuto y sin filtro. En (b) y (c) se dibuja una media
-    móvil de 10~min solo para la visualización; (a), (b) y (c) tienen la misma
-    escala vertical.}
+    \caption[La perturbación total medida]{Perturbación total medida en M2, 12~h del 1 de
+    mayo de 2025 desde las 09:30, a 1~min: (a) OD medido y referencia; (b) señal de control
+    equivalente; (c) $\bar{\xi}$ de \eqref{eq:ident_xi_medida}, sin filtro y con una media
+    móvil de 10~min solo para la visualización. La línea discontinua de (c),
+    $-\bo \cdot 100~\%$, es lo que compensa el soplador al 100~\%.}
     \label{fig:ident_perturbacion}
 \end{figure}
 
@@ -898,32 +868,34 @@ soplador. El ruido de la sonda no se suma a $\bar{\xi}$, sino a la salida simula
 \subsection{Espectro de la perturbación total}
 \label{sec:ident_espectro}
 El observador del ADRC tiene que seguir a $\bar{\xi}$, así que su ancho de banda $\wo$ debe quedar por
-encima de las frecuencias donde $\bar{\xi}$ tiene su energía. Para verlo se calculó, con el método de
-Welch (segmentos de $N = 4096$~min solapados a la mitad y ventana de Hann), el espectro de la $\bar{\xi}$
-sintética de M2, de 28 días a 1~min, con la frecuencia en rad/h, las unidades de $\wo$
-(Figura~\ref{fig:ident_espectro_f}a), y la fracción de la energía acumulada hasta $\omega_k$,
+encima de las frecuencias donde $\bar{\xi}$ tiene la mayor parte de su energía. Para verlo se calculó, con el
+método de Welch, el espectro de $\bar{\xi}$ en cada día limpio completo (un segmento de $N = 1440$~min,
+un día, con ventana de Hann) y se promediaron los 54 días, con la frecuencia en rad/h, las unidades de
+$\wo$ (Figura~\ref{fig:ident_espectro_f}a), y la fracción de la energía acumulada hasta $\omega_k$,
 \begin{equation}
 E(\omega_k) = 100~\% \cdot \frac{\sum_{i=0}^{k} P[i]}{\sum_{i=0}^{N/2} P[i]},
 \label{eq:ident_energia}
 \end{equation}
-con $P[i]$ la densidad espectral; la frecuencia donde $E$ cruza el 50, 90, 95 y 99~\% se guarda en la
+con $P[i]$ la densidad espectral; la frecuencia donde $E$ cruza el 50, 90 y 99~\% se guarda en la
 Tabla~\ref{tab:ident_resumen}.
 
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\linewidth]{ident_19_espectro_f.pdf}
     \caption[Espectro de la perturbación total]{Espectro de la perturbación
-    total de M2: (a) densidad espectral de la $\bar{\xi}$ sintética; (b)
-    fracción de la energía de $\bar{\xi}$ que queda por debajo de cada frecuencia.}
+    total medida en M2, promedio de 54 días: (a) densidad espectral; (b)
+    fracción de la energía de $\bar{\xi}$ que queda por debajo de cada frecuencia, con el
+    $\wo$ de diseño.}
     \label{fig:ident_espectro_f}
 \end{figure}
 
-La mitad de la energía de la perturbación está por debajo de 1,0~rad/h y el
-95~\% por debajo de 12~rad/h. Por ende, para que el observador siga al menos el
-95~\% de la energía de $\bar{\xi}$, su ancho de banda debe estar por encima de unos
-12~rad/h, y para seguir el 99~\%, por encima de unos 56~rad/h. El límite superior
-de $\wo$ no lo pone la perturbación, sino el ruido de la medida y el retardo del
-lazo, y se trata en el diseño del observador.
+La perturbación medida tiene energía en todo el rango: el nivel y el ciclo diario a la izquierda,
+un pico cerca de 14~rad/h, que es la oscilación del PID de la planta (también está en $u$ y en el
+OD), y la variación de minuto a minuto, hasta el límite del muestreo. Con el $\wo$ de diseño,
+60~rad/h (Sección~\ref{subsec:caso_parametros}), el observador sigue el 87~\% de la energía de
+$\bar{\xi}$; el resto es esa variación de minuto a minuto, que no conviene perseguir. El límite
+superior de $\wo$ no lo pone la perturbación, sino el ruido de la medida y el retardo del lazo, y
+se trata en el diseño del observador.
 
 % ----------------------------------------------------------------------------
 \subsection{Ruido del sensor}
@@ -1032,9 +1004,9 @@ entre los dos módulos, es decir, de $0{,}22$ a $1{,}5$ veces el $b_0$ de diseñ
 retardo, entre 0 y 60~s, es pequeño frente a
 esa dinámica. Por ende, el controlador tiene que funcionar en todos estos
 rangos con una sola sintonía, que es justamente lo que se busca con el ADRC.
-Además, el espectro de la perturbación indica que casi toda su energía (95~\%)
-está por debajo de unos 12~rad/h, lo que fija el mínimo del ancho de banda
-del observador $\wo$; el máximo lo ponen el ruido de la medida y el retardo.
+Además, el espectro de la perturbación medida indica que la mayor parte de su energía
+(87~\%) está por debajo de 60~rad/h, el ancho de banda del observador $\wo$; el resto es
+variación de minuto a minuto, y el máximo de $\wo$ lo ponen el ruido de la medida y el retardo.
 
 \begin{table}[!htbp]
 \centering
@@ -1071,17 +1043,16 @@ $\sigma$ del OD promedio & traza del PLC a 50~ms, M1 & 0,0011 \\
 Entrada (FIT-101) & media / variación del ciclo diario & 34 / 9,4 \\
 \quad desviación respecto al ciclo & $\sigma$, robusta & 13,6 \\
 \midrule
-\multicolumn{3}{l}{\emph{Perturbación total} [mg/(L$\cdot$h)]} \\
-Nivel $\bar{\xi}_0$ & en $y = 2$~mg/L & $-8{,}49$ \\
-Ciclo diario & completo, pico a pico (medianas) & 3,46 \\
-Desviación de $w$ & $\sigma_w$, robusta & 3,75 \\
-Constante de tiempo de $w$, $\tau_w$ [min] & correlación a 1~h & 58 \\
+\multicolumn{3}{l}{\emph{Perturbación total medida} [mg/(L$\cdot$h)]} \\
+Media & 57 días limpios & $-7{,}49$ \\
+Desviación & $\sigma$, robusta & 4,05 \\
+Cambio entre minutos & mediana / percentil 95 & 0,60 / 2,06 \\
 \midrule
 \multicolumn{3}{l}{\emph{Espectro de $\bar{\xi}$} [rad/h]} \\
-50~\% de la energía & por debajo de & 1,0 \\
-90~\% de la energía & por debajo de & 6,0 \\
-95~\% de la energía & por debajo de & 12 \\
-99~\% de la energía & por debajo de & 56 \\
+50~\% de la energía & por debajo de & 12,6 \\
+90~\% de la energía & por debajo de & 70 \\
+99~\% de la energía & por debajo de & 129 \\
+Energía por debajo de $\wo = 60$~rad/h & fracción del total & 87~\% \\
 \bottomrule
 \end{tabular}
 \end{table}
