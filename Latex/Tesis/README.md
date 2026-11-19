@@ -59,10 +59,7 @@ Las rutas son relativas a la carpeta `PTAR/`.
 
 ## Figuras
 
-`figuras/` contiene solo las figuras que cita el documento. Al correr completos los cuadernos
-aparecen además figuras que no se usan y se pueden borrar: `ident_01_dos_dias_manual.pdf`,
-`ident_04_histogramas_tau_K.pdf`, `ident_08_ganancia_vs_od.pdf` e `ident_15_ensayo_scada.pdf`
-(capítulo 2), y `adrc_embrague.pdf` y `pid_rechazo_mejorado.pdf` (cuaderno continuo).
+`figuras/` contiene solo las figuras que cita el documento, y los cuadernos solo generan esas.
 
 ## Pendiente antes de entregar
 
