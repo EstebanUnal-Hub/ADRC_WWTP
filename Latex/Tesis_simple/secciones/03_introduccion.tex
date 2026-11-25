@@ -64,11 +64,11 @@ implementación industrial
 
 Bajo este marco, el presente proyecto se centra en el diseño, implementación y
 validación de dos estrategias de control avanzado basadas en rechazo activo de
-perturbaciones: un controlador proporcional-integral generalizado (GPI) y un
+perturbaciones: un controlador proporcional-integral generalizado (GPI) robusto y un
 ADRC con ESO, ambos escritos sobre el error de seguimiento, para la regulación
 de oxígeno disuelto en una planta de tratamiento de aguas residuales. Los dos
 se enfrentan al mismo PID ISA de referencia con filtro en la acción derivativa,
-a la misma perturbación, obtenida y sintetizada a partir de los datos reales de la planta. La investigación busca demostrar que estas técnicas no solo
+a la misma perturbación, obtenida a partir de los datos reales de la planta. La investigación busca demostrar que estas técnicas no solo
 pueden mejorar el desempeño transitorio, con una sintonización más sencilla y
 un menor movimiento de la señal de control que el PID convencional, sino que también son viables técnicamente para ser embebidas en
 la infraestructura de automatización existente, contribuyendo de esta forma a
@@ -88,7 +88,7 @@ empíricamente, con las limitaciones ya descritas \cite{khalid2018review,shen200
 Evaluar allí el ADRC, bajo condiciones reales de operación, con variabilidad de carga e instrumentación
 limitada, permite validar su desempeño y su robustez frente a la estrategia convencional. Su
 contribución técnica es una estrategia de control avanzada con alto potencial de replicabilidad, y su
-carácter innovador, llevar el ADRC del ámbito teórico a una implementación práctica en un proceso de
+carácter innovador, llevar el ADRC del ámbito teórico a un acercamiento práctico en un proceso de
 tratamiento de aguas residuales, con evidencia a partir de datos reales
 \cite{amand2013review,santin2016advanced}.
 
@@ -142,9 +142,29 @@ crecimiento aerobio de la biomasa heterótrofa y autótrofa:
   \label{eq:intro_rz}
 \end{equation}
 
-donde $S_S$ y $S_{NH}$ son el sustrato rápidamente biodegradable y el nitrógeno amoniacal;
-$X_{B,H}$ y $X_{B,A}$, la biomasa heterótrofa y autótrofa activa; $Y_H$ y $Y_A$, los rendimientos;
-$\mu_H$ y $\mu_A$, las tasas máximas de crecimiento, y las $K$, las constantes de saturación.
+donde los símbolos se recogen en la Tabla~\ref{tab:intro_asm1}: las variables cambian en el tiempo con
+la carga que entra, y los parámetros son valores numéricos fijos del ASM1; se dan los del BSM1
+\cite{alex2008bsm1}.
+
+\begin{table}[H]
+\centering
+\caption{Variables y parámetros de $r_{Z,5}$ en el ASM1, con los valores del BSM1.}
+\label{tab:intro_asm1}
+\renewcommand{\arraystretch}{1.0}
+\footnotesize
+\begin{tabular}{|c|l|c|c|}
+\hline
+\rowcolor[gray]{0.9}
+\textbf{Símbolo} & \textbf{Descripción} & \textbf{Tipo} & \textbf{Valor o unidad} \\ \hline
+$S_S$ & Sustrato rápidamente biodegradable & variable & g~DQO/m$^3$ \\ \hline
+$S_{NH}$ & Nitrógeno amoniacal & variable & g~N/m$^3$ \\ \hline
+$X_{B,H}$, $X_{B,A}$ & Biomasa heterótrofa y autótrofa activa & variable & g~DQO/m$^3$ \\ \hline
+$Y_H$, $Y_A$ & Rendimientos heterótrofo y autótrofo & parámetro & 0,67 / 0,24 \\ \hline
+$\mu_H$, $\mu_A$ & Tasas máximas de crecimiento & parámetro & 4,0 / 0,5 d$^{-1}$ \\ \hline
+$K_S$, $K_{NH}$ & Saturación del sustrato y del amonio & parámetro & 10 g~DQO/m$^3$ / 1,0 g~N/m$^3$ \\ \hline
+$K_{O,H}$, $K_{O,A}$ & Saturación del oxígeno & parámetro & 0,2 / 0,4 g~O$_2$/m$^3$ \\ \hline
+\end{tabular}
+\end{table}
 
 La ecuación de la dinámica servirá solo como guía, para identificar las perturbaciones que pueden
 afectar el lazo de control y para analizar la estimación de la perturbación total realizada mediante el
@@ -241,7 +261,8 @@ $(\boldsymbol{k}^{\top}\;1)\,\hat{\boldsymbol{x}}$ calcula la acción que lleva
 el error a cero y cancela la perturbación estimada, y el bloque $1/\bo$ la
 convierte en la señal física $u$. Como el observador se alimenta con
 $u_{\text{lim}}$, la saturación del actuador no hace que la estimación se
-desvíe, es decir que este tipo de controlador ya viene con un manejo de saturación incorporado, un anti-windup natural. 
+desvíe, es decir que este tipo de controlador ya viene con un manejo de saturación incorporado, un anti-windup natural. Y, adicionalmente, al colocar el enfoque
+basado en el error, se hace seguimiento y rechazo al mismo tiempo. 
 
 \subsection{Control GPI (A Flat Filtering Approach)}
 
@@ -255,7 +276,7 @@ un controlador de una sola pieza, sin estados de observador explícitos, cuya
 robustez proviene del mismo mecanismo y el rechazo de perturbaciones corresponde
 a un modelo interno de la perturbación.
 
-Sira-Ramírez et al. \cite[\S3.4.3]{sira2017adrc} presentan este enfoque, de
+Sira-Ramírez et al. \cite[sec.~3.4.3]{sira2017adrc} presentan este enfoque, de
 \emph{filtrado plano}, sobre un sistema de segundo orden. El control GPI elimina la necesidad de
 observadores asintóticos de estado mediante \emph{reconstructores integrales}, que solo involucran
 la entrada y la salida. Como el estimado queda afectado por valores constantes, como las
@@ -276,7 +297,7 @@ y el desempeño el orden del sistema, el número de estados extendidos, la
 incertidumbre en la ganancia de control y el método de sintonía. Además,
 recopilan las equivalencias ya conocidas entre el ADRC y otras estructuras,
 como los filtros planos y el PID. Siguiendo la línea de la equivalencia entre
-el ADRC y los filtros planos, en este trabajo se busca la correspondencia entre el GPI construido con
+el ADRC y los filtros planos, y como motivación de este trabajo, se busca la correspondencia entre el GPI construido con
 reconstructores integrales y el ADRC con ESO, es decir, el cambio de
 ganancias de $(\wc,\wo)$ a $(k_0,k_1,k_2)$. Ambas son formas
 equivalentes que solo difieren en su implementación y en el manejo de la
@@ -312,18 +333,6 @@ atenuación de ruido de sonda y velocidad de recuperación ante carga --- que en
 este trabajo resulta ser, cuantitativamente, el compromiso que decide el
 diseño.
 
-\subsection{Análisis comparativo}
-
-Frente a las estrategias revisadas, el PID tiene una estructura simple, un bajo costo computacional y una
-base instalada amplia, pero no desacopla perturbaciones fuertes y queda con una sola sintonía para todo el
-rango de operación \cite{iratni2019advances}. El MPC maneja de forma explícita las restricciones y los
-sistemas multivariables, a cambio de un costo computacional elevado, sensibilidad al error de modelo y un
-mantenimiento difícil \cite{li2017multi}. Las redes neuronales y el control difuso modelan dinámicas
-complejas sin ecuaciones explícitas, pero con una estructura opaca, una validación de estabilidad difícil y
-dependencia de datos de calidad \cite{qiao2014neural}. El ADRC y el GPI estiman y cancelan la perturbación
-total, con un equilibrio entre desempeño y simplicidad y una sintonía por ancho de banda, aunque requieren un
-diseño cuidadoso del observador ante el ruido de medida y tienen menor penetración comercial
-\cite{wei2020disturbance}; por eso se eligen como estrategia central de este trabajo.
 
 \subsection{Métricas de desempeño y robustez}
 \label{subsec:metricas}
@@ -463,7 +472,7 @@ El trabajo se desarrolló en seis fases, con sus capítulos y objetivos (Tabla~\
 \textbf{Fase 3} & Diseño de controladores (Cap.~\ref{cap:ADRC-ESO} y~\ref{cap:GPI}; OE2 y OE3) &
 \textbullet~ADRC con ESO basado en el error de seguimiento, con sintonía por anchos de banda.\newline
 \textbullet~GPI con integradores y su equivalencia con el ADRC con ESO.\newline
-\textbullet~Análisis de robustez y ante variaciones de la planta, en Python y Simulink. \\ \hline
+\textbullet~Análisis de robustez y ante variaciones de la planta, en Python, MATLAB y Simulink. \\ \hline
 \textbf{Fase 4} & Implementación en PLC (Cap.~\ref{cap:implementacion}; OE4) &
 \textbullet~Saturación, acondicionamiento de la referencia, ruido y retardo.\newline
 \textbullet~Discretización y realización con retardos.\newline

@@ -111,7 +111,7 @@ es $C(s)$; en el lazo los dos van multiplicados, $C(s)\,b_0/s$, y el $b_0$ de la
 cancela con el $1/b_0$ del controlador. Por eso lo que se diseña es $b_0\,C(s)$, de $-e_y$ a
 $u_0$, con ganancias que no dependen de $b_0$, y $b_0$ solo vuelve a aparecer al final, al
 pasar de $u_0$ a $u$. Las ganancias se numeran de forma que el subíndice coincida con la potencia de $s$
-que multiplican en el polinomio característico. Su análisis se hizo de forma inductiva,
+que multiplican en el polinomio característico. El análisis se hizo de forma inductiva,
 viendo patrones a medida que cambiamos la forma del controlador, por ejemplo:
 
 \paragraph{A. Solo proporcional.}
@@ -244,7 +244,7 @@ de la perturbación.
 
 \begin{table}[H]
 \centering
-\caption[Integradores del GPI según la planta y la perturbación]{Controlador GPI
+\caption[Integradores del GPI según la planta y la perturbación]{Controlador GPI robusto
   \eqref{eq:gpi_integradores_netos} para una planta de orden $n$ y una
   perturbación modelada como la salida de $m$ integradores, $1/s^{m}$ en Laplace (un
   polinomio de grado $m - 1$ en el tiempo): orden de las integrales de $u_0$ y
@@ -383,8 +383,7 @@ s\mathbf{I} - \mathbf{A}_c = \begin{bmatrix} s + k_{p_1} + l_1 & 0 \\ l_2 & s \e
 \begin{bmatrix} s & 0 \\ -l_2 & s + k_{p_1} + l_1 \end{bmatrix} .
 \end{equation}
 
-\paragraph{Estados en función del error.} Como $\mathbf{B}_c = \mathbf{L}$, el
-resolvente multiplica el vector de ganancias fila por fila:
+\paragraph{Estados en función del error.} Como $\mathbf{B}_c = \mathbf{L}$, el resultado queda de la siguiente forma:
 \begin{equation}
 \mathbf{G}_X(s) = \bigl[s\mathbf{I} - \mathbf{A}_c\bigr]^{-1}\mathbf{L}
 = \frac{1}{s\,(s + k_{p_1} + l_1)}
@@ -416,7 +415,7 @@ $D_A = s$, $\bar{D}_C = s + k_{p_1} + l_1$ y $N_C = (k_{p_1} l_1 + l_2)\,s + k_{
 \subsection{Relación entre las ganancias}
 \label{subsec:gpi_eso_ganancias}
 
-Igualando \eqref{eq:gpi_eso_tf} con \eqref{eq:gpi_ley}, las ganancias del GPI
+Igualando \eqref{eq:gpi_eso_tf} con \eqref{eq:gpi_ley}, las ganancias del GPI robusto
 se leen directamente de las del ESO:
 \begin{equation}
 \boxed{\;k_2 = k_{p_1} + l_1, \qquad k_1 = k_{p_1} l_1 + l_2, \qquad k_0 = k_{p_1} l_2\;}
@@ -429,7 +428,7 @@ P(s) = s^3 + k_2 s^2 + k_1 s + k_0
 = \underbrace{(s + k_{p_1})}_{p_c(s)}\,\underbrace{(s^2 + l_1 s + l_2)}_{p_o(s)} .
 \label{eq:gpi_producto}
 \end{equation}
-Es el principio de separación \eqref{eq:separacion} visto desde el GPI: el
+Es el principio de separación \eqref{eq:separacion} visto desde el GPI robusto: el
 polinomio característico es el producto del polinomio del
 controlador, $p_c(s)$, y el del observador, $p_o(s)$
 \cite{sira2017adrc}. Con \eqref{eq:gpi_S}, la función de
@@ -451,7 +450,7 @@ Tabla~\ref{tab:caso_parametros}).
 \begin{table}[H]
 \centering
 \caption[Relación entre las ganancias del ESO y del GPI]{Relación entre las
-ganancias del ADRC con ESO de orden 2 ($n = m = 1$) y las del GPI
+ganancias del ADRC con ESO de orden 2 ($n = m = 1$) y las del GPI robusto
 \eqref{eq:gpi_ley}. Los valores numéricos son los del caso PTAR, con
 $\omega_c = 3{,}33\times10^{-3}$~rad/s y $\omega_o = 5\,\omega_c$; 
 $b_0 = 4{,}17\times10^{-5}$.}
@@ -596,7 +595,7 @@ mismo comportamiento del ADRC basado en observador de estado extendido, tanto en
 el seguimiento como en el rechazo de la perturbación: las dos curvas se
 superponen. La señal de control no se satura en ninguno de los dos
 controladores, por lo que el diseño es adecuado para escalones cerca de este
-punto de operación.
+punto de operación y para perturbaciones exógenas $\varepsilon$ de esta magnitud. 
 
 \begin{figure}[H]
   \centering
@@ -604,7 +603,7 @@ punto de operación.
   \caption[GPI y ADRC con observador en el escalón de consigna]{Escalón de
     consigna de $2{,}0$ a $2{,}2$~mg/L y perturbación de entrada
     $\varepsilon = -15~\%$ a los $40$~min, con la planta nominal sin retardo ni
-    saturación: GPI \eqref{eq:gpi_pi_filtro} y ADRC con observador
+    saturación: GPI robusto \eqref{eq:gpi_pi_filtro} y ADRC con observador
     (Sección~\ref{subsec:caso_simulacion}). (a) Salida. (b) Señal de control.}
   \label{fig:gpi_vs_adrc}
 \end{figure}
@@ -633,7 +632,7 @@ control no llega a saturarse.
 Para validar su comportamiento, se repite el escalón de consigna de $2{,}0$ a
 $2{,}2$~mg/L, con la planta cerca del punto de operación y $u = 40~\%$, variando
 cada ganancia de $1/4$ a $4$ veces su valor nominal, una a la vez y sin
-saturación (Figura~\ref{fig:gpi_variacion}). El GPI se comporta como un PI con
+saturación (Figura~\ref{fig:gpi_variacion}). El GPI robusto se comporta como un PI con
 filtro:
 \begin{itemize}
   \item \textbf{$k_0$, la integral}, amplifica o disminuye el sobrepico: al
@@ -657,7 +656,7 @@ control (Tabla~\ref{tab:metricas}).
   \includegraphics[width=\textwidth]{gpi_variacion_ganancias.pdf}
   \caption[Escalón de consigna con variación de las ganancias del GPI]{Escalón
     de consigna de $2{,}0$ a $2{,}2$~mg/L con el GPI y la planta, variando
-    (a) $k_0$, (b) $k_1$ y (c) $k_2$. Izquierda, la salida; derecha, la señal
+    (a) $k_0$, (b) $k_1$ y (c) $k_2$. Primera columna, la salida; segunda columna, la señal
     de control. En negro, las ganancias nominales de la Tabla~\ref{tab:gpi_eso}.}
   \label{fig:gpi_variacion}
 \end{figure}
@@ -734,13 +733,13 @@ Figura~\ref{fig:gpi_sensibilidad} se ve que:
   subirlo el pico baja y se corre a frecuencias más altas.
 \end{itemize}
 
-\begin{figure}[tbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{gpi_sensibilidad.pdf}
   \caption[Sensibilidad en lazo cerrado del GPI al variar sus ganancias]{Bode
     de la sensibilidad en lazo cerrado $S_{\xi}(s) = e_y/\xi$ \eqref{eq:gpi_caso_S},
     variando (a) $k_0$, (b) $k_1$ y (c) $k_2$; $\xi$ en mg/(L$\cdot$s), así que
-    $|S_{\xi}|$ está en dB respecto a $1$~s. Izquierda, magnitud; derecha, fase. En
+    $|S_{\xi}|$ está en dB respecto a $1$~s. Primera columna, magnitud; segunda columna, fase. En
     gris punteado, $1/s$, el error sin control; las verticales marcan $1/\tau$,
     $\omega_c$ y $\omega_o$.}
   \label{fig:gpi_sensibilidad}
@@ -770,8 +769,8 @@ y~\ref{fig:gpi_margen_fase}.
   \includegraphics[width=\textwidth]{gpi_margen_fase.pdf}
   \caption[Margen de fase del GPI al variar sus ganancias]{Lazo abierto
     $C(s)\,G(s)$ con la planta nominal sin retardo, variando (a, d) $k_0$,
-    (b, e) $k_1$ y (c, f) $k_2$; en negro, las ganancias nominales. Arriba, la
-    magnitud; abajo, la fase, con el margen de fase como segmento vertical y su
+    (b, e) $k_1$ y (c, f) $k_2$; en negro, las ganancias nominales. Primera fila, la
+    magnitud; segunda fila, la fase, con el margen de fase como segmento vertical y su
     valor en la leyenda. La vertical punteada marca $\omega_c$.}
   \label{fig:gpi_margen_fase}
 \end{figure}

@@ -1110,8 +1110,7 @@ mismo, $k_{p_1} = \omega_c$, $l_1 = 2\omega_o$ y $l_2 = \omega_o^2$, porque los
 polos se ubicaron en un solo punto (polos duplicados): basta conocer los anchos de banda deseados. Por ejemplo, $\omega_o$ quedó
 igual a $60$~rad/h, y en la Tabla~\ref{tab:ident_resumen} vemos que el $87~\%$ de la energía de la
 perturbación medida está por debajo de ese valor, por lo que la mayor parte de la perturbación queda dentro de
-la banda del observador; el resto es variación de minuto a minuto, y seguirla pediría un $\omega_o$ de más del
-doble, que deja pasar más ruido.
+la banda del observador; el resto puede ser de más alta frecuencia, y seguirla pediría un $\omega_o$ más grande, que deja pasar más ruido.
 
 \paragraph{Polos con la planta nominal.} Los polos de arriba son los del diseño, utilizando la cadena de integradores.
 Con la planta nominal, que no es un integrador
@@ -1122,8 +1121,9 @@ forma perfecta la dinámica de la planta, el término $-y/\tau$ que queda dentro
 $\xi$. Herbst y Madoński lo mencionan: el lazo cerrado solo es aproximadamente el
 de diseño, porque el lazo interno no es perfecto en la práctica
 \cite[ec.~(2.34)]{herbst2024adrc}, y con la cadena de integradores la respuesta
-se desvía un poco de la nominal, a una escala muy limitada. Además, la dinámica de la planta real no
-se conoce muy bien como para realizar un ajuste; simplemente está dentro de un rango intercuartílico.
+se desvía un poco de la nominal. Además, la dinámica de la planta real no
+se conoce muy bien como para realizar un ajuste. Por eso, el controlador debe ser lo suficientemente robusto para
+no inestabilizarse con estas variaciones. 
 
 
 \begin{table}[H]
@@ -1383,7 +1383,7 @@ qué sigue el lazo, qué rechaza y qué filtra:
   perturbación se rechaza mejor, y en (e) se ve que $u$ la compensa hasta
   frecuencias más altas; es decir, el rechazo mejora cuando aumenta $\wo$.
   \item \textbf{Esfuerzo de control y ruido} (b y h). La ganancia de $C(s)$ sube con
-  $\omega_o/\omega_c$: por encima de $\omega_c$, $|C/(1 + CG)| \approx |C|$ (Tabla~\ref{tab:adrc_frecuencia_kESO}). Por eso un $\omega_o$ alto
+  $\omega_o/\omega_c$. Por eso un $\omega_o$ alto
   pide más señal de control ante el escalón y deja pasar más ruido del sensor
   al soplador, por lo que se deben ajustar bien las ganancias para que el ruido no llegue a la
   señal de control.

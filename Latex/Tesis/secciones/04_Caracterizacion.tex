@@ -274,7 +274,7 @@ la transferencia de oxígeno en los difusores, como se descompone en la
 Tabla~\ref{tab:gain_decomposition}. Se aclara que esta relación es solo una
 aproximación, y se utiliza para entender las suposiciones del modelo
 simplificado y las discrepancias que van a existir entre este y el
-comportamiento real de la planta.
+comportamiento real de la planta. 
 
 \begin{table}[!htbp]
 \centering
@@ -397,7 +397,7 @@ y permite ver con claridad la relación entre la planta y la perturbación total
 La simplificación es razonable porque el retardo, que se acota entre 0 y
 60~s (Sección~\ref{sec:ident_retardo}), es pequeño frente a la constante de
 tiempo, $\theta/\tau \leq 0{,}06$; su efecto se retoma al acotar el ancho
-de banda del observador. Sin el retardo, y con una perturbación $\varepsilon(t)$ a la entrada, en las
+de banda del observador y al validar los controladores. Sin el retardo, y con una perturbación $\varepsilon(t)$ a la entrada, en las
 mismas unidades de $u$, la planta \eqref{eq:car_foptd} en el tiempo es
 \begin{equation}
 \tau\,\dot{y}(t) + y(t) = k_{dc}\bigl(u(t) + \varepsilon(t)\bigr)
@@ -453,7 +453,7 @@ muestreadas a 50~ms, que son el único registro donde aparece directamente la
 consigna $u$ que el PLC manda al variador.
 
 De cada módulo se toma lo que sus datos permiten. M1 no tiene medidor de
-potencia, pero cuenta con el ensayo del 12 de marzo de 2026, registrado en el
+potencia, pero cuenta con un ensayo (12 de marzo de 2026), registrado en el
 PLC a 50~ms con la consigna $u$ medida directamente en trazas de datos del PLC; de él salen el retardo, el
 ruido del sensor y la comparación entre el SCADA y el PLC. M2 y M3 tienen
 medida de potencia, pero no de la consigna; con ellos se hacen la
@@ -462,13 +462,13 @@ identificación por ventanas ARX, los caudales y la perturbación total.
 Como los tres módulos son idénticos en proceso, y la consigna de 0 a 100~\%
 enviada por el PLC a los variadores no quedó en el histórico del SCADA, en M2 y
 M3 se toma la potencia en porcentaje de plena carga,
-$u = 100\,P/P_{\max}$, como si fuera la misma señal de control. $P_{\max}$ es una aproximación de
+$u = 100\,P/P_{\max}$, como si fuera la misma señal de control, y la diferencia la deberá compensar el controlador.
+$P_{\max}$ es una aproximación de
 la plena carga y no el máximo del registro: se toma un valor cercano al percentil 99 de la potencia
 registrada con el soplador encendido, $P_{\max} = 106{,}3$~kW en M2 y $110{,}1$~kW en M3. Con los dos
 sopladores encendidos la potencia consumida no siempre es la misma, y en algunos casos pasa de ese
-valor (Figura~\ref{fig:ident_segundo_soplador}); ahí $u$ supera el $100~\%$. Aun así, se deja este
-valor en todo el trabajo, porque los $K$ y $\bo$ identificados están referidos a él. La diferencia entre la potencia y la señal de control, debida a la
-cadena variador--motor--soplador y no exactamente lineal, no se modela por
+valor (Figura~\ref{fig:ident_segundo_soplador}); ahí $u$ supera el $100~\%$. La diferencia entre la potencia y la señal de control, debida a la
+cadena variador--motor--soplador, no se modela por
 separado: queda incluida en la perturbación total $\bar{\xi}$, igual que el
 error al elegir $\bo$ (Secciones~\ref{sec:ident_arx} y~\ref{sec:car_modelo}).
 El observador del ADRC la estima y la compensa junto con el resto de lo que el
@@ -517,21 +517,21 @@ envolvente decreciente hasta que llega al estacionario.
 
 \begin{figure}[!htbp]
     \centering
-    \subfloat[Los dos mejores arranques en M2: el OD llega a la referencia sin
+    \subfloat[Respuestas transitorias en M2: el OD llega a la referencia sin
     oscilar.]{\includegraphics[width=\linewidth]{ident_13_pid_arranques.pdf}%
     \label{fig:ident_pid_arranques}}\\
-    \subfloat[Arranques en su versión oscilatoria, en M2 y M3: subamortiguados
-    pero convergentes; los círculos marcan los picos sucesivos sobre la
+    \subfloat[Respuestas transitorias oscilatorias, en M2 y M3: subamortiguados;
+    los círculos marcan los picos sucesivos sobre la
     referencia.]{\includegraphics[width=\linewidth]{ident_14_pid_oscilatorio.pdf}%
     \label{fig:ident_pid_oscilatorio}}
-    \caption[Arranques del PID actual]{Arranques del PID actual en la planta.
+    \caption[Arranques del PID actual]{Respuestas transitorias del PID actual en la planta.
     La línea discontinua es la referencia de 2,0~mg/L; abajo de cada panel, la
     potencia consumida en kW.}
     \label{fig:ident_pid}
 \end{figure}
 
 Por lo tanto, cuando el sistema tiene condiciones diferentes, a
-veces llega a la referencia limpiamente y otras veces oscila. Esto es coherente
+veces llega a la referencia limpiamente y otras veces oscila (debido a las perturbaciones). Esto es coherente
 con lo que se muestra más adelante en la identificación: la ganancia de la planta cambia de una
 ventana a otra (Sección~\ref{sec:ident_arx}), aunque desde el
 enfoque del ADRC la ganancia se mantiene constante y lo que cambia es la
@@ -587,16 +587,15 @@ ganancia cambia con las perturbaciones.
     \centering
     \includegraphics[width=0.85\linewidth]{ident_16_escalon_3mgL.pdf}
     \caption[El mismo escalón de M2 en dos días]{El mismo escalón de M2 en dos días, el 16-abr-2025 y
-    el 26-feb-2025: (a) señal de control en porcentaje y (b) OD, que asienta en 3,06 y 1,93~mg/L. La
-    línea punteada es el ajuste de primer orden con retardo.}
+    el 26-feb-2025: (a) señal de control en porcentaje y (b) OD, que asienta en 3,06 y 1,93~mg/L.}
     \label{fig:ident_escalon_3mgL}
 \end{figure}
 
 \paragraph{Un escalón alrededor de la referencia.} Casi todos los escalones
-anteriores van de soplador apagado a plena carga, y el OD recorre de casi 0 a
+anteriores van de soplador apagado al máximo de potencia, y el OD recorre de casi 0 a
 más de 4~mg/L. En M3 hay una identificación en el punto de operación, realizada el 13-jun-2025
 (Figura~\ref{fig:ident_escalon_ref}). Con 40~kW el OD se asienta en
-1,08~mg/L; a las 04:16 la potencia sube a 60~kW ($\Delta u = 18{,}1$~\% de
+1,08~mg/L; luego la potencia sube a 60~kW ($\Delta u = 18{,}1$~\% de
 plena carga) y el OD llega a 2,50~mg/L.
 \begin{equation*}
 K = \frac{\Delta y}{\Delta u} = \frac{2{,}50 - 1{,}08}{18{,}1}
@@ -619,8 +618,7 @@ K = \frac{\Delta y}{\Delta u} = \frac{2{,}50 - 1{,}08}{18{,}1}
 La planta se operaba con una sola señal de control de 0 a $100~\%$ repartida entre los dos
 sopladores: el primer $50~\%$ de la señal lleva un soplador hasta su máximo y el otro $50~\%$ es para
 el segundo. En la Figura~\ref{fig:ident_segundo_soplador}, con un soplador el OD se queda casi quieto,
-y al entrar el segundo sube rápido; cuando se apaga, vuelve a bajar. Por eso se decidió conectar los
-dos sopladores a la misma señal de control de 0 a $100~\%$, sin fraccionarla. Aun así, el ADRC debería
+y al entrar el segundo sube rápido; cuando se apaga, vuelve a bajar. Aun así, el ADRC debería
 poder asimilar la entrada del segundo soplador: mientras el sistema no llegue a la referencia actúa el
 anti-\emph{windup}, y cuando entra el segundo soplador, el exceso de potencia que aporta se toma como una
 perturbación y el sistema llega a la referencia. Como anotación, aunque el sistema está diseñado para 3 sopladores, solo
@@ -631,7 +629,7 @@ se tienen en funcionamiento dos para las fechas de las pruebas.
     \includegraphics[width=0.85\linewidth]{ident_22_segundo_soplador.pdf}
     \caption[Entrada del segundo soplador en M3]{M3 el 26-abr-2025: (a) potencia consumida y (b) OD,
     con el valor que alcanza al final de cada cambio de potencia: apagado, un soplador a 50~kW, los dos a
-    115~kW y de nuevo uno a 60~kW.}
+    115~kW.}
     \label{fig:ident_segundo_soplador}
 \end{figure}
 
@@ -639,8 +637,8 @@ se tienen en funcionamiento dos para las fechas de las pruebas.
 \subsection{Retardo}
 \label{sec:ident_retardo}
 
-El SCADA, a 1~min, no puede resolver un retardo de menos de un minuto. El único
-escalón que sí lo resuelve es el registrado por el PLC a 50~ms
+El SCADA, a 1~min, no puede obtener un retardo de menos de un minuto. El único
+escalón que sí lo tiene es el registrado por el PLC a 50~ms
 (Figura~\ref{fig:ident_retardo}). La imagen muestra un retardo aproximado de
 $\theta = 50$~s, y el OD sale de su ruido a los $\approx$ 58~s. A simple vista, el OD empieza a subir hacia los 50~s. Por
 ende, para el diseño se considera un retardo entre 0 y 60~s, con ideal de 50~s, que abarca el espectro completo de $\theta$, y en
@@ -692,17 +690,16 @@ con escalones pequeños cerca de ese punto. En este trabajo el diseño también 
 hizo en un punto de operación, el de 2~mg/L
 (Sección~\ref{sec:ident_planta_diseno}), pero la identificación se hizo con
 todos los escalones recolectados, en todo el rango de operación de la planta y
-del actuador, para conocer cuánto varían la ganancia y la constante de tiempo
+del actuador, para conocer cuánto pueden llegar a variar la ganancia y la constante de tiempo
 del sistema, y verificar que el ADRC funciona en todo ese rango sin cambiar los
 parámetros del controlador.
 
 Para eso, el ajuste se repite en ventanas deslizantes de 3~h con paso de 1~h,
 descartando las ventanas sin excitación, con $R^2 < 0{,}5$ o con $\tau$ fuera
-de 1--300~min. Las distribuciones que quedan son anchas
-(Figura~\ref{fig:ident_pob}): la identificación promedia la subida y la bajada,
+de 1--300~min. Las distribuciones que quedan se encuentran en la Figura~\ref{fig:ident_pob}: la identificación promedia la subida y la bajada,
 y además la ganancia cambia de una ventana a otra. Por eso la
 Tabla~\ref{tab:ident_arx} reporta medianas y, como rango, el intercuartílico, es
-decir, el intervalo donde cae la mitad central de las ventanas.
+decir, el intervalo donde cae la mitad central de las ventanas (50\% de los datos).
 
 \begin{table}[!htbp]
 \centering
@@ -734,7 +731,7 @@ después escalón por escalón.
 Los escalones de soplador son la referencia más directa del comportamiento real: en cada uno se
 ve cuánto tarda el OD en responder y cuánto llega a cambiar, por separado para
 las subidas y para las bajadas. Se toman los 532 escalones que pasan un filtro
-estricto ($|\Delta u| \geq 20$~\%, al menos 90~min de duración,
+($|\Delta u| \geq 20$~\%, al menos 90~min de duración,
 $R^2 \geq 0{,}90$, respuesta asentada y $|\Delta y| \geq 0{,}30$~mg/L), y cada
 uno se ajusta con un primer orden. Si el modelo ARX representa bien la planta, sus
 parámetros deberían parecerse a los de los escalones.
@@ -749,13 +746,12 @@ logarítmica.
     \centering
     \includegraphics[width=\linewidth]{ident_05_poblaciones_tau_K.pdf}
     \caption[Poblaciones de $\tau$, $K$ y $\bo$ en M2 y M3]{Las tres poblaciones
-    de la constante de tiempo (izquierda), de la ganancia estática (centro) y de
-    la ganancia de entrada $\bo = K/\tau$ (derecha) en M2 (arriba) y M3 (abajo):
+    de la constante de tiempo (primera columna de la gráfica), de la ganancia estática (segunda columna) y de
+    la ganancia de entrada $\bo = K/\tau$ (tercera columna) en M2 (primera fila) y M3 (segunda fila):
     ventanas ARX de 3~h, escalones que suben y escalones que bajan (en $\bo$,
     solo las ventanas ARX). Histogramas en densidad, con el eje horizontal en escala logarítmica; las
     líneas discontinuas son las medianas, la punteada de la derecha es el $\bo$
-    de diseño (0,15) y los valores fuera del eje se acumulan en las barras de los
-    extremos.}
+    de diseño (0,15)}
     \label{fig:ident_pob}
 \end{figure}
 
@@ -799,8 +795,7 @@ diagonal punteada indica que los dos coinciden.
 En la ganancia los puntos caen sobre la diagonal en todo el rango, tanto en M2
 como en M3 y tanto al subir como al bajar. En la constante de tiempo también siguen la
 diagonal; las bajadas, que son rápidas, quedan muy pegadas a ella, y las
-subidas lentas se dispersan más, porque al arrancar desde un OD muy bajo la
-respuesta no es una exponencial limpia. Por ende, cuando el ARX mira un solo
+subidas lentas se dispersan más, pero en general la mayor parte de la información, es decir, los puntos tanto de subida como de bajada de los módulos, caen muy cerca de la recta. Por ende, cuando el ARX mira un solo
 escalón reproduce lo que se mide en la planta, y esto valida que el espectro de
 ganancias que entrega la identificación (Sección~\ref{sec:ident_arx}) es válido para la planta.
 
@@ -825,10 +820,7 @@ medir es el rango en el que los operarios lo tratan de mantener.
 En la Figura~\ref{fig:ident_caudales_perfil}b, siete días seguidos se
 superponen al ciclo diario (la media de los datos medidos en cada hora durante los días de referencia); Lo que cada registro se aparta del ciclo tiene una desviación estándar
 robusta de 13,6~L/s. Es decir, el caudal de entrada es sobre todo aleatorio, con un ciclo
-diario débil que está alrededor de un valor de DC de aproximadamente 34~L/s. Por ende, la perturbación, que depende de los caudales de entrada
-según la ecuación~\eqref{ecu:disturbance} que se modela en la sección
-siguiente tiene la misma estructura: un nivel, un ciclo diario débil y una parte
-aleatoria de mayor magnitud.
+diario que está alrededor de un valor de DC de aproximadamente 34~L/s. 
 
 \begin{figure}[H]
     \centering
@@ -854,7 +846,7 @@ señal de control unos 12 puntos; el OD apenas se aparta de la consigna, y al
 apagarse la bomba la señal vuelve casi al nivel de antes. Como el caudal de
 entrada se mantuvo casi constante mientras la bomba estuvo encendida, ese cambio
 se debe a la recirculación. Este cambio de unos 12 puntos es el que se usa más adelante
-para elegir la perturbación de entrada de las simulaciones, $\varepsilon = -15~\%$
+para elegir la perturbación de entrada de las simulaciones, $\varepsilon = -15~\%$ (se sobredimensiona para las pruebas)
 (Sección~\ref{subsec:caso_simulacion}): del mismo orden que la medida, y algo mayor.
 
 \begin{figure}[H]
@@ -963,9 +955,9 @@ a 50~ms del ensayo del 12 de marzo de 2026 en M1. Se usan los últimos
 su estacionario (Figura~\ref{fig:ident_ruido}), se usa la medida del oxígeno promedio entre los dos transmisores AIT-100-A y AIT-100-B, calculado por el PLC.
 El estimador es $\sigma = \mathrm{std}(\Delta y)/\sqrt{2}$, que supone ruido
 blanco. A 50~ms el ruido del promedio de ambos sensores es de 0,0011~mg/L. La
-densidad espectral de esos 10~min (Figura~\ref{fig:ident_ruido}b) confirma
-la hipótesis: desde unos 2000~rad/h hasta la frecuencia de Nyquist tiene un
-piso plano, al nivel de un ruido blanco de esa $\sigma$; por debajo domina la
+densidad espectral de esos 10~min (Figura~\ref{fig:ident_ruido}b) lo confirma
+: desde unos 2000~rad/h hasta la frecuencia de Nyquist tiene un
+valor casi plano, al nivel de un ruido blanco de esa $\sigma$; por debajo domina la
 variación real del OD.
 
 Para M2 y M3 no hay trazas a 50~ms, así que su valor sale del SCADA a 1~min
@@ -973,8 +965,8 @@ Para M2 y M3 no hay trazas a 50~ms, así que su valor sale del SCADA a 1~min
 ruido del sensor sino la variación del OD de un minuto a otro: la misma traza
 del 12 de marzo, promediada a 1~min, da 0,024~mg/L, igual que el valor del
 SCADA para M1 (0,024). El valor de M3, unas 19 veces mayor que el de M1 y 14 veces mayor que
-el de M2 con la misma planta y la misma aireación, apunta a un problema de su
-sonda.
+el de M2 con la misma planta y la misma aireación, evidencia, tal vez, un problema de ruido en la sonda de M3.
+
 
 
 \begin{table}[!htbp]
@@ -1028,7 +1020,7 @@ $k_{dc} = 0{,}05$~mg/(L$\cdot$\%), que queda entre los escalones de M2 y
 los de M3 (Figura~\ref{fig:ident_validacion}), y $\tau = 20$~min, cerca de la
 mediana de los escalones. Con ellos, el controlador usa
 $\bo = k_{dc}/\tau = 0{,}15$~mg/(L$\cdot$h$\cdot$\%), es decir,
-$4{,}17\times10^{-5}$~mg/(L$\cdot$s$\cdot$\%). Para revisar la robustez, la
+$4{,}17\times10^{-5}$~mg/(L$\cdot$s$\cdot$\%) y este valor corresponde con la mediana de M3; aunque es más grande que la mediana de M2, más adelante se evidencia que es mejor sobreestimar el valor de $b_0$ que subestimarlo. Para revisar la robustez, la
 ganancia se varía a través de $b_0$: el barrido del $b_0$ del controlador de la
 Sección~\ref{subsec:caso_variacion}, de $1/6$ a $6$ veces el de diseño, abarca el rango
 intercuartílico de $b_0$ de los dos módulos (Tabla~\ref{tab:ident_arx}), que va de $0{,}22$ a $1{,}5$
@@ -1054,9 +1046,8 @@ que sostiene los $2{,}0$~mg/L.
 
 La Tabla~\ref{tab:ident_resumen} reúne los rangos de todo lo caracterizado en
 esta sección: la dinámica de la planta para M2 y M3, con todas las ventanas
-ARX, y la planta nominal de diseño, común a los dos módulos. Para la ganancia, el
-rango que se usa en el diseño es el de $b_0$: de $0{,}0335$ a $0{,}224$~mg/(L$\cdot$h$\cdot$\%)
-entre los dos módulos, es decir, de $0{,}22$ a $1{,}5$ veces el $b_0$ de diseño. Ahora bien, el
+ARX, y la planta nominal de diseño, común a los dos módulos. Para la ganancia, los rangos de validación de $b_0$ van de $0{,}0335$ a $0{,}224$~mg/(L$\cdot$h$\cdot$\%)
+entre los dos módulos, es decir, de $0{,}22$ a $1{,}5$ veces el $b_0$ de diseño (en las validaciones se usan cambios de $b_0$ más grandes y bruscos, para ver con más detalle el comportamiento del sistema). Ahora bien, el
 retardo, entre 0 y 60~s, es pequeño frente a
 esa dinámica. Por ende, el controlador tiene que funcionar en todos estos
 rangos con una sola sintonía, que es justamente lo que se busca con el ADRC.

@@ -9,7 +9,7 @@ En los ámbitos industriales, el máximo exponente en simplicidad, desempeño y 
 controlador PID, que abarca casi todos los lazos de control. Por eso se busca un nuevo paradigma en
 el que se cambie por controladores más avanzados teóricamente, que ofrecen mejores prestaciones, como
 los de rechazo activo de perturbaciones (ADRC) o su equivalencia en control
-proporcional-integral generalizado (GPI). En ellos cambia el enfoque de sintonización por uno donde
+proporcional-integral generalizado (GPI) robusto. En ellos cambia el enfoque de sintonización por uno donde
 se coloca la dinámica deseada del error de seguimiento y se rechazan las diferentes perturbaciones
 identificadas. Al estar basados en el error de seguimiento, se busca que sean lo más simples posible
 para que puedan llegar a sustituir al PID casi \emph{plug and play}.
@@ -19,7 +19,7 @@ de una planta de tratamiento de aguas residuales, donde se presentan diferentes 
 los caudales de entrada, los mismos actuadores con sus zonas muertas y algunas endógenas, como las
 cargas orgánicas, que afectan los niveles de oxígeno en el tanque. A partir de 22 meses de datos de
 operación se identificó la planta y se caracterizó la perturbación, y con eso se diseñaron un ADRC
-basado en observador de estado extendido (ESO) y un GPI, que resultan ser el mismo lazo escrito de
+basado en observador de estado extendido (ESO) y un GPI robusto, que resultan ser el mismo lazo escrito de
 dos maneras.
 
 Se presentan también los aspectos prácticos de implementación, como el manejo de la saturación, el
@@ -54,7 +54,7 @@ the Activated Sludge Stage of a Wastewater Treatment Plant}
 In industry, the PID controller has been the leading choice for simplicity, performance and
 robustness, and it covers almost every control loop. This work therefore looks at replacing it with
 theoretically more advanced controllers that offer better capabilities, such as active disturbance
-rejection control (ADRC) or its equivalent, generalized proportional-integral (GPI) control. These
+rejection control (ADRC) or its equivalent, robust generalized proportional-integral (GPI) control. These
 controllers change the tuning approach: the desired tracking error dynamics are imposed and the
 identified disturbances are rejected. Since they work on the tracking error, the aim is to keep them
 simple enough to replace a PID almost as plug and play.
@@ -63,7 +63,7 @@ The case study is the dissolved oxygen control loop in the activated sludge stag
 treatment plant, which is affected by inlet flows, by the actuators themselves and their dead zones,
 and by endogenous disturbances such as organic loads. From 22 months of operating data, the plant was
 identified and its disturbance characterized, and an ADRC based on an extended state observer (ESO)
-and a GPI were designed, which turn out to be the same loop written in two ways.
+and a robust GPI were designed, which turn out to be the same loop written in two ways.
 
 Practical implementation issues are also addressed: saturation handling, reference conditioning,
 noise and dead time, together with a discrete-time realization for digital equipment, for both the

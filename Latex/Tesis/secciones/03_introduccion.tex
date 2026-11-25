@@ -64,11 +64,11 @@ implementación industrial
 
 Bajo este marco, el presente proyecto se centra en el diseño, implementación y
 validación de dos estrategias de control avanzado basadas en rechazo activo de
-perturbaciones: un controlador proporcional-integral generalizado (GPI) y un
+perturbaciones: un controlador proporcional-integral generalizado (GPI) robusto y un
 ADRC con ESO, ambos escritos sobre el error de seguimiento, para la regulación
 de oxígeno disuelto en una planta de tratamiento de aguas residuales. Los dos
 se enfrentan al mismo PID ISA de referencia con filtro en la acción derivativa,
-a la misma perturbación, obtenida y sintetizada a partir de los datos reales de la planta. La investigación busca demostrar que estas técnicas no solo
+a la misma perturbación, obtenida a partir de los datos reales de la planta. La investigación busca demostrar que estas técnicas no solo
 pueden mejorar el desempeño transitorio, con una sintonización más sencilla y
 un menor movimiento de la señal de control que el PID convencional, sino que también son viables técnicamente para ser embebidas en
 la infraestructura de automatización existente, contribuyendo de esta forma a
@@ -156,6 +156,12 @@ $S_O^{*}$ & Concentración de saturación de oxígeno & g~O$_2$/m$^3$ \\ \hline
 $r_{Z,5}$ & Tasa neta de consumo de oxígeno por la biomasa & g~O$_2$/(m$^3$\,d) \\ \hline
 \end{tabular}
 \end{table}
+
+El término $r_{Z,5}$ se calcula con el ASM1 a partir del crecimiento aerobio de la biomasa heterótrofa
+y autótrofa \eqref{eq:car_rz}: depende de variables que cambian en el tiempo con la carga que entra
+(el sustrato, el amonio, la biomasa activa y el propio $\SOc$) y de parámetros fijos del ASM1 (los
+rendimientos, las tasas máximas de crecimiento y las constantes de saturación). Por eso actúa como
+perturbación: depende de lo que entra al tanque y no del soplador.
 
 La ecuación de la dinámica servirá solo como guía, para identificar las perturbaciones que pueden
 afectar el lazo de control y para analizar la estimación de la perturbación total realizada mediante el
@@ -252,7 +258,8 @@ $(\boldsymbol{k}^{\top}\;1)\,\hat{\boldsymbol{x}}$ calcula la acción que lleva
 el error a cero y cancela la perturbación estimada, y el bloque $1/\bo$ la
 convierte en la señal física $u$. Como el observador se alimenta con
 $u_{\text{lim}}$, la saturación del actuador no hace que la estimación se
-desvíe, es decir que este tipo de controlador ya viene con un manejo de saturación incorporado, un anti-windup natural. 
+desvíe, es decir que este tipo de controlador ya viene con un manejo de saturación incorporado, un anti-windup natural. Y, adicionalmente, al colocar el enfoque
+basado en el error, se hace seguimiento y rechazo al mismo tiempo.
 
 \subsection{Control GPI (A Flat Filtering Approach)}
 
@@ -266,7 +273,7 @@ un controlador de una sola pieza, sin estados de observador explícitos, cuya
 robustez proviene del mismo mecanismo y el rechazo de perturbaciones corresponde
 a un modelo interno de la perturbación.
 
-Sira-Ramírez et al. \cite[\S3.4.3]{sira2017adrc} presentan este enfoque, de
+Sira-Ramírez et al. \cite[sec.~3.4.3]{sira2017adrc} presentan este enfoque, de
 \emph{filtrado plano}, sobre el sistema de segundo orden no perturbado
 
 \begin{equation}
@@ -340,7 +347,7 @@ y el desempeño el orden del sistema, el número de estados extendidos, la
 incertidumbre en la ganancia de control y el método de sintonía. Además,
 recopilan las equivalencias ya conocidas entre el ADRC y otras estructuras,
 como los filtros planos y el PID. Siguiendo la línea de la equivalencia entre
-el ADRC y los filtros planos, en este trabajo se busca la correspondencia entre el GPI construido con
+el ADRC y los filtros planos, y como motivación de este trabajo, se busca la correspondencia entre el GPI construido con
 reconstructores integrales y el ADRC con ESO, es decir, el cambio de
 ganancias de $(\wc,\wo)$ a $(k_0,k_1,k_2)$. Ambas son formas
 equivalentes que solo difieren en su implementación y en el manejo de la
@@ -566,7 +573,7 @@ y a los objetivos específicos (Tabla~\ref{tab:metodologia}).
 \textbf{Fase 3} & Diseño de controladores (Cap.~\ref{cap:ADRC-ESO} y~\ref{cap:GPI}; OE2 y OE3) &
 \textbullet~ADRC con ESO basado en el error de seguimiento, con sintonía por anchos de banda.\newline
 \textbullet~GPI con integradores y su equivalencia con el ADRC con ESO.\newline
-\textbullet~Análisis de robustez y ante variaciones de la planta, en Python y Simulink. \\ \hline
+\textbullet~Análisis de robustez y ante variaciones de la planta, en Python, MATLAB y Simulink. \\ \hline
 \textbf{Fase 4} & Implementación en PLC (Cap.~\ref{cap:implementacion}; OE4) &
 \textbullet~Saturación, acondicionamiento de la referencia, ruido y retardo.\newline
 \textbullet~Discretización y realización con retardos.\newline
