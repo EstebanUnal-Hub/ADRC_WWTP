@@ -44,13 +44,13 @@ retrasando la orden que le entra, como proponen Herbst y Madoński \cite[sec.~9.
 de oscilar, a cambio de una respuesta algo más lenta (Sección~\ref{sec:impl_retardo}).
 
 \paragraph{Manejo de la saturación.} Los esquemas de manejo de la saturación, el del ESO, que
-realimenta al observador la orden aplicada \cite[sec.~9.1.1]{herbst2024adrc}, y el del GPI, con el
+realimenta al observador la orden aplicada \cite[sec.~9.1.1]{herbst2024adrc}, y el del GPI robusto, con el
 polinomio $E_1$ del \emph{Handbook} \cite[sec.~19.1.3]{levine2011handbook}, muestran muy buenos
 resultados (Sección~\ref{sec:impl_saturacion}): el lazo no se desestabiliza, incluso ante variaciones
 de los parámetros de la planta (Figura~\ref{fig:sat_adrc_gpi_variacion}), y cuando el soplador sale del
 límite no se observa sobrepico y el oxígeno se mantiene en la referencia. En caso contrario, sin manejo
 de la saturación, el controlador se demora más en salir del límite y muestra sobrepicos más grandes,
-como el GPI sin \emph{anti-windup} de la Figura~\ref{fig:sat_arranque}. Lo que ningún esquema evita es
+como el GPI robusto sin \emph{anti-windup} de la Figura~\ref{fig:sat_arranque}. Lo que ningún esquema evita es
 que, mientras el soplador está en el límite, el oxígeno suba más despacio que en el diseño
 (Figura~\ref{fig:adrc_lazo_cerrado_saturacion}): el \emph{anti-windup} evita que el controlador acumule
 error, pero no le da al soplador más capacidad. Con la perturbación medida se ve lo mismo: el
@@ -66,7 +66,7 @@ $u$ \cite[ecs.~4.20 y 6.30]{herbst2024adrc}. Como se mostró en la Sección~\ref
 \eqref{eq:ruido_ft} se pueden ajustar las frecuencias que se desean filtrar y las que se desean estimar
 a partir del ancho de banda del observador, y en la Figura~\ref{fig:adrc_gang_kESO}(h) se ve que, entre
 más grande la relación $\omega_o/\omega_c$, más ruido dejamos pasar a $u$
-(Tabla~\ref{tab:adrc_frecuencia_kESO}). Por lo que el ruido, junto con el retardo, es quien realmente
+(Tabla~\ref{tab:adrc_frecuencia_kESO}). Por lo que el ruido es quien realmente
 pone la cota superior al ancho de banda del observador, que es el compromiso entre atenuación del ruido
 de la sonda y recuperación ante la carga que plantean Cao et al.\ \cite{cao2025cascaded}. Con la
 sintonía de diseño, por debajo de $\omega_o$ queda el 87~\% de la energía de la perturbación medida
@@ -90,7 +90,7 @@ banda pasa directamente al discreto: basta con llevar los polos de $\omega_c$ y 
 $\mathbf{K}_p$, sin rediseñar el controlador.
 
 \paragraph{Rechazo de perturbaciones.} Viendo los resultados de la Figura~\ref{fig:gpi_sensibilidad},
-correspondiente al Bode de la sensibilidad en lazo cerrado del GPI, vemos que podemos ajustar el
+correspondiente al Bode de la sensibilidad en lazo cerrado del GPI robusto, vemos que podemos ajustar el
 rechazo con cada ganancia (Tabla~\ref{tab:gpi_frecuencia}). A baja frecuencia,
 $S_{\xi}(s) \approx (k_2/k_0)\,s$ \eqref{eq:gpi_caso_S_asintotas}, por lo que la parte lenta de la
 perturbación la deciden $k_2$ y $k_0$: subir $k_0$ la rechaza mejor, pero baja el margen de fase. El
@@ -110,21 +110,19 @@ comunes dentro de la norma IEC~61131-3 \cite{iec61131}, porque de todos es el m�
 bien, los esquemas de las Figuras~\ref{fig:adrc_discreto_retardos} y \ref{fig:disc_formas_directas}
 solo tienen sumas, ganancias y retardos, que existen en todos los lenguajes de la norma
 (Sección~\ref{subsec:plc_lenguajes}): para el ESO son suficientes dos retardos y tres sumas, y para el
-GPI discreto seis retardos y un sumador. Por lo que se puede implementar en cualquier PLC de la norma,
+GPI robusto discreto seis retardos y un sumador. Por lo que se puede implementar en cualquier PLC de la norma,
 con una condición: trabajar en doble precisión (LREAL), porque con $T_s = 50$~ms los polos discretos
 quedan muy cerca de $z = 1$ y los coeficientes necesitan muchos decimales
 (Sección~\ref{subsec:disc_gpi}). Además, al estar formulado sobre el error, el bloque recibe las mismas
 señales que el PID y lo puede sustituir sin recablear el lazo, que es la motivación del ADRC basado en
 el error de Madoński et al.\ \cite{madonski2019general}.
 
-\paragraph{ADRC con ESO y GPI.} Al comparar los controladores con enfoque de rechazo activo de
-perturbaciones, ya sea utilizando un ESO o el GPI, se ve que tienen una relación directa. En el caso
+\paragraph{ADRC con ESO y GPI robusto.} Al comparar los controladores con enfoque de rechazo activo de
+perturbaciones, ya sea utilizando un ESO o el GPI robusto, se ve que tienen una relación directa. En el caso
 del observador de estado extendido se busca estimar la perturbación y el error de seguimiento mediante
-el observador, y el GPI trata de realizar la misma idea bajo reconstrucciones de la señal, a partir de
+el observador, y el GPI robusto trata de realizar la misma idea bajo reconstrucciones de la señal, a partir de
 integraciones de la señal de control y del error \eqref{eq:gpi_integrales}. Todo esto indica que son
-estructuras equivalentes que tratan de realizar la misma tarea bajo enfoques diferentes, en la línea de
-las equivalencias que recopilan Rojas y Cortés-Romero entre el observador GPI, el ESO y el observador
-de perturbación clásico \cite{rojas2020equivalence}. Con las ganancias $k_0$, $k_1$ y $k_2$ queda más
+estructuras equivalentes que tratan de realizar la misma tarea bajo enfoques diferentes. Ahora bien, con las ganancias $k_0$, $k_1$ y $k_2$ queda más
 fácil interpretar cómo es la sensibilidad del rechazo de perturbaciones en lazo cerrado
 (Figura~\ref{fig:gpi_sensibilidad}) y cómo cada ganancia afecta el sobrepico o el tiempo de
 asentamiento (Tabla~\ref{tab:gpi_transitorio}). Mientras que el ADRC con ESO ayuda a interpretar el
@@ -138,7 +136,7 @@ márgenes de fase y de ganancia y los mismos anchos de banda, y lo que realmente
 esquemas es la forma de sintonizar y su esquema de saturación. Pero incluso ahí se puede pasar de un
 esquema a otro y tener el mismo resultado: el \emph{Handbook} recomienda construir $E_1$ con los polos
 más rápidos del lazo cerrado \cite[ec.~19.3]{levine2011handbook}, y al tomar
-$E_1(s) = (s + \omega_o)^2$ \eqref{eq:aw_gpi_wo}, los polos del observador, el GPI se comporta igual que
+$E_1(s) = (s + \omega_o)^2$ \eqref{eq:aw_gpi_wo}, los polos del observador, el GPI robusto se comporta igual que
 el ADRC también cuando satura (Figuras~\ref{fig:sat_arranque} y \ref{fig:gpi_discreto_vs_adrc}).
 
 \paragraph{Comparación con el PID}
@@ -150,8 +148,7 @@ precedido por filtros en cascada \cite{cao2025cascaded}, así como en este caso 
 error \eqref{eq:gpi_pi_filtro}. Pero su diferencia con el PID ISA con filtro en la derivada radica en
 que la función de transferencia de ese PID es bipropia, y la del ADRC estrictamente propia. Esa es una
 primera diferencia, donde el PID tiene peores resultados en su manejo del ruido: como vimos en la
-Sección~\ref{sec:impl_ruido}, al ser bipropio deja pasar el ruido hacia la señal de control, con una
-$\sigma_u$ unas veinte veces mayor que la del ADRC (Tabla~\ref{tab:pid_escalon}), haciendo mayor
+Sección~\ref{sec:impl_ruido}, al ser bipropio deja pasar el ruido hacia la señal de control, haciendo mayor
 desgaste en los actuadores, a pesar de que la misma planta se comporte como un filtro.
 
 Ahora bien, el PID se sintonizó para que su señal de control no salte más que la del ADRC y con la
@@ -160,7 +157,8 @@ cambios de consigna y rechaza peor las perturbaciones (Tablas~\ref{tab:pid_escal
 y \ref{tab:pid_pert_escalon}). En el PID una sola ganancia fija el rechazo, el esfuerzo inicial y el
 ruido, mientras que en el ADRC el rechazo lo pone el observador. Sin embargo, para una planta de primer
 orden como esta, un PI sintonizado con el mismo procedimiento y el mismo margen de fase del ADRC lo
-supera en rechazo (Figura~\ref{fig:pid_mejores}). Lo que el ADRC sigue ganando es una señal de control que arranca suave y casi
+supera en rechazo (Figura~\ref{fig:pid_mejores}), aunque no con la misma $M_s$: la del PI es menor
+(Tabla~\ref{tab:pid_mejores}). Lo que el ADRC sigue ganando es una señal de control que arranca suave y casi
 sin ruido, y la posibilidad de subir el grado del modelo de la perturbación sin cambiar su estructura.
 Además, el seguimiento y el rechazo se entienden y se sintonizan por separado, con dos anchos de banda.
 
@@ -170,8 +168,7 @@ con la dinámica deseada ni con la perturbación. Además, al ser de parámetros
 variaciones de carga y de caudal \cite{qiao2016self}: queda sintonizado para un punto del rango que
 recorre la planta, y en los arranques medidos del PID de la PTAR unas veces llega limpio a la consigna
 y otras oscila (Sección~\ref{sec:ident_pid}). El ADRC, en cambio, se puede sintonizar por anchos de
-banda \cite{gao2003scaling}, por \emph{pole placement} con las ganancias $k_0$, $k_1$ y $k_2$ para
-ajustar la sensibilidad en lazo cerrado, o en su forma clásica de PI más filtro.
+banda \cite{gao2003scaling} y ajustarlo para poder lograr rechazar la perturbación que se desea.
 
 \section{Limitaciones del estudio}
 \label{sec:limitaciones}
@@ -181,15 +178,9 @@ ajustar la sensibilidad en lazo cerrado, o en su forma clásica de PI más filtr
   es complicado tener una ventana de tiempo para realizar la implementación del código en campo dentro
   de las fechas admisibles para el proyecto. Por eso la validación es en simulación, con la planta
   identificada, y se deja todo el proyecto probado y verificado para su puesta en marcha cuando se tenga
-  el espacio en campo para instalarlo. Por la misma razón no se midió el consumo eléctrico de los
-  sopladores: $E_u$ (Tabla~\ref{tab:metricas}) es la energía de la señal de control, no un consumo en
-  kWh, así que el posible ahorro energético queda por confirmar en campo.
+  el espacio en campo para instalarlo. 
 
-  \item \textbf{La señal de control del PLC no quedó registrada.} La consigna que el PLC envía a los
-  variadores no quedó en el histórico del SCADA, así que en M2 y M3 la identificación usa la potencia en
-  porcentaje de plena carga como si fuera la señal de control (Sección~\ref{sec:ident}). Por eso los
-  $b_0$ identificados están en unidades de potencia y no en las del bloque del controlador, y de ahí la
-  recomendación de medirlo directamente en el PLC (Sección~\ref{sec:implicaciones}).
+
 
   \item \textbf{El retardo está acotado, no medido con precisión.} El retardo se encuentra acotado y
   obtenido visualmente a partir de una de las pruebas de uno de los tres módulos dispuestos en la
@@ -212,8 +203,7 @@ ajustar la sensibilidad en lazo cerrado, o en su forma clásica de PI más filtr
 
   \item \textbf{Limitación del orden de la perturbación.} Se escogió para el diseño una perturbación de
   orden $m = 1$, un solo integrador, por lo que al cambiar la referencia por rampas u otros tipos se
-  tendrán errores de seguimiento, relativamente pequeños en función de las ganancias de los
-  controladores, pero de igual forma existirá el error de seguimiento. Para estos entornos industriales
+  tendrán errores de seguimiento, relativamente pequeños en función de las ganancias, pero de igual forma existirá el error de seguimiento. Para estos entornos industriales
   donde se usan PID no es tanto problema, pero si llegado el caso se necesita seguir otro tipo de
   referencias de forma exacta, $e_y(\infty) = 0$, deberá modificarse cada uno de los bloques de los
   controladores implementados y diseñados en este documento.
@@ -222,8 +212,8 @@ ajustar la sensibilidad en lazo cerrado, o en su forma clásica de PI más filtr
 \section{Implicaciones prácticas}
 \label{sec:implicaciones}
 
-Para quien tenga que decidir sobre un lazo de oxígeno en servicio, los
-resultados se traducen en cinco recomendaciones concretas:
+
+Los resultados se traducen en cinco recomendaciones concretas:
 
 \begin{enumerate}
   \item \textbf{Medir $\bo$ en las unidades del bloque, no en unidades
@@ -237,22 +227,19 @@ resultados se traducen en cinco recomendaciones concretas:
   respuesta es más lenta, pero se conserva la robustez. Con $b_0$ subestimado el controlador es más
   agresivo y con retardo el lazo se acerca al límite de inestabilidad (Figura~\ref{fig:adrc_rlocus_b0}).
 
-  \item \textbf{Elegir $\wo$ con el espectro de la perturbación y el ruido de la sonda.} Se elige como
+  \item \textbf{Elegir $\wo$ con la densidad espectral de la perturbación y el ruido de la sonda.} Se elige como
   un factor de $\wc$, entre $3$ y $10$ veces como sugieren Herbst y Madoński
   \cite[sec.~3.3]{herbst2024adrc}, por encima de donde está la energía de la perturbación, pero sin
   dejar pasar el ruido de la sonda, o no lo filtraremos y tendremos una señal de control ruidosa. Cuando
-  se tengan problemas de ruido y no se quiera dañar tanto el rechazo, es más fácil cambiar el
+  se tengan problemas de ruido y no se quiera dañar el rechazo, es más fácil cambiar el
   instrumento o hacer mejores acondicionamientos en campo que realizar un sobreajuste en el observador.
 
   \item \textbf{Manejar la saturación y acondicionar la referencia.} Al observador le debe entrar
-  $u_{\mathrm{sat}}$ y no $u$, el GPI debe tener su esquema de anti-\emph{windup}, y los cambios de
+  $u_{\mathrm{sat}}$ y no $u$, el GPI robusto debe tener su esquema de anti-\emph{windup}, y los cambios de
   consigna deben pasar por Bézier o por el prefiltro, que no cambian el rechazo de perturbaciones y
-  bajan el pico de $u$, de $93$ a $54~\%$ con el retardo de diseño (Figura~\ref{fig:pref_escalon}).
+  bajan el pico de $u$.
 
   \item \textbf{Migrar progresivamente.} Se puede arrancar el control con anchos de banda
   conservadores, no muy grandes, y dependiendo de su comportamiento en el transitorio y en el rechazo ir
-  variando las ganancias, siguiendo el resumen de la Sección~\ref{sec:impl_resumen}. Es la misma ruta
-  que proponen Stanković et al.: arrancar con un ADRC que se comporte como el PID instalado y subir
-  después el ancho de banda del observador \cite{stankovic2024pid}. Como el bloque recibe las mismas
-  señales que el PID, es una ruta de puesta en marcha que no necesita tantos acondicionamientos.
+  variando las ganancias, siguiendo el resumen de la Sección~\ref{sec:impl_resumen}.
 \end{enumerate}

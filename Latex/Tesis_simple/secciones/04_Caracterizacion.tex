@@ -8,7 +8,7 @@
 
 Este capítulo busca encontrar el modelo representativo de la dinámica de la
 planta, junto con sus parámetros (la constante de tiempo $\tau$, la ganancia
-$K$,  el retardo $\theta$ y la ganancia $b_0$), e identificar algunas de las perturbaciones que
+$K$, el retardo $\theta$ y la ganancia $b_0$), e identificar algunas de las perturbaciones que
 afectan el lazo de control de oxígeno disuelto. Para ello se parte de un P\&ID
 del proceso de aireación en la etapa de lodos activados, con el fin de obtener
 la ecuación que explica la dinámica del sistema y encontrar una forma
@@ -392,7 +392,7 @@ mismas unidades de $u$, la planta \eqref{eq:car_foptd} en el tiempo es
 \dot{y}(t) = b_0\left(u(t) + \varepsilon(t) - \frac{y(t)}{k_{dc}}\right),
 \qquad b_0 = \frac{k_{dc}}{\tau} .
 \end{equation}
-La dinámica que sobra de la planta, el término $-y/k_{dc}$, hace parte de la perturbacion. Es decir, parte de la dinámica de la planta queda embebida dentro de la
+La dinámica que sobra de la planta, el término $-y/k_{dc}$, hace parte de la perturbación. Es decir, parte de la dinámica de la planta queda embebida dentro de la
 perturbación total:
 \begin{equation}
 \dot{y}(t) = b_0\bigl(u(t) + \bar{\varepsilon}(t)\bigr),
@@ -600,7 +600,7 @@ El SCADA, a 1~min, no puede obtener un retardo de menos de un minuto. El único
 escalón que sí lo tiene es el registrado por el PLC a 50~ms
 (Figura~\ref{fig:ident_retardo}). La imagen muestra un retardo aproximado de
 $\theta = 50$~s, y el OD sale de su ruido a los $\approx$ 58~s. A simple vista, el OD empieza a subir hacia los 50~s. Por
-ende, para el diseño se considera un retardo entre 0 y 60~s, con ideal de 50~s, que abarca el espectro completo de $\theta$, y en
+ende, para el diseño se considera un retardo entre 0 y 60~s, con ideal de 50~s, que abarca el rango completo de $\theta$, y en
 simulación se valida el controlador con estas variaciones del retardo.
 
 \begin{figure}[H]
@@ -746,7 +746,7 @@ En la ganancia los puntos caen sobre la diagonal en todo el rango, tanto en M2
 como en M3 y tanto al subir como al bajar. En la constante de tiempo también siguen la
 diagonal; las bajadas, que son rápidas, quedan muy pegadas a ella, y las
 subidas lentas se dispersan más, pero en general la mayor parte de la información, es decir, los puntos tanto de subida como de bajada de los módulos, caen muy cerca de la recta. Por ende, cuando el ARX mira un solo
-escalón reproduce lo que se mide en la planta, y esto valida que el espectro de
+escalón reproduce lo que se mide en la planta, y esto valida que el rango de
 ganancias que entrega la identificación (Sección~\ref{sec:ident_arx}) es válido para la planta.
 
 
@@ -858,11 +858,11 @@ por debajo de lo que el soplador alcanza a compensar, y el OD cae.
 
 
 % ----------------------------------------------------------------------------
-\subsection{Espectro de la perturbación total}
+\subsection{Densidad espectral de la perturbación total}
 \label{sec:ident_espectro}
 El observador del ADRC tiene que seguir a $\bar{\xi}$, así que su ancho de banda $\wo$ debe quedar por
 encima de las frecuencias donde $\bar{\xi}$ tiene la mayor parte de su energía. Para verlo se calculó, con el
-método de Welch (se usa una librería), el espectro de $\bar{\xi}$ en cada día limpio completo (un segmento de $N = 1440$~min,
+método de Welch (se usa una librería), la densidad espectral de potencia (PSD) de $\bar{\xi}$ en cada día limpio completo (un segmento de $N = 1440$~min,
 un día, con ventana de Hann) y se promediaron los 54 días, con la frecuencia en rad/h, las unidades de
 $\wo$ (Figura~\ref{fig:ident_espectro_f}a), y la fracción de la energía acumulada hasta $\omega_k$,
 \begin{equation}
@@ -875,8 +875,8 @@ Tabla~\ref{tab:ident_resumen}.
 \begin{figure}[!htbp]
     \centering
     \includegraphics[width=\linewidth]{ident_19_espectro_f.pdf}
-    \caption[Espectro de la perturbación total]{Espectro de la perturbación
-    total medida en M2, promedio de 54 días: (a) densidad espectral; (b)
+    \caption[Densidad espectral de la perturbación total]{Densidad espectral de
+    potencia de la perturbación total medida en M2, promedio de 54 días: (a) densidad espectral; (b)
     fracción de la energía de $\bar{\xi}$ que queda por debajo de cada frecuencia, con el
     $\wo$ de diseño.}
     \label{fig:ident_espectro_f}
@@ -994,7 +994,7 @@ entre los dos módulos, es decir, de $0{,}22$ a $1{,}5$ veces el $b_0$ de diseñ
 retardo, entre 0 y 60~s, es pequeño frente a
 esa dinámica. Por ende, el controlador tiene que funcionar en todos estos
 rangos con una sola sintonía, que es justamente lo que se busca con el ADRC.
-Además, el espectro de la perturbación medida indica que la mayor parte de su energía
+Además, la densidad espectral de la perturbación medida indica que la mayor parte de su energía
 (87~\%) está por debajo de 60~rad/h, el ancho de banda del observador $\wo$; el resto es
 variación de minuto a minuto, y el máximo de $\wo$ lo ponen el ruido de la medida y el retardo.
 
@@ -1038,7 +1038,7 @@ Media & 57 días limpios & $-7{,}49$ \\
 Desviación & $\sigma$, robusta & 4,05 \\
 Cambio entre minutos & mediana / percentil 95 & 0,60 / 2,06 \\
 \midrule
-\multicolumn{3}{l}{\emph{Espectro de $\bar{\xi}$} [rad/h]} \\
+\multicolumn{3}{l}{\emph{Densidad espectral de $\bar{\xi}$} [rad/h]} \\
 50~\% de la energía & por debajo de & 12,6 \\
 90~\% de la energía & por debajo de & 70 \\
 99~\% de la energía & por debajo de & 129 \\
